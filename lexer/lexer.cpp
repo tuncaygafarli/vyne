@@ -8,6 +8,16 @@ std::vector<Token> tokenize(const std::string& input) {
 
 		if (std::isspace(character)) continue;
 
+		if (character == '"') {
+			std::string buffer;
+			i++;
+			while (i < input.length() && input[i] != '"') {
+				buffer += input[i++];
+			}
+			tokens.push_back({ TokenType::String, 0, buffer });
+			continue;
+		}
+
 		if (std::isdigit(character)) {
 			std::string buffer;
 
@@ -24,7 +34,14 @@ std::vector<Token> tokenize(const std::string& input) {
 				buffer += input[i++];
 			}
 			--i;
-			tokens.push_back({ TokenType::Identifier, 0, buffer });
+
+			if (buffer == "print") {
+				tokens.emplace_back(TokenType::Print, 0, buffer);
+			}
+
+			else {
+				tokens.emplace_back(TokenType::Identifier, 0, buffer);
+			}
 		}
 
 		else {

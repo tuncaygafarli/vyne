@@ -14,6 +14,8 @@ enum class TokenType {
 	Right_Parenthese,
 	Identifier,
 	Equals,
+	Print,
+	String,
 	End
 };
 

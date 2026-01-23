@@ -24,6 +24,11 @@ Token Parser::lookAhead(int distance) {
 std::unique_ptr<ASTNode> Parser::parseFactor() {
 	Token current = peekToken();
 
+	if (current.type == TokenType::String) {
+		getNextToken();
+		return std::make_unique<StringNode>(current.name);
+	}
+
 	if (current.type == TokenType::Number) {
 		getNextToken();
 		return std::make_unique<NumberNode>(current.value);
@@ -70,8 +75,19 @@ std::unique_ptr<ASTNode> Parser::parseExpression() {
 	return left;
 }
 
+// statement parser ucun nezerde tutulub, demo
 std::unique_ptr<ASTNode> Parser::parseStatement() {
 	Token current = peekToken();
+
+	if (peekToken().type == TokenType::Print) {
+		getNextToken();
+		consume(TokenType::Left_Parenthese);
+
+		auto expr = parseExpression();
+
+		consume(TokenType::Right_Parenthese);
+		return std::make_unique<PrintNode>(std::move(expr));
+	}
 
 	if (current.type == TokenType::Identifier && lookAhead(1).type == TokenType::Equals) {
 		std::string name = getNextToken().name;

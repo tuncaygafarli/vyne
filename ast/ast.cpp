@@ -32,12 +32,12 @@ Value BinOpNode::evaluate(SymbolForest& env, std::string currentGroup) const {
     Value l = left->evaluate(env, currentGroup);
     Value r = right->evaluate(env, currentGroup);
 
-    if (l.isString && r.isString) {
+    if (l.type == Value::STRING && r.type == Value::STRING) {
         if (op == '+') return Value(l.text + r.text);
         throw std::runtime_error("Type Error: Only '+' allowed for strings.");
     }
 
-    if (l.isString != r.isString) {
+    if (l.type == Value::STRING != r.type == Value::STRING) {
         throw std::runtime_error("Type Error: Cannot mix strings and numbers!");
     }
 

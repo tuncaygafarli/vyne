@@ -128,7 +128,6 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 
 Token Parser::consume(TokenType expected) {
 	Token t = peekToken();
-	std::cout << "Consuming: " << (int)t.type << " (Expected: " << (int)expected << ")\n";
 	if (t.type == expected) {
 		return tokens[pos++];
 	}

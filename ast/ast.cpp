@@ -6,7 +6,16 @@ Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const
 }
 
 Value VariableNode::evaluate(SymbolContainer& forest, std::string currentGroup) const {
-    std::string targetGroup = specificGroup.empty() ? currentGroup : specificGroup;
+    std::string targetGroup;
+    
+    if (specificGroup.empty()) {
+        targetGroup = currentGroup;
+    } else {
+        targetGroup = "global";
+        for (const auto& g : specificGroup) {
+            targetGroup += "." + g;
+        }
+    }
 
     if (forest.count(targetGroup) && forest[targetGroup].count(name)) {
         return forest[targetGroup][name];
@@ -17,13 +26,16 @@ Value VariableNode::evaluate(SymbolContainer& forest, std::string currentGroup) 
 
 Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value val = rhs->evaluate(env, currentGroup);
-    env[currentGroup][identifier] = val;
+    
+    env[currentGroup][identifier] = val; 
     return val;
 }
 
 Value GroupNode::evaluate(SymbolContainer& forest, std::string currentGroup) const {
+    std::string nextGroup = currentGroup + "." + groupName;
+    
     for (const auto& stmt : statements) {
-        stmt->evaluate(forest, groupName);
+        stmt->evaluate(forest, nextGroup);
     }
     return Value();
 }
@@ -48,7 +60,9 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     case '/':
         if (r.number == 0) throw std::runtime_error("Division by zero!");
         return Value(l.number / r.number);
-    default: return Value(0.0);
+    case '<': return Value(l.number < r.number);
+    case '>': return Value(l.number > r.number);
+    default:  return Value(0.0);
     }
 }
 

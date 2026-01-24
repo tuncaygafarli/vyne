@@ -66,10 +66,10 @@ public:
 
 class VariableNode : public ASTNode {
     std::string name;
-    std::string specificGroup;
+    std::vector<std::string> specificGroup;
 public:
-    VariableNode(std::string name, std::string group = "")
-        : name(name), specificGroup(group) {
+    VariableNode(std::string name, std::vector<std::string>&& group = {})
+        : name(std::move(name)), specificGroup(std::move(group)) {
     }
 
     Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;

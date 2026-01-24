@@ -71,6 +71,9 @@ std::vector<Token> tokenize(const std::string& input) {
 			case ']' : tokens.emplace_back(TokenType::Right_Bracket, 0, ""); break;
 			case ',' : tokens.emplace_back(TokenType::Comma, 0, ""); break;
 			case ';' : tokens.emplace_back(TokenType::Semicolon, 0, ""); break;
+			case '<' : tokens.emplace_back(TokenType::Smaller, 0, ""); break;
+			case '>' : tokens.emplace_back(TokenType::Greater, 0, ""); break;
+			case '.' : tokens.emplace_back(TokenType::Dot, 0, ""); break;
 			default:
 				std::cerr << "Unexpected character: " << character << std::endl;
 				break;
@@ -102,6 +105,7 @@ std::string tokenTypeToString(TokenType type) {
         case TokenType::Right_Bracket:    return "']'";
         case TokenType::Comma:            return "','";
 		case TokenType::Semicolon:        return "';'";
+		case TokenType::Dot:              return "'.'";
         case TokenType::End:              return "end of file";
         default:                          return "Unknown Token";
     }

@@ -21,6 +21,7 @@ public:
 	Token lookAhead(int distance);
 	std::unique_ptr<ASTNode> parseFactor();
 	std::unique_ptr<ASTNode> parseTerm();
+	std::unique_ptr<ASTNode> parseRelational();
 	std::unique_ptr<ASTNode> parseExpression();
 	std::unique_ptr<ASTNode> parseStatement();
 	Token consume(TokenType expected);

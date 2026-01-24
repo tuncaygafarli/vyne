@@ -10,6 +10,8 @@ enum class TokenType {
 	Add,
 	Substract,
 	Division,
+	Greater,
+	Smaller,
 	Left_Parenthese,
 	Right_Parenthese,
 	Identifier,
@@ -23,6 +25,7 @@ enum class TokenType {
 	Right_Bracket,
 	Comma,
 	Semicolon,
+	Dot,
 	End
 };
 

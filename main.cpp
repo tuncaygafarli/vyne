@@ -20,8 +20,8 @@ int main(int argc, char* argv[]) {
 		std::string filename = argv[1];
 
 		size_t dotPos = filename.find_last_of(".");
-		if (dotPos == std::string::npos || filename.substr(dotPos + 1) != "tf") {
-			std::cerr << "Error: File must end in .tf" << "\n";
+		if (dotPos == std::string::npos || filename.substr(dotPos + 1) != "vy") {
+			std::cerr << "Error: File must end in .vy" << "\n";
 			return 1;
 		}
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-		std::cout << "TF-Compiler Shell (Type 'exit' to quit)" << "\n";
+		std::cout << "Vyne Interpreter Shell (Type 'exit' to quit)" << "\n";
 		while (true) {
 			std::cout << ">> ";
 			std::getline(std::cin, input);

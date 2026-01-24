@@ -39,6 +39,10 @@ std::vector<Token> tokenize(const std::string& input) {
 				tokens.emplace_back(TokenType::Print, 0, buffer);
 			}
 
+			else if (buffer == "group") {
+				tokens.emplace_back(TokenType::Group, 0, "");
+			}
+
 			else {
 				tokens.emplace_back(TokenType::Identifier, 0, buffer);
 			}
@@ -53,6 +57,10 @@ std::vector<Token> tokenize(const std::string& input) {
 			case '(': tokens.emplace_back(TokenType::Left_Parenthese, 0, ""); break;
 			case ')': tokens.emplace_back(TokenType::Right_Parenthese, 0, ""); break;
 			case '=': tokens.emplace_back(TokenType::Equals, 0, ""); break;
+			case '{': tokens.emplace_back(TokenType::Left_CB, 0, ""); break;
+			case '}': tokens.emplace_back(TokenType::Right_CB, 0, ""); break;
+			case '[': tokens.emplace_back(TokenType::Left_Bracket, 0, ""); break;
+			case ']': tokens.emplace_back(TokenType::Right_Bracket, 0, ""); break;
 			default:
 				std::cerr << "Unexpected character: " << character << std::endl;
 				break;

@@ -23,5 +23,5 @@ public:
 	std::unique_ptr<ASTNode> parseTerm();
 	std::unique_ptr<ASTNode> parseExpression();
 	std::unique_ptr<ASTNode> parseStatement();
-	void consume(TokenType expected);
+	Token consume(TokenType expected);
 };

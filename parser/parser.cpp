@@ -35,8 +35,16 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 	}
 
 	if (current.type == TokenType::Identifier) {
-		getNextToken();
-		return std::make_unique<VariableNode>(current.name);
+		Token firstIdent = consume(TokenType::Identifier);
+
+		if (peekToken().type == TokenType::Left_Bracket) {
+			consume(TokenType::Left_Bracket);
+			Token varIdent = consume(TokenType::Identifier);
+			consume(TokenType::Right_Bracket);
+
+			return std::make_unique<VariableNode>(varIdent.name, firstIdent.name);
+		}
+		return std::make_unique<VariableNode>(firstIdent.name);
 	}
 
 	if (current.type == TokenType::Left_Parenthese) {
@@ -70,7 +78,7 @@ std::unique_ptr<ASTNode> Parser::parseExpression() {
 
 		auto right = parseTerm();
 
-			left = std::make_unique<BinOpNode>(opChar, std::move(left), std::move(right));
+		left = std::make_unique<BinOpNode>(opChar, std::move(left), std::move(right));
 	}
 	return left;
 }
@@ -89,6 +97,24 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 		return std::make_unique<PrintNode>(std::move(expr));
 	}
 
+	if (peekToken().type == TokenType::Group) {
+		consume(TokenType::Group);
+
+		std::string treeName = consume(TokenType::Identifier).name;
+
+		consume(TokenType::Left_CB);
+
+		std::vector<std::unique_ptr<ASTNode>> statements;
+
+		while (peekToken().type != TokenType::Right_CB && peekToken().type != TokenType::End) {
+			statements.push_back(parseStatement());
+		}
+
+		consume(TokenType::Right_CB);
+
+		return std::make_unique<GroupNode>(treeName, std::move(statements));
+	}
+
 	if (current.type == TokenType::Identifier && lookAhead(1).type == TokenType::Equals) {
 		std::string name = getNextToken().name;
 		consume(TokenType::Equals);
@@ -100,9 +126,13 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 	return parseExpression();
 }
 
-void Parser::consume(TokenType expected) {
-	Token t = getNextToken();
-	if (t.type != expected) {
-		throw std::runtime_error("Unexpected token!");
+Token Parser::consume(TokenType expected) {
+	Token t = peekToken();
+	std::cout << "Consuming: " << (int)t.type << " (Expected: " << (int)expected << ")\n";
+	if (t.type == expected) {
+		return tokens[pos++];
 	}
+	throw std::runtime_error("Error: Unexpected token type! Expected " +
+		std::to_string((int)expected) + " but got " +
+		std::to_string((int)peekToken().type));
 }

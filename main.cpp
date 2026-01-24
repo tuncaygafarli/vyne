@@ -8,26 +8,27 @@
 #include "ast/ast.h"
 
 int main(int argc, char* argv[]) {
-	SymbolTable globals;
+	SymbolForest forest;
+	forest["default"] = {};
 	
-	globals["pi"] = 3.14159;
-	globals["x"] = 10.0;
+	forest["default"]["pi"] = 3.14159;
+	forest["default"]["x"] = 10.0;
 
 	std::string input;
-	std::cout << "TF-Compiler Shell (Type 'exit' to quit)" << std::endl;
+	std::cout << "TF-Compiler Shell (Type 'exit' to quit)" << "\n";
 
 	if (argc > 1) {
 		std::string filename = argv[1];
 
 		size_t dotPos = filename.find_last_of(".");
 		if (dotPos == std::string::npos || filename.substr(dotPos + 1) != "tf") {
-			std::cerr << "Error: File must end in .tf" << std::endl;
+			std::cerr << "Error: File must end in .tf" << "\n";
 			return 1;
 		}
 
 		std::ifstream file(filename);
 		if (!file.is_open()) {
-			std::cerr << "Could not open file: " << filename << std::endl;
+			std::cerr << "Could not open file: " << filename << "\n";
 			return 1;
 		}
 
@@ -43,11 +44,11 @@ int main(int argc, char* argv[]) {
 			while (parser.peekToken().type != TokenType::End) {
 				auto ast = parser.parseStatement();
 				if (ast) {
-					ast->evaluate(globals);
+					ast->evaluate(forest);
 				}
 			}
 		} catch (const std::exception& e) {
-			std::cerr << "Runtime Error: " << e.what() << std::endl;
+			std::cerr << "Runtime Error: " << e.what() << "\n";
 		}
 
 		return 0;
@@ -61,23 +62,37 @@ int main(int argc, char* argv[]) {
 
 			// debug commands
 			if (input == "view tree") {
-				std::cout << "--- Current Variables ---" << std::endl;
-				if (globals.empty()) {
-					std::cout << "(no variables defined)" << std::endl;
-				}
-				else {
-					for (const auto& [name, value] : globals) {
-						std::cout << name << " = ";
+				std::cout << "--- Current Symbol Forest ---" << "\n";
 
-						if (value.isString) {
-							std::cout << value.text << std::endl;
+				bool hasAnyVariables = false;
+
+				for (const auto& [groupName, table] : forest) {
+
+					for (const auto& [varName, val] : table) {
+						hasAnyVariables = true;
+
+						if (groupName == "default") {
+							std::cout << varName << " = ";
 						}
 						else {
-							std::cout << value.number << std::endl;
+							std::cout << groupName << "[" << varName << "] = ";
+						}
+
+						if (val.isString) {
+							std::cout << "\"" << val.text << "\"" << "\n";
+						}
+						else {
+							std::cout << val.number << "\n";
 						}
 					}
 				}
-				std::cout << "-------------------------" << std::endl;
+
+				if (!hasAnyVariables) {
+					std::cout << "(no variables defined)" << "\n";
+				}
+
+				std::cout << "-----------------------------" << "\n";
+				continue;
 			}
 
 			try {
@@ -86,12 +101,12 @@ int main(int argc, char* argv[]) {
 
 				auto root = parser.parseStatement();
 				if (root) {
-					Value result = root->evaluate(globals);
+					Value result = root->evaluate(forest);
 					result.print();
 				}
 			}
 			catch (const std::exception& e) {
-				std::cerr << "Error: " << e.what() << std::endl;
+				std::cerr << "Error: " << e.what() << "\n";
 			}
 	}
 	return 0;

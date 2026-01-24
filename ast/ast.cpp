@@ -1,76 +1,59 @@
 #include "ast.h"
 #include <stdexcept>
 
-NumberNode::NumberNode(double val) : value(val) {}
-Value NumberNode::evaluate(SymbolTable& env) const {
-    Value res;
-    res.isString = false;
-    res.number = value;
-    res.text = "";
-    return res;
+Value NumberNode::evaluate(SymbolForest& env, std::string currentGroup) const {
+    return Value(value);
 }
 
-VariableNode::VariableNode(std::string& name) : name(name) {};
-Value VariableNode::evaluate(SymbolTable& env) const {
-	if (env.find(name) != env.end()) {
-		return env[name];
-	}
+Value VariableNode::evaluate(SymbolForest& forest, std::string currentGroup) const {
+    std::string targetGroup = specificGroup.empty() ? currentGroup : specificGroup;
 
-	throw std::runtime_error("Undefined variable " + name);
+    if (forest.count(targetGroup) && forest[targetGroup].count(name)) {
+        return forest[targetGroup][name];
+    }
+
+    throw std::runtime_error("Variable '" + name + "' not found in " + targetGroup);
 }
 
-AssignmentNode::AssignmentNode(std::string id, std::unique_ptr<ASTNode> rhs_ptr)
-    : identifier(std::move(id)), rhs(std::move(rhs_ptr)) {
-}
-
-Value AssignmentNode::evaluate(SymbolTable& env) const {
-    Value val = rhs->evaluate(env);
-    env[identifier] = val;
+Value AssignmentNode::evaluate(SymbolForest& env, std::string currentGroup) const {
+    Value val = rhs->evaluate(env, currentGroup);
+    env[currentGroup][identifier] = val;
     return val;
 }
 
-BinOpNode::BinOpNode(char op, std::unique_ptr<ASTNode> left, std::unique_ptr<ASTNode> right)
-    : op(op), left(std::move(left)), right(std::move(right)) {
+Value GroupNode::evaluate(SymbolForest& forest, std::string currentGroup) const {
+    for (const auto& stmt : statements) {
+        stmt->evaluate(forest, groupName);
+    }
+    return Value();
 }
 
-Value BinOpNode::evaluate(SymbolTable& env) const {
-    Value l = left->evaluate(env);
-    Value r = right->evaluate(env);
+Value BinOpNode::evaluate(SymbolForest& env, std::string currentGroup) const {
+    Value l = left->evaluate(env, currentGroup);
+    Value r = right->evaluate(env, currentGroup);
 
     if (l.isString && r.isString) {
-        if (op == '+') {
-            return Value(l.text + r.text);
-        }
-        else {
-            throw std::runtime_error("Type Error: You can only use '+' with strings.");
-        }
+        if (op == '+') return Value(l.text + r.text);
+        throw std::runtime_error("Type Error: Only '+' allowed for strings.");
     }
 
     if (l.isString != r.isString) {
-        throw std::runtime_error("Type Error: Cannot mix strings and numbers in math!");
+        throw std::runtime_error("Type Error: Cannot mix strings and numbers!");
     }
 
-    Value result;
-    result.isString = false;
     switch (op) {
-    case '+': result.number = l.number + r.number; break;
-    case '-': result.number = l.number - r.number; break;
-    case '*': result.number = l.number * r.number; break;
+    case '+': return Value(l.number + r.number);
+    case '-': return Value(l.number - r.number);
+    case '*': return Value(l.number * r.number);
     case '/':
         if (r.number == 0) throw std::runtime_error("Division by zero!");
-        result.number = l.number / r.number;
-        break;
-    default: result.number = 0;
+        return Value(l.number / r.number);
+    default: return Value(0.0);
     }
-    return result;
 }
 
-PrintNode::PrintNode(std::unique_ptr<ASTNode> expr)
-    : expression(std::move(expr)) {
-}
-
-Value PrintNode::evaluate(SymbolTable& env) const {
-    Value val = expression->evaluate(env);
+Value PrintNode::evaluate(SymbolForest& env, std::string currentGroup) const {
+    Value val = expression->evaluate(env, currentGroup);
     val.print();
     return val;
 }

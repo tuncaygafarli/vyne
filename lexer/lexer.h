@@ -16,6 +16,11 @@ enum class TokenType {
 	Equals,
 	Print,
 	String,
+	Group,
+	Left_CB,
+	Right_CB,
+	Left_Bracket,
+	Right_Bracket,
 	End
 };
 

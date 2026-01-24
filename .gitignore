@@ -2,3 +2,4 @@ x64/*
 *.user
 *.filters
 *.vcxproj
+*.exe

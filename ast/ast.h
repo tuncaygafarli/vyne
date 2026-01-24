@@ -19,7 +19,7 @@ struct Value {
     Value(std::string s) : type(STRING), text(std::move(s)) {}
     Value(std::vector<Value> l) : type(ARRAY), list(std::move(l)) {}
     Value(std::unordered_map<std::string, Value> t) : type(TABLE), table(std::move(t)) {}
-    
+
     void print(std::ostream& os) const {
         if (type == Type::ARRAY) {
             os << "{";
@@ -50,7 +50,7 @@ class GroupNode : public ASTNode {
     std::string groupName;
     std::vector<std::unique_ptr<ASTNode>> statements;
 public:
-    GroupNode(std::string name, std::vector<std::unique_ptr<ASTNode>> stmts)
+    GroupNode(std::string&& name, std::vector<std::unique_ptr<ASTNode>> stmts)
         : groupName(name), statements(std::move(stmts)) {
     }
 

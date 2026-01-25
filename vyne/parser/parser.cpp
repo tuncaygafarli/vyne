@@ -54,6 +54,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 		return std::make_unique<BooleanNode>(false);
 	}
 	// PARSE IDENTIFIERS
+	// x.pos = 5;
 	if (current.type == TokenType::Identifier) {
 		std::vector<std::string> scope;
 		Token tok = consume(TokenType::Identifier);
@@ -67,15 +68,17 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 				consume(TokenType::Dot);
 				Token member = consume(TokenType::Identifier);
 
+				// if it sees (, then it is definitely a method
+				// so it will try to parse its args
 				if (peekToken().type == TokenType::Left_Parenthese) {
 					consume(TokenType::Left_Parenthese);
 					
 					std::vector<std::unique_ptr<ASTNode>> args;
 					if (peekToken().type != TokenType::Right_Parenthese) {
-						args.push_back(parseExpression());
+						args.emplace_back(parseExpression());
 						while (peekToken().type == TokenType::Comma) {
 							consume(TokenType::Comma);
-							args.push_back(parseExpression());
+							args.emplace_back(parseExpression());
 						}
 					}
 					consume(TokenType::Right_Parenthese);
@@ -83,7 +86,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 					node = std::make_unique<MethodCallNode>(std::move(node), member.name, std::move(args));
 				} 
 				else {
-					scope.push_back(lastName);
+					scope.emplace_back(lastName);
 					lastName = member.name;
 					node = std::make_unique<VariableNode>(lastName, std::vector<std::string>(scope));
 				}
@@ -182,11 +185,11 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 
 		if(lookAhead(checkPos).type == TokenType::Equals){
 			std::vector<std::string> path;
-			path.push_back(consume(TokenType::Identifier).name);
+			path.emplace_back(consume(TokenType::Identifier).name);
 
 			while (peekToken().type == TokenType::Dot) {
 				consume(TokenType::Dot);
-				path.push_back(consume(TokenType::Identifier).name);
+				path.emplace_back(consume(TokenType::Identifier).name);
 			}
 
 			std::string varName = path.back();
@@ -223,7 +226,7 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 		std::vector<std::unique_ptr<ASTNode>> statements;
 
 		while (peekToken().type != TokenType::Right_CB && peekToken().type != TokenType::End) {
-			statements.push_back(parseStatement());
+			statements.emplace_back(parseStatement());
 		}
 
 		consume(TokenType::Right_CB);

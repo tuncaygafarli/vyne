@@ -136,9 +136,17 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
         Value& target = env[targetGroup][var->getName()];
 
         if(methodName == "size"){
-            if(target.type != Value::ARRAY) throw std::runtime_error("Compilation error : Called size() on non-array!");
+            if(target.type != Value::ARRAY) throw std::runtime_error("Compilation error : Called method size() on non-array!");
 
             return Value(static_cast<double>(target.list.size()));
+        }
+
+        if (methodName == "push"){
+            if(target.type != Value::ARRAY) throw std::runtime_error("Compilation error : Called method push() on non-array!");
+
+            Value val = arguments[0]->evaluate(env, currentGroup);
+            target.list.emplace_back(val);
+            return val;
         }
     } else {
         Value temp = receiver->evaluate(env, currentGroup);

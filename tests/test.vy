@@ -1,9 +1,6 @@
-group creatures {
-    group human {
-        petuxlar = {"Vuqar","Amil","Resul"};
-        lgbt = petuxlar;
-    };
+group Node {
+    x = {1,2,3};
 };
 
-name = "gjfdhg;ds"
-log(creatures.human.petuxlar.size());
+Node.x.add(5);
+log(Node.x);

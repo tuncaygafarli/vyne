@@ -44,11 +44,11 @@ std::vector<Token> tokenize(const std::string& input) {
 			}
 
 			else if (buffer == "true"){
-				tokens.emplace_back(TokenType::Number, 1, "");
+				tokens.emplace_back(TokenType::True, 1, "true");
 			}
 
 			else if (buffer == "false"){
-				tokens.emplace_back(TokenType::Number, 0, "");
+				tokens.emplace_back(TokenType::False, 0, "false");
 			}
 
 			else {

@@ -24,16 +24,29 @@ Token Parser::lookAhead(int distance) {
 std::unique_ptr<ASTNode> Parser::parseFactor() {
 	Token current = peekToken();
 
+	// PARSE STRINGS
 	if (current.type == TokenType::String) {
 		getNextToken();
 		return std::make_unique<StringNode>(current.name);
 	}
 
+	// PARSE NUMBERS
 	if (current.type == TokenType::Number) {
 		getNextToken();
 		return std::make_unique<NumberNode>(current.value);
 	}
 
+	// PARSE BOOLEANS
+	if (current.type == TokenType::True) {
+		consume(TokenType::True);
+		return std::make_unique<BooleanNode>(true);
+	}
+	
+	if (current.type == TokenType::False) {
+		consume(TokenType::False);
+		return std::make_unique<BooleanNode>(false);
+	}
+	// PARSE IDENTIFIERS
 	if (current.type == TokenType::Identifier) {
 		std::vector<std::string> scope;
 		

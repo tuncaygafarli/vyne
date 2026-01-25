@@ -26,6 +26,8 @@ enum class TokenType {
 	Comma,
 	Semicolon,
 	Dot,
+	False,
+	True,
 	End
 };
 

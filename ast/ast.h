@@ -6,10 +6,11 @@
 #include <vector>
 
 struct Value {
-    enum Type { NUMBER, STRING, ARRAY, TABLE, NONE };
+    enum Type { NUMBER, STRING, ARRAY, TABLE, NONE, BOOLEAN };
     Type type = NONE;
 
     double number = 0;
+    bool boolean;
     std::string text;
     std::vector<Value> list;
     std::unordered_map<std::string, Value> table;
@@ -17,23 +18,26 @@ struct Value {
     Value() : type(NONE) {}
     Value(double n) : type(NUMBER), number(n) {}
     Value(std::string s) : type(STRING), text(std::move(s)) {}
+    Value(bool b) : type(BOOLEAN), boolean(std::move(b)) {}
     Value(std::vector<Value> l) : type(ARRAY), list(std::move(l)) {}
     Value(std::unordered_map<std::string, Value> t) : type(TABLE), table(std::move(t)) {}
 
     void print(std::ostream& os) const {
-        if (type == Type::ARRAY) {
-            os << "{";
-            for (size_t i = 0; i < list.size(); ++i) {
-                list[i].print(os);
-                if (i < list.size() - 1) os << ", ";
-            }
-            os << "}";
-        } else if (type == Type::STRING) {
-            os << "\"" << text << "\"";
-        } else {
-            os << number;
+    if (type == Type::ARRAY) {
+        os << "{";
+        for (size_t i = 0; i < list.size(); ++i) {
+            list[i].print(os);
+            if (i < list.size() - 1) os << ", ";
         }
+        os << "}";
+    } else if (type == Type::STRING) {
+        os << "\"" << text << "\"";
+    } else if (type == Type::BOOLEAN) {
+        os << (boolean ? "true" : "false");
+    } else {
+        os << number;
     }
+}
 };
 
 using SymbolTable  = std::unordered_map<std::string, Value>;
@@ -111,6 +115,16 @@ public:
     Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override {
         return Value(text);
     }
+};
+
+class BooleanNode : public ASTNode {
+    bool condition;
+public :
+    BooleanNode(bool c) : condition(std::move(c)) {}
+
+    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override {
+        return Value(condition);
+    };
 };
 
 class ArrayNode : public ASTNode {

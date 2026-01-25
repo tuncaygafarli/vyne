@@ -1,7 +1,8 @@
-group human {
-    group tuncay {
-        id = {true, false, 5};
+group creatures {
+    group human {
+        petuxlar = {"Vuqar","Amil","Resul"};
+        lgbt = petuxlar;
     };
 };
 
-log(human.tuncay);
+log(creatures.human.petuxlar.size());

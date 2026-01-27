@@ -6,91 +6,127 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <variant>
 
 class ASTNode;
 struct Value {
-    enum Type { NUMBER, STRING, ARRAY, TABLE, FUNCTION, NONE };
-    Type type = NONE;
-
-    double number = 0;
-    std::string text;
-    std::vector<Value> list;
-    std::unordered_map<std::string, Value> table;
-
+    enum TypeIndex { NONE = 0, NUMBER = 1, STRING = 2, ARRAY = 3, TABLE = 4, FUNCTION = 5 };
     struct FunctionData {
         std::vector<std::string> params;
         std::vector<std::shared_ptr<ASTNode>> body; 
     };
 
-    std::shared_ptr<FunctionData> function;
+    using VariantData = std::variant<
+        std::monostate,
+        double,
+        std::string,
+        std::vector<Value>,
+        std::unordered_map<std::string, Value>,
+        std::shared_ptr<FunctionData>
+    >;
 
-    Value() : type(NONE) {}
-    Value(double n) : type(NUMBER), number(n) {}
-    Value(std::string s) : type(STRING), text(std::move(s)) {}
-    Value(std::vector<Value> l) : type(ARRAY), list(std::move(l)) {}
-    Value(std::unordered_map<std::string, Value> t) : type(TABLE), table(std::move(t)) {}
-    Value(std::vector<std::string> p, std::vector<std::shared_ptr<ASTNode>> b) 
-        : type(FUNCTION), number(0) {
-        function = std::make_shared<FunctionData>();
-        function->params = std::move(p);
-        function->body = std::move(b);
+    VariantData data;
+
+    Value() : data(std::monostate{}) {}
+    Value(double n) : data(n) {}
+    Value(std::string s) : data(std::move(s)) {}
+    Value(std::vector<Value> l) : data(std::move(l)) {}
+    Value(std::shared_ptr<FunctionData> f) : data(std::move(f)) {}
+    Value(std::vector<std::string> p, std::vector<std::shared_ptr<ASTNode>> b) {
+        auto func = std::make_shared<FunctionData>();
+        func->params = std::move(p);
+        func->body = std::move(b);
+        
+        data = std::move(func); 
     }
 
-    bool operator==(const Value& other) const {
-        if (type != other.type) return false;
-        if (type == NUMBER) return number == other.number;
-        if (type == STRING) return text == other.text;
-        if (type == NONE) return true;
+    // safe getters
+    int getType() const { return data.index(); }
 
-        return false; 
-    }
-
-    bool operator<(const Value& other) const {
-        if (type != other.type) return type < other.type;
-
-        if (type == NUMBER) return number < other.number;
-
-        if (type == STRING) return text < other.text;
-
-        return false;
-    }
+    double asNumber() const { return std::get<double>(data); }
+    const std::string& asString() const { return std::get<std::string>(data); }
+    std::vector<Value>& asList() { return std::get<std::vector<Value>>(data); }
+    const std::vector<Value>& asList() const { return std::get<std::vector<Value>>(data); }
+    const std::shared_ptr<FunctionData>& asFunction() const { return std::get<std::shared_ptr<FunctionData>>(data); }
 
     void print(std::ostream& os) const {
-        if (type == Type::NONE) {
-            return;
-        } else if (type == Type::ARRAY) {
-            os << "{";
-            for (size_t i = 0; i < list.size(); ++i) {
-                list[i].print(os);
-                if (i < list.size() - 1) os << ", ";
+        switch(data.index()){
+            case 0 :
+                os << "null";
+                break;
+            case 1 :
+                os << std::get<double>(data);
+                break;
+            case 2 :
+                os << "\"" << std::get<std::string>(data) << "\"";
+                break;
+            case 3 : {
+                const auto& list = std::get<std::vector<Value>>(data);
+
+                os << "{";
+                for (size_t i = 0; i < list.size(); ++i) {
+                    list[i].print(os);
+                    if (i < list.size() - 1) os << ", ";
+                }
+                os << "}";
+                break;
             }
-            os << "}";
-        } else if (type == Type::FUNCTION) {
-            os << "<function " << (function ? "defined" : "null") << ">";
-        } else if (type == Type::STRING) {
-            os << "\"" << text << "\"";
-        } else if (type == Type::TABLE) {
-            os << "<table[" << table.size() << "]>";
-        } else if (type == Type::NUMBER) {
-            os << number;
+
+            case 5:
+                os << "<function>";
+                break;
+            default:
+                os << "<unknown>";
+                break; 
         }
     }
 
     size_t getBytes() const {
-        switch(type){
-            case NUMBER  :  return sizeof(double);
-            case STRING  :  return text.length() * sizeof(char);
-            case ARRAY   : {
-                size_t total = 0; // doing base calculation here because also vectors has base size
+        switch(data.index()){
+            case 1:
+                return sizeof(double);
+            case 2: 
+                return std::get<std::string>(data).length() * sizeof(char);
+            case 3: {
+                size_t total = 0;
 
-                for(const auto& el : list){
-                    total += el.getBytes();
+                const auto& list = std::get<std::vector<Value>>(data);
+                for (const auto& v : list) {
+                    total += v.getBytes();
                 }
 
                 return total;
             }
 
-            default : return 0;
+            default :
+                return 0;
+        }
+    }
+
+    bool operator==(const Value& other) const {
+        if (data.index() != other.data.index()) return false;
+
+        switch (data.index()) {
+            case 0: return true;
+            case 1: return std::get<double>(data) == std::get<double>(other.data);
+            case 2: return std::get<std::string>(data) == std::get<std::string>(other.data);
+            case 3: return std::get<std::vector<Value>>(data) == std::get<std::vector<Value>>(other.data);
+            default: return false; 
+        }
+    }
+
+    bool operator<(const Value& other) const {
+        if (data.index() != other.data.index()) {
+            return data.index() < other.data.index();
+        }
+
+        switch (data.index()) {
+            case 1:
+                return std::get<double>(data) < std::get<double>(other.data);
+            case 2:
+                return std::get<std::string>(data) < std::get<std::string>(other.data);
+            default:
+                return false;
         }
     }
 };

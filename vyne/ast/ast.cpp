@@ -60,34 +60,34 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     Value l = left->evaluate(env, currentGroup);
     Value r = right->evaluate(env, currentGroup);
 
-    if (l.type == Value::STRING && r.type == Value::STRING) {
-        if (op == '+') return Value(l.text + r.text);
+    if (l.getType() == Value::STRING && r.getType() == Value::STRING) {
+        if (op == '+') return Value(l.asString() + r.asString());
         throw std::runtime_error("Type Error: Only '+' allowed for strings.");
     }
 
-    if (l.type == Value::ARRAY && r.type == Value::ARRAY) {
+    if (l.getType() == Value::ARRAY && r.getType() == Value::ARRAY) {
         if (op == '+') {
             Value result = l;
 
-            result.list.insert(result.list.end(), r.list.begin(), r.list.end());
+            result.asList().insert(result.asList().end(), r.asList().begin(), r.asList().end());
             return result;
         }
         throw std::runtime_error("Type Error: Only '+' allowed for strings, numbers and arrays.");
     }
 
-    if ((l.type == Value::STRING) != (r.type == Value::STRING)) {
+    if ((l.getType() == Value::STRING) != (r.getType() == Value::STRING)) {
         throw std::runtime_error("Type Error: Cannot mix strings and numbers!");
     }
 
     switch (op) {
-    case '+': return Value(l.number + r.number);
-    case '-': return Value(l.number - r.number);
-    case '*': return Value(l.number * r.number);
+    case '+': return Value(l.asNumber() + r.asNumber());
+    case '-': return Value(l.asNumber() - r.asNumber());
+    case '*': return Value(l.asNumber() * r.asNumber());
     case '/':
-        if (r.number == 0) throw std::runtime_error("Division by zero!");
-        return Value(l.number / r.number);
-    case '<': return Value(l.number < r.number);
-    case '>': return Value(l.number > r.number);
+        if (r.asNumber() == 0) throw std::runtime_error("Division by zero!");
+        return Value(l.asNumber() / r.asNumber());
+    case '<': return Value(l.asNumber() < r.asNumber());
+    case '>': return Value(l.asNumber() > r.asNumber());
     default:  return Value(0.0);
     }
 }
@@ -129,23 +129,23 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
 
     Value& arrayVal = env[targetGroup][name];
 
-    if (arrayVal.type != Value::ARRAY) {
+    if (arrayVal.getType() != Value::ARRAY) {
         throw std::runtime_error("Type Error: '" + name + "' is not an array.");
     }
 
     Value idxVal = index->evaluate(env, currentGroup);
     
-    if (idxVal.type != Value::NUMBER) {
+    if (idxVal.getType() != Value::NUMBER) {
         throw std::runtime_error("Index must be a number.");
     }
 
-    int i = static_cast<int>(idxVal.number);
+    int i = static_cast<int>(idxVal.asNumber());
 
-    if (i < 0 || i >= static_cast<int>(arrayVal.list.size())) {
+    if (i < 0 || i >= static_cast<int>(arrayVal.asList().size())) {
         throw std::runtime_error("Index out of bounds: " + std::to_string(i));
     }
 
-    return arrayVal.list[i]; 
+    return arrayVal.asList()[i]; 
 }
 
 Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
@@ -159,7 +159,7 @@ Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) con
 Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value funcVal = env["global"]["sub@" + funcName];
 
-    if(funcVal.type != Value::FUNCTION) throw std::runtime_error("Type Error : " + funcName + " is not a function.");
+    if(funcVal.getType() != Value::FUNCTION) throw std::runtime_error("Type Error : " + funcName + " is not a function.");
 
     std::vector<Value> evaluatedArgs;
 
@@ -169,7 +169,7 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
 
     std::string localScope = "call_" + funcName + "_" + std::to_string(rand()); // for functions local scopes
 
-    auto& params = funcVal.function->params;
+    auto& params = funcVal.asFunction()->params;
 
     if(params.size() != evaluatedArgs.size()) throw std::runtime_error("Argument Error : Argument count mismatch on function call " + funcName);
     
@@ -179,7 +179,7 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
 
     Value result;
     try {
-        for (const auto& bodyNode : funcVal.function->body){
+        for (const auto& bodyNode : funcVal.asFunction()->body){
             result = bodyNode->evaluate(env, localScope);
         }
     } catch (const ReturnException& e) {
@@ -209,61 +209,61 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
         */
        
         if(methodName == "size"){
-            if(target.type != Value::ARRAY) throw std::runtime_error("Type Error : Called method size() on non-array!");
+            if(target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method size() on non-array!");
 
-            return Value(static_cast<double>(target.list.size()));
+            return Value(static_cast<double>(target.asList().size()));
         }
 
         if (methodName == "push"){
-            if(target.type != Value::ARRAY) throw std::runtime_error("Type Error : Called method push() on non-array!");
+            if(target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method push() on non-array!");
 
             Value val = arguments[0]->evaluate(env, currentGroup);
-            target.list.emplace_back(val);
+            target.asList().emplace_back(val);
             return val;
         }
 
         if(methodName == "pop"){
-            if(target.type != Value::ARRAY) throw std::runtime_error("Type Error : Called method pop() on non-array!");
-            if(target.list.empty()) throw std::runtime_error("Index Error: pop() from empty array.");
+            if(target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method pop() on non-array!");
+            if(target.asList().empty()) throw std::runtime_error("Index Error: pop() from empty array.");
             if(!arguments.empty()) throw std::runtime_error("Argument Error: pop() expects 0 arguments, but got " + std::to_string(arguments.size()) + ".");
 
-            Value lastValue = target.list.back();
+            Value lastValue = target.asList().back();
             
-            target.list.pop_back();
+            target.asList().pop_back();
 
             return Value(true);
         }
 
         if(methodName == "delete"){
-            if(target.type != Value::ARRAY) throw std::runtime_error("Type Error : Called method delete() on non-array!");
+            if(target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method delete() on non-array!");
             if(arguments.size() != 1) throw std::runtime_error("Argument Error: delete() expects exactly 1 argument, but got " + std::to_string(arguments.size()) + " instead.");
 
             Value val = arguments[0]->evaluate(env, currentGroup);
 
-            auto it = std::find(target.list.begin(), target.list.end(), val);
+            auto it = std::find(target.asList().begin(), target.asList().end(), val);
 
-            if (it == std::end(target.list)) throw std::runtime_error("Value error : Could not find given value in array!");
+            if (it == std::end(target.asList())) throw std::runtime_error("Value error : Could not find given value in array!");
 
-            target.list.erase(it);
+            target.asList().erase(it);
 
             return Value(true);
         }
 
         if (methodName == "sort") {
-            if (target.type != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array!");
+            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array!");
             if (!arguments.empty()) throw std::runtime_error("Argument Error: sort() expects 0 arguments.");
             
-            for(auto& el : target.list){
-                if(el.type != Value::NUMBER) throw std::runtime_error("Value Error: Cannot sort string values!");
+            for(auto& el : target.asList()){
+                if(el.getType() != Value::NUMBER) throw std::runtime_error("Value Error: Cannot sort string values!");
             }
 
-            std::sort(target.list.begin(), target.list.end());
+            std::sort(target.asList().begin(), target.asList().end());
 
             return Value(true); 
         }
 
         if(methodName == "place_all"){
-            if (target.type != Value::ARRAY) throw std::runtime_error("Type Error: place_all() called on non-array!");
+            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: place_all() called on non-array!");
             if (arguments.size() > 2) throw std::runtime_error("Argument Error: place_all() expects 2 arguments, but got " + std::to_string(arguments.size()) + " instead.");
 
             Value element = arguments[0]->evaluate(env, currentGroup);
@@ -271,11 +271,10 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
             std::vector<Value> arr;
 
-            for(size_t i = 0; i < count.number; i++){
+            for(size_t i = 0; i < count.asNumber(); i++){
                 arr.emplace_back(element);
             }
 
-            // returns a Value list
             return Value(arr);
         }
     }

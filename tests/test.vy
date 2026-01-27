@@ -4,4 +4,9 @@ group Boys {
 
 Boys.list.push("bat");
 
+sub func(a, b){
+    x = 5+2;
+}
+
 log(Boys.list);
+log()

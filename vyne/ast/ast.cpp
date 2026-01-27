@@ -146,7 +146,11 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
 }
 
 Value FunctionNode::evaluate(SymbolContainer& forest, std::string currentGroup) const {
-        return Value(parameters, body); 
+    Value funcValue(parameters, body);
+    
+    forest[currentGroup][this->name] = funcValue; 
+
+    return funcValue; 
 }
 
 Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {

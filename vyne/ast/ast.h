@@ -64,6 +64,8 @@ struct Value {
                 if (i < list.size() - 1) os << ", ";
             }
             os << "}";
+        } if (type == Type::FUNCTION) {
+            os << "<function " << (function ? "defined" : "null") << ">";
         } else if (type == Type::STRING) {
             os << "\"" << text << "\"";
         } else {
@@ -208,13 +210,14 @@ public :
 };
 
 class FunctionNode : public ASTNode {
+    std::string name;
     std::vector<std::string> parameters;
     std::vector<std::shared_ptr<ASTNode>> body;
 
 public:
-    FunctionNode(std::vector<std::string> params, 
+    FunctionNode(const std::string& n,std::vector<std::string> params, 
                  std::vector<std::shared_ptr<ASTNode>> body)
-        : parameters(std::move(params)), body(std::move(body)) {}
+        : name(std::move(n)), parameters(std::move(params)), body(std::move(body)) {}
 
     Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
 };

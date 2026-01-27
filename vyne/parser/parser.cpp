@@ -154,7 +154,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 		}
 		consume(TokenType::Right_CB);
 
-		return std::make_unique<FunctionNode>(std::move(params), std::move(body));
+		return std::make_unique<FunctionNode>(std::move(funcName),std::move(params), std::move(body));
 	}
 
 	throw std::runtime_error("Expected number, identifier, or parenthesis");

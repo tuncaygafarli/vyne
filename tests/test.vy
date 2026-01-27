@@ -1,8 +1,8 @@
 sub area(r){
     x = pi * r * r;
-    y = 5;
-    return x;
+    y = sizeof(x);
+    return y;
 }
 
 area = area(5);
-log(sizeof(area));
+log(area);

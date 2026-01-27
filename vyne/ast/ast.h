@@ -56,19 +56,22 @@ struct Value {
     }
 
     void print(std::ostream& os) const {
-        if (type == Type::NONE) return;
-        if (type == Type::ARRAY) {
+        if (type == Type::NONE) {
+            return;
+        } else if (type == Type::ARRAY) {
             os << "{";
             for (size_t i = 0; i < list.size(); ++i) {
                 list[i].print(os);
                 if (i < list.size() - 1) os << ", ";
             }
             os << "}";
-        } if (type == Type::FUNCTION) {
+        } else if (type == Type::FUNCTION) {
             os << "<function " << (function ? "defined" : "null") << ">";
         } else if (type == Type::STRING) {
             os << "\"" << text << "\"";
-        } else {
+        } else if (type == Type::TABLE) {
+            os << "<table[" << table.size() << "]>";
+        } else if (type == Type::NUMBER) {
             os << number;
         }
     }

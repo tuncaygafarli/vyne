@@ -257,6 +257,23 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
             return Value(true); 
         }
+
+        if(methodName == "place_all"){
+            if (target.type != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array!");
+            if (arguments.size() > 2) throw std::runtime_error("Argument Error: sort() expects 2 arguments, but got " + std::to_string(arguments.size()) + " instead.");
+
+            Value element = arguments[0]->evaluate(env, currentGroup);
+            Value count = arguments[1]->evaluate(env, currentGroup);
+
+            std::vector<Value> arr;
+
+            for(size_t i = 0; i < count.number; i++){
+                arr.emplace_back(element);
+            }
+
+            // returns a Value list
+            return Value(arr);
+        }
     }
     
     throw std::runtime_error("Unknown method: " + methodName);

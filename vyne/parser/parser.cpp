@@ -268,7 +268,7 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 
 			consume(TokenType::Equals);
 			auto rhs = parseExpression();
-			consume(TokenType::Semicolon);
+			consumeSemicolon();
 
 			return std::make_unique<AssignmentNode>(varName, std::move(rhs), path);
 		}
@@ -282,7 +282,7 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 		auto expr = parseExpression();
 
 		consume(TokenType::Right_Parenthese);
-		consume(TokenType::Semicolon);
+		consumeSemicolon();
 		return std::make_unique<PrintNode>(std::move(expr));
 	}
 
@@ -317,4 +317,12 @@ Token Parser::consume(TokenType expected) {
 	throw std::runtime_error("Error: Unexpected token type! Expected " +
 		tokenTypeToString(expected) + ", but got " +
 		tokenTypeToString(peekToken().type) + " instead.");
+}
+
+void Parser::consumeSemicolon() {
+    if (peekToken().type == TokenType::Semicolon) {
+        consume(TokenType::Semicolon);
+    } else if (peekToken().type != TokenType::End) {
+        throw std::runtime_error("Expected ';' at end of statement.");
+    }
 }

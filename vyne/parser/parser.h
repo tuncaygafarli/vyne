@@ -25,4 +25,5 @@ public:
 	std::unique_ptr<ASTNode> parseExpression();
 	std::unique_ptr<ASTNode> parseStatement();
 	Token consume(TokenType expected);
+	void consumeSemicolon();
 };

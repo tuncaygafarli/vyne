@@ -1,0 +1,38 @@
+name: Vyne CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++
+
+    - name: Compile Vyne
+      # We name the output 'vyne_run' to avoid the directory conflict
+      run: |
+        g++ -std=c++17 main.cpp \
+            vyne/lexer/lexer.cpp \
+            vyne/parser/parser.cpp \
+            vyne/ast/ast.cpp \
+            -o vyne_run -Wall -Wextra
+
+    - name: Run Tests
+      # This ensures the binary actually runs without a Segfault
+      run: |
+        if [ -f "tests/test.vy" ]; then
+          ./vyne_run tests/test.vy
+        else
+          echo "No test file found, skipping execution check."
+        fi

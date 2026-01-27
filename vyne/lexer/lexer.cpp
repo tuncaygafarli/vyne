@@ -61,7 +61,7 @@ std::vector<Token> tokenize(const std::string& input) {
             if (buffer == "log") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
             else if (buffer == "sizeof") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
             else if (buffer == "group") tokens.emplace_back(TokenType::Group, 0, "");
-            else if (buffer == "true") tokens.emplace_back(TokenType::True, 0, "");
+            else if (buffer == "true") tokens.emplace_back(TokenType::True, 1, "");
             else if (buffer == "false") tokens.emplace_back(TokenType::False, 0, "");
             else if (buffer == "null") tokens.emplace_back(TokenType::Null, 0, "");
             else if (buffer == "sub") tokens.emplace_back(TokenType::Function, 0, buffer);

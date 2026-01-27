@@ -222,6 +222,17 @@ public:
     Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
 };
 
+class FunctionCallNode : public ASTNode {
+    std::string funcName;
+    std::vector<std::unique_ptr<ASTNode>> arguments;
+
+public:
+    FunctionCallNode(std::string name, std::vector<std::unique_ptr<ASTNode>> args)
+        : funcName(std::move(name)), arguments(std::move(args)) {}
+
+    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+};
+
 class MethodCallNode : public ASTNode {
     std::unique_ptr<ASTNode> receiver;
     std::string methodName;

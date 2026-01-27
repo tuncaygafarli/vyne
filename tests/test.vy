@@ -5,8 +5,7 @@ group Boys {
 Boys.list.push("bat");
 
 sub func(a, b){
-    x = 5+2;
+    x = a + b;
 }
 
-log(Boys.list);
-log()
+log(func(5,2));

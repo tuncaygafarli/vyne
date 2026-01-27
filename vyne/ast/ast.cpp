@@ -145,12 +145,43 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     return arrayVal.list[i]; 
 }
 
-Value FunctionNode::evaluate(SymbolContainer& forest, std::string currentGroup) const {
+Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value funcValue(parameters, body);
     
-    forest[currentGroup][this->name] = funcValue; 
+    env[currentGroup][this->name] = funcValue; 
 
     return funcValue; 
+}
+
+Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+    Value funcVal = env["global"][funcName];
+
+    if(funcVal.type != Value::FUNCTION) throw std::runtime_error("Type Error : " + funcName + " is not a function.");
+
+    std::vector<Value> evaluatedArgs;
+
+    for (const auto& arg : arguments){
+        evaluatedArgs.emplace_back(arg->evaluate(env, currentGroup));
+    }
+
+    std::string localScope = "call_" + funcName + "_" + std::to_string(rand()); // what is ts, AI copilot recommended this
+
+    auto& params = funcVal.function->params;
+
+    if(params.size() != evaluatedArgs.size()) throw std::runtime_error("Argument Error : Argument count mismatch on function call " + funcName);
+    
+    for (size_t i = 0; i < params.size(); ++i) {
+        env[localScope][params[i]] = evaluatedArgs[i];
+    }
+
+    Value result;
+    for (const auto& bodyNode : funcVal.function->body){
+        result = bodyNode->evaluate(env, localScope);
+    }
+
+    env.erase(localScope);
+
+    return result;
 }
 
 Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {

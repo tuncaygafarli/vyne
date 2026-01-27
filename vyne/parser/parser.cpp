@@ -62,6 +62,23 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 		std::unique_ptr<ASTNode> node = std::make_unique<VariableNode>(tok.name);
 		std::string lastName = tok.name;
 
+		if(peekToken().type == TokenType::Left_Parenthese){
+			consume(TokenType::Left_Parenthese);
+			std::vector<std::unique_ptr<ASTNode>> args;
+
+			if(peekToken().type != TokenType::Right_Parenthese){
+				args.emplace_back(parseExpression());
+				while (peekToken().type == TokenType::Comma) {
+					consume(TokenType::Comma);
+					args.emplace_back(parseExpression());
+				}
+
+				consume(TokenType::Right_Parenthese);
+        
+        		return std::make_unique<FunctionCallNode>(std::move(lastName), std::move(args));
+			}
+		}
+
 		while (peekToken().type == TokenType::Dot || peekToken().type == TokenType::Left_Bracket) {
 			
 			if (peekToken().type == TokenType::Dot) {

@@ -5,22 +5,21 @@ Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const
 }
 
 Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
-    std::string targetGroup;
+    std::string targetGroup = specificGroup.empty() ? currentGroup : "global";
     
-    if (specificGroup.empty()) {
-        targetGroup = currentGroup;
-    } else {
-        targetGroup = "global";
-        for (const auto& g : specificGroup) {
-            targetGroup += "." + g;
-        }
+    if (!specificGroup.empty()) {
+        for (const auto& g : specificGroup) targetGroup += "." + g;
     }
 
     if (env.count(targetGroup) && env[targetGroup].count(name)) {
         return env[targetGroup][name];
     }
 
-    throw std::runtime_error("Variable '" + name + "' not found in " + targetGroup);
+    if (targetGroup != "global" && env["global"].count(name)) {
+        return env["global"][name];
+    }
+
+    throw std::runtime_error("Variable '" + name + "' not found in " + targetGroup + " or global.");
 }
 
 Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
@@ -164,7 +163,7 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
         evaluatedArgs.emplace_back(arg->evaluate(env, currentGroup));
     }
 
-    std::string localScope = "call_" + funcName + "_" + std::to_string(rand()); // what is ts, AI copilot recommended this
+    std::string localScope = "call_" + funcName + "_" + std::to_string(rand()); // for functions local scopes
 
     auto& params = funcVal.function->params;
 

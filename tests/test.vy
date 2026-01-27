@@ -1,9 +1,8 @@
-names = {"Tuncay","Qurban","Hossain"};
-
-group People {
-    workers = names;
+sub swap(a, b){
+    return {b,a};
 };
 
-People.workers.push("Mirdjafar");
+x = 5;
+y = 3;
 
-log(People.workers);
+log(x);

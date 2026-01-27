@@ -106,7 +106,7 @@ class ASTNode {
 public:
     int lineNumber = 0;
     virtual ~ASTNode() = default;
-    virtual Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const = 0;
+    virtual Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const = 0;
 };
 
 class GroupNode : public ASTNode {
@@ -117,14 +117,14 @@ public:
         : groupName(name), statements(std::move(stmts)) {
     }
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
 class NumberNode : public ASTNode {
     double value;
 public:
     NumberNode(double val) : value(val) {}
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class VariableNode : public ASTNode {
@@ -135,7 +135,7 @@ public:
         : name(std::move(name)), specificGroup(std::move(group)) {
     }
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 
     // getters
     const std::vector<std::string>& getScope() { return specificGroup; }
@@ -150,7 +150,7 @@ public:
     AssignmentNode(std::string id, std::unique_ptr<ASTNode> rhs_ptr, std::vector<std::string> path = {})
         : identifier(std::move(id)), rhs(std::move(rhs_ptr)), scopePath(std::move(path)) {
     }
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class BinOpNode : public ASTNode {
@@ -161,28 +161,28 @@ public:
     BinOpNode(char op, std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r)
         : op(op), left(std::move(l)), right(std::move(r)) {
     }
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class PrintNode : public ASTNode {
     std::unique_ptr<ASTNode> expression;
 public:
     PrintNode(std::unique_ptr<ASTNode> expr) : expression(std::move(expr)) {}
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class SizeofNode : public ASTNode {
     std::unique_ptr<ASTNode> expression;
 public:
     SizeofNode(std::unique_ptr<ASTNode> expr) : expression(std::move(expr)) {}
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class StringNode : public ASTNode {
     std::string text;
 public:
     StringNode(std::string t) : text(std::move(t)) {}
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override {
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override {
         return Value(text);
     }
 };
@@ -192,7 +192,7 @@ class BooleanNode : public ASTNode {
 public :
     BooleanNode(bool c) : condition(std::move(c)) {}
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override {
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override {
         return Value(condition);
     };
 };
@@ -201,7 +201,7 @@ class ArrayNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> elements;
 public:
     ArrayNode(std::vector<std::unique_ptr<ASTNode>> elm) : elements(std::move(elm)) {}
-    Value evaluate(SymbolContainer& forest, std::string currentGroup = "global") const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class IndexAccessNode : public ASTNode {
@@ -213,7 +213,7 @@ public :
     IndexAccessNode(std::string n, std::vector<std::string> s, std::unique_ptr<ASTNode> idx)
         : name(std::move(n)), scope(std::move(s)), index(std::move(idx)) {}
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
 class FunctionNode : public ASTNode {
@@ -226,7 +226,7 @@ public:
                  std::vector<std::shared_ptr<ASTNode>> body)
         : name(std::move(n)), parameters(std::move(params)), body(std::move(body)) {}
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
 class FunctionCallNode : public ASTNode {
@@ -237,7 +237,7 @@ public:
     FunctionCallNode(std::string name, std::vector<std::unique_ptr<ASTNode>> args)
         : funcName(std::move(name)), arguments(std::move(args)) {}
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
 class ReturnNode : public ASTNode {
@@ -257,7 +257,7 @@ public:
                    std::vector<std::unique_ptr<ASTNode>> args)
         : receiver(std::move(recv)), methodName(std::move(method)), arguments(std::move(args)) {}
 
-    Value evaluate(SymbolContainer& forest, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
 std::string resolvePath(std::vector<std::string> scope, std::string currentGroup);

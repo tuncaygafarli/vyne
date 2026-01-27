@@ -259,8 +259,8 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
         }
 
         if(methodName == "place_all"){
-            if (target.type != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array!");
-            if (arguments.size() > 2) throw std::runtime_error("Argument Error: sort() expects 2 arguments, but got " + std::to_string(arguments.size()) + " instead.");
+            if (target.type != Value::ARRAY) throw std::runtime_error("Type Error: place_all() called on non-array!");
+            if (arguments.size() > 2) throw std::runtime_error("Argument Error: place_all() expects 2 arguments, but got " + std::to_string(arguments.size()) + " instead.");
 
             Value element = arguments[0]->evaluate(env, currentGroup);
             Value count = arguments[1]->evaluate(env, currentGroup);

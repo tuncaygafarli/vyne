@@ -310,6 +310,14 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
             return Value(target);
         }
+        if(methodName == "clear"){
+            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: clear() called on non-array!");
+            if (arguments.size() > 0) throw std::runtime_error("Argument Error: clear() expects 0 arguments, but got " + std::to_string(arguments.size()) + " instead.");
+
+            target.asList().clear();
+
+            return Value(target);
+        }
     }
     
     throw std::runtime_error("Unknown method: " + methodName);

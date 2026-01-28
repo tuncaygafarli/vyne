@@ -7,7 +7,6 @@
 #include "vyne/compiler/lexer/lexer.h"
 #include "vyne/compiler/parser/parser.h"
 #include "vyne/compiler/ast/ast.h"
-#include "vyne/modules/modules.h"
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -18,7 +17,6 @@
 
 int main(int argc, char* argv[]) {
 	SymbolContainer env;
-	setupBuiltIns(env);
 	env["global"] = {};
 	
 	env["global"]["pi"] = 3.14159;

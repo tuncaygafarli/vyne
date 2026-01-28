@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "../../modules/vcore/vcore.h"
 
 Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     return Value(value);
@@ -381,12 +382,13 @@ Value BlockNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
 
 Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     std::string modulePath = "global." + moduleName;
-    
-    if (env.find(modulePath) == env.end()) {
-        env[modulePath] = {}; 
-    }
+
+    if (moduleName == "vcore") {
+        setupVCore(env);
+    } 
 
     env[currentGroup][moduleName] = Value(moduleName, true); 
+    
     std::cout << "[DEBUG] Imported module " << modulePath << "\n";
     return env[currentGroup][moduleName];
 }

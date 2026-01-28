@@ -27,7 +27,6 @@ jobs:
               vyne/compiler/ast/ast.cpp \
               vyne/compiler/ast/value.cpp \
               vyne/modules/vcore/vcore.cpp \
-              vyne/modules/modules.cpp \
               -o vyne_run -Wall -Wextra
 
       - name: Run Tests

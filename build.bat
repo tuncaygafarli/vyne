@@ -4,7 +4,7 @@ setlocal
 set CXX=g++
 set CXXFLAGS=-std=c++17 -g -Wall -Wextra -Wpedantic
 set OUT=vyne.exe
-set SRC_FILES=main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/compiler/ast/value.cpp vyne/modules/vcore/vcore.cpp vyne/modules/modules.cpp
+set SRC_FILES=main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/compiler/ast/value.cpp vyne/modules/vcore/vcore.cpp
 
 echo ---------------------------------------
 echo Building Vyne Interpreter (Windows)...

@@ -101,6 +101,13 @@ std::vector<Token> tokenize(const std::string& input) {
                 }
                 break;
             }
+            case '#': {
+                while (i < input.length() && input[i] != '\n') {
+                    i++;
+                }
+                i--; 
+                break;
+            }
             default:
                 std::cerr << "Unexpected character: " << character << std::endl;
                 break;

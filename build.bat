@@ -1,8 +1,27 @@
 @echo off
-g++ -std=c++17 main.cpp vyne/lexer/lexer.cpp vyne/parser/parser.cpp vyne/ast/ast.cpp -o vyne.exe -Wall -Wextra
-if %errorlevel% neq 0 (
-    echo Build Failed!
-    pause
+setlocal
+
+set CXX=g++
+set CXXFLAGS=-std=c++17 -g -Wall -Wextra -Wpedantic
+set OUT=vyne.exe
+set SRC_FILES=main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/modules/vcore.cpp
+
+echo ---------------------------------------
+echo Building Vyne Interpreter (Windows)...
+echo ---------------------------------------
+
+%CXX% %CXXFLAGS% %SRC_FILES% -o %OUT%
+
+if %ERRORLEVEL% EQU 0 (
+    echo Build Successful: %OUT% created.
+    
+    if "%1"=="--test" (
+        echo Running module_test.vy...
+        .\%OUT% tests/module_test.vy
+    )
 ) else (
-    echo Build Successful: vyne.exe created.
+    echo Build Failed! Check the errors above.
+    exit /b 1
 )
+
+endlocal

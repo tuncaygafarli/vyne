@@ -22,24 +22,18 @@ jobs:
       - name: Compile Vyne
         run: |
           g++ -std=c++17 main.cpp \
-              vyne/lexer/lexer.cpp \
-              vyne/parser/parser.cpp \
-              vyne/ast/ast.cpp \
+              vyne/compiler/lexer/lexer.cpp \
+              vyne/compiler/parser/parser.cpp \
+              vyne/compiler/ast/ast.cpp \
+              vyne/modules/vcore.cpp \
               -o vyne_run -Wall -Wextra
 
       - name: Run Tests
         run: |
-          if [ -f "tests/stress_test.vy" ]; then
-            ./vyne_run tests/stress_test.vy
-          fi
-          if [ -f "tests/while_test.vy" ]; then
-            ./vyne_run tests/while_test.vy
-          fi
-          if [ -f "tests/array_test.vy" ]; then
-            ./vyne_run tests/array_test.vy
-          fi
-          if [ -f "tests/module_test.vy" ]; then
-            ./vyne_run tests/module_test.vy
-          else
-            echo "No test file found, skipping execution check."
-          fi
+          for testfile in tests/*.vy; do
+            if [ -f "$testfile" ]; then
+              echo "---------------------------------------"
+              echo "Running $testfile..."
+              ./vyne_run "$testfile"
+            fi
+          done

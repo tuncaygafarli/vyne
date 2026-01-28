@@ -1,13 +1,5 @@
 #include "ast.h"
 
-void setupBuiltIns(SymbolContainer& env){
-    env["global.vcore"] = SymbolTable(); 
-
-    env["global.vcore"]["sub@now"] = Value([](std::vector<Value>& args) -> Value {
-        return Value(static_cast<double>(time(0)));
-    });
-}
-
 Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     return Value(value);
 }
@@ -391,7 +383,7 @@ Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const
     }
 
     env[currentGroup][moduleName] = Value(moduleName, true); 
-    std::cout << "Imported module " << modulePath << "\n";
+    std::cout << "[DEBUG] Imported module " << modulePath << "\n";
     return env[currentGroup][moduleName];
 }
 

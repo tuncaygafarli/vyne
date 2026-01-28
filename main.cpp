@@ -4,9 +4,10 @@
 #include <sstream>
 #include <chrono>
 
-#include "vyne/lexer/lexer.h"
-#include "vyne/parser/parser.h"
-#include "vyne/ast/ast.h"
+#include "vyne/compiler/lexer/lexer.h"
+#include "vyne/compiler/parser/parser.h"
+#include "vyne/compiler/ast/ast.h"
+#include "vyne/modules/vcore.h"
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"

@@ -198,9 +198,6 @@ struct Value {
     }
 
 };
-
-void setupBuiltIns(SymbolContainer& env);
-
 // exception signals
 struct ReturnException {
     Value value;

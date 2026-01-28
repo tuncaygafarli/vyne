@@ -194,7 +194,7 @@ std::unique_ptr<ASTNode> Parser::parseTerm() {
 
 	while (peekToken().type == TokenType::Multiply || peekToken().type == TokenType::Division) {
 		Token opToken = getNextToken();
-		char opChar = (opToken.type == TokenType::Multiply) ? '*' : '/';
+		TokenType opChar = (opToken.type == TokenType::Multiply) ? TokenType::Multiply : TokenType::Smaller;
 
 		auto right = parseFactor();
 		left = std::make_unique<BinOpNode>(opChar, std::move(left), std::move(right));
@@ -207,7 +207,7 @@ std::unique_ptr<ASTNode> Parser::parseRelational() {
 
 	while (peekToken().type == TokenType::Greater || peekToken().type == TokenType::Smaller) {
 		Token opToken = getNextToken();
-		char opChar = (opToken.type == TokenType::Greater) ? '>' : '<';
+		TokenType opChar = (opToken.type == TokenType::Greater) ? TokenType::Greater : TokenType::Smaller;
 
 		auto right = parseTerm();
 
@@ -216,12 +216,25 @@ std::unique_ptr<ASTNode> Parser::parseRelational() {
 	return left;
 }
 
-std::unique_ptr<ASTNode> Parser::parseExpression() {
+std::unique_ptr<ASTNode> Parser::parseEquality() {
 	auto left = parseRelational();
+
+	while (peekToken().type == TokenType::Double_Equals) {
+		Token opToken = getNextToken();
+
+		auto right = parseRelational();
+
+		left = std::make_unique<BinOpNode>(TokenType::Double_Equals, std::move(left), std::move(right));
+	}
+	return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseExpression() {
+	auto left = parseEquality();
 
 	while (peekToken().type == TokenType::Add || peekToken().type == TokenType::Substract) {
 		Token opToken = getNextToken();
-		char opChar = (opToken.type == TokenType::Add) ? '+' : '-';
+		TokenType opChar = (opToken.type == TokenType::Add) ? TokenType::Add : TokenType::Substract;
 
 		auto right = parseTerm();
 

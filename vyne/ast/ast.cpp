@@ -61,12 +61,12 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     Value r = right->evaluate(env, currentGroup);
 
     if (l.getType() == Value::STRING && r.getType() == Value::STRING) {
-        if (op == '+') return Value(l.asString() + r.asString());
+        if (op == TokenType::Add) return Value(l.asString() + r.asString());
         throw std::runtime_error("Type Error: Only '+' allowed for strings.");
     }
 
     if (l.getType() == Value::ARRAY && r.getType() == Value::ARRAY) {
-        if (op == '+') {
+        if (op == TokenType::Add) {
             Value result = l;
 
             result.asList().insert(result.asList().end(), r.asList().begin(), r.asList().end());
@@ -80,14 +80,15 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     }
 
     switch (op) {
-    case '+': return Value(l.asNumber() + r.asNumber());
-    case '-': return Value(l.asNumber() - r.asNumber());
-    case '*': return Value(l.asNumber() * r.asNumber());
-    case '/':
+    case TokenType::Add : return Value(l.asNumber() + r.asNumber());
+    case TokenType::Substract: return Value(l.asNumber() - r.asNumber());
+    case TokenType::Multiply: return Value(l.asNumber() * r.asNumber());
+    case TokenType::Division:
         if (r.asNumber() == 0) throw std::runtime_error("Division by zero!");
         return Value(l.asNumber() / r.asNumber());
-    case '<': return Value(l.asNumber() < r.asNumber());
-    case '>': return Value(l.asNumber() > r.asNumber());
+    case TokenType::Smaller: return Value(l.asNumber() < r.asNumber());
+    case TokenType::Greater: return Value(l.asNumber() > r.asNumber());
+    case TokenType::Double_Equals : return Value(l == r);
     default:  return Value(0.0);
     }
 }
@@ -123,6 +124,21 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) 
         if (argValues.size() != 1) throw std::runtime_error("Argument Error : string() expects 1 argument, but got " + std::to_string(argValues.size()) + " instead.");
 
         return Value(argValues[0].toString());
+    }
+    else if (funcName == "type") {
+        if (argValues.size() != 1) throw std::runtime_error("Argument Error : string() expects 1 argument, but got " + std::to_string(argValues.size()) + " instead.");
+
+        int type = argValues[0].getType();
+
+        switch(type) {
+            case Value::NONE:     return Value("null");
+            case Value::NUMBER:   return Value("number");
+            case Value::STRING:   return Value("string");
+            case Value::ARRAY:    return Value("array");
+            case Value::TABLE:    return Value("table");
+            case Value::FUNCTION: return Value("function");
+            default:              return Value("unknown");
+        }
     }
 
     throw std::runtime_error("Unknown built-in function: " + funcName);

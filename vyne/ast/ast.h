@@ -9,6 +9,8 @@
 #include <variant>
 #include <sstream>
 
+#include "../lexer/lexer.h"
+
 class ASTNode;
 struct Value {
     enum TypeIndex { NONE = 0, NUMBER = 1, STRING = 2, ARRAY = 3, TABLE = 4, FUNCTION = 5 };
@@ -101,6 +103,17 @@ struct Value {
 
             default :
                 return 0;
+        }
+    }
+
+    bool equals(const Value& other) const {
+        if (getType() != other.getType()) return false;
+
+        switch(getType()) {
+            case 0: return true;
+            case 1: return asNumber() == other.asNumber();
+            case 2: return asString() == other.asString();
+            default: return false;
         }
     }
 
@@ -214,11 +227,11 @@ public:
 };
 
 class BinOpNode : public ASTNode {
-    char op;
+    TokenType op;
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
 public:
-    BinOpNode(char op, std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r)
+    BinOpNode(TokenType op, std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r)
         : op(op), left(std::move(l)), right(std::move(r)) {
     }
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;

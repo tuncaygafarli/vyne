@@ -22,6 +22,7 @@ public:
 	std::unique_ptr<ASTNode> parseFactor();
 	std::unique_ptr<ASTNode> parseTerm();
 	std::unique_ptr<ASTNode> parseRelational();
+	std::unique_ptr<ASTNode> parseEquality();
 	std::unique_ptr<ASTNode> parseExpression();
 	std::unique_ptr<ASTNode> parseStatement();
 	Token consume(TokenType expected);

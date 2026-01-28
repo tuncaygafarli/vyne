@@ -61,6 +61,7 @@ std::vector<Token> tokenize(const std::string& input) {
             if (buffer == "log") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
             else if (buffer == "sizeof") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
             else if (buffer == "string") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
+            else if (buffer == "type") tokens.emplace_back(TokenType::BuiltIn, 0, buffer);
             else if (buffer == "group") tokens.emplace_back(TokenType::Group, 0, "");
             else if (buffer == "true") tokens.emplace_back(TokenType::True, 1, "");
             else if (buffer == "false") tokens.emplace_back(TokenType::False, 0, "");
@@ -80,7 +81,6 @@ std::vector<Token> tokenize(const std::string& input) {
             case '/': tokens.emplace_back(TokenType::Division, 0, ""); break;
             case '(': tokens.emplace_back(TokenType::Left_Parenthese, 0, ""); break;
             case ')': tokens.emplace_back(TokenType::Right_Parenthese, 0, ""); break;
-            case '=': tokens.emplace_back(TokenType::Equals, 0, ""); break;
             case '{': tokens.emplace_back(TokenType::Left_CB, 0, ""); break;
             case '}': tokens.emplace_back(TokenType::Right_CB, 0, ""); break;
             case '[': tokens.emplace_back(TokenType::Left_Bracket, 0, ""); break;
@@ -90,6 +90,15 @@ std::vector<Token> tokenize(const std::string& input) {
             case '<': tokens.emplace_back(TokenType::Smaller, 0, ""); break;
             case '>': tokens.emplace_back(TokenType::Greater, 0, ""); break;
             case '.': tokens.emplace_back(TokenType::Dot, 0, ""); break;
+            case '=': {
+                if (i + 1 < input.length() && input[i + 1] == '=') {
+                    tokens.emplace_back(TokenType::Double_Equals, 0, "==");
+                    i++;
+                } else {
+                    tokens.emplace_back(TokenType::Equals, 0, "=");
+                }
+                break;
+            }
             default:
                 std::cerr << "Unexpected character: " << character << std::endl;
                 break;

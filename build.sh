@@ -1,10 +1,26 @@
 #!/bin/bash
 
-g++ -std=c++17 -g main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/modules/vcore.cpp -o vyne -Wall -Wextra
+set -e
 
-if [ $? -ne 0 ]; then
-    echo "Build Failed!"
-    exit 1
-else
-    echo "Build Successful: vyne created."
+CXX=g++
+CXXFLAGS="-std=c++17 -g -Wall -Wextra -Wpedantic"
+OUT="vyne"
+SRC_FILES="main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/modules/vcore.cpp"
+
+echo "---------------------------------------"
+echo "Building Vyne Interpreter (Linux/macOS)..."
+echo "---------------------------------------"
+
+$CXX $CXXFLAGS $SRC_FILES -o $OUT
+
+echo "Build Successful: $OUT created."
+
+if [ "$1" == "--test" ]; then
+    if [ -n "$2" ]; then
+        echo "Running tests/${2}_test.vy..."
+        ./$OUT "tests/${2}_test.vy"
+    else
+        echo "Running default stress_test.vy..."
+        ./$OUT "tests/stress_test.vy"
+    fi
 fi

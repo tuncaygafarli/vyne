@@ -371,6 +371,18 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
 		return node;
 	}
 
+	if (current.type == TokenType::If) {
+		consume(TokenType::If);
+		consume(TokenType::Left_Parenthese);
+		auto condition = parseExpression();
+		consume(TokenType::Right_Parenthese);
+
+		auto body = parseStatement();
+		auto node = std::make_unique<IfNode>(std::move(condition), std::move(body));
+		node->lineNumber = line;
+		return node;
+	}
+
 	auto expr = parseExpression();
     consumeSemicolon(); 
     return expr;

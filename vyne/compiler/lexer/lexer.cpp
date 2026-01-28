@@ -77,6 +77,7 @@ std::vector<Token> tokenize(const std::string& input) {
             else if (buffer == "break") tokens.emplace_back(TokenType::Break, currentLine, 0, buffer);
             else if (buffer == "continue") tokens.emplace_back(TokenType::Continue, currentLine, 0, buffer);
             else if (buffer == "module") tokens.emplace_back(TokenType::Module, currentLine, 0, buffer);
+            else if (buffer == "if") tokens.emplace_back(TokenType::If, currentLine, 0, buffer);
             else tokens.emplace_back(TokenType::Identifier, currentLine, 0, buffer);
             continue;
         }

@@ -370,6 +370,22 @@ Value WhileNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     return lastResult; 
 }
 
+Value IfNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+    Value lastResult;
+
+    if(condition->evaluate(env,currentGroup).isTruthy()){
+        try {
+            lastResult = body->evaluate(env, currentGroup);
+        } catch (const BreakException& e) {
+            throw;
+        } catch (const ContinueException& e) {
+            throw;
+        }
+    }
+
+    return lastResult;
+}
+
 Value BlockNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value lastValue;
     

@@ -210,6 +210,16 @@ public:
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
 };
 
+class IfNode : public ASTNode {
+public:
+    std::unique_ptr<ASTNode> condition;
+    std::unique_ptr<ASTNode> body;
+
+    IfNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b) : condition(std::move(c)), body(std::move(b)) {}
+
+    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
+};
+
 // exception structs
 struct BreakNode : public ASTNode {
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override {

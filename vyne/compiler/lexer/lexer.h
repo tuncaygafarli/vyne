@@ -39,6 +39,7 @@ enum class TokenType {
 	Break,
 	Continue,
 	Module,
+	If,
 	End
 };
 

@@ -1,4 +1,5 @@
 module vcore;
 
 os = vcore.platform();
-log("Hello from " + os);
+version = vcore.version;
+log("Hello from " + os + version);

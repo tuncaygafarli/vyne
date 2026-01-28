@@ -16,6 +16,7 @@ class ASTNode;
 struct Value; 
 using SymbolTable = std::unordered_map<std::string, Value>;
 using SymbolContainer = std::unordered_map<std::string, SymbolTable>;
+
 struct Value {
     enum TypeIndex { NONE = 0, NUMBER = 1, STRING = 2, ARRAY = 3, TABLE = 4, FUNCTION = 5, MODULE = 6 };
     struct FunctionData {

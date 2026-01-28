@@ -36,6 +36,8 @@ enum class TokenType {
 	BuiltIn,
 	While,
 	Return,
+	Break,
+	Continue,
 	End
 };
 

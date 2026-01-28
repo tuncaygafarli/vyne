@@ -69,6 +69,8 @@ std::vector<Token> tokenize(const std::string& input) {
             else if (buffer == "sub") tokens.emplace_back(TokenType::Function, 0, buffer);
             else if (buffer == "return") tokens.emplace_back(TokenType::Return, 0, buffer);
             else if (buffer == "while") tokens.emplace_back(TokenType::While, 0, buffer);
+            else if (buffer == "break") tokens.emplace_back(TokenType::Break, 0, buffer);
+            else if (buffer == "continue") tokens.emplace_back(TokenType::Continue, 0, buffer);
             else tokens.emplace_back(TokenType::Identifier, 0, buffer);
             continue;
         }
@@ -135,6 +137,9 @@ std::string tokenTypeToString(TokenType type) {
 		case TokenType::Dot:              return "'.'";
 		case TokenType::Greater:          return "'>'";
 		case TokenType::Smaller:          return "'<'";
+        case TokenType::While:            return "'while'";
+        case TokenType::Break:            return "'break'";
+        case TokenType::Continue:         return "'continue'";
 		case TokenType::BuiltIn:          return "'BuiltIn'";
         case TokenType::End:              return "'end of file'";
         default:                          return "Unknown Token";

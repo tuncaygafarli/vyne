@@ -24,7 +24,6 @@ Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) con
 
 Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value val = rhs->evaluate(env, currentGroup);
-    
     std::string targetGroup;
 
     if (scopePath.empty()) {
@@ -40,6 +39,12 @@ Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) c
             if (env.find(globalPath) != env.end()) {
                 targetGroup = globalPath;
             }
+        }
+    }
+
+    if (env[targetGroup].count(identifier)){
+        if (env[targetGroup][identifier].isReadOnly){
+            throw std::runtime_error("Runtime Error: Cannot reassign to read-only property '" + identifier + "'");
         }
     }
 

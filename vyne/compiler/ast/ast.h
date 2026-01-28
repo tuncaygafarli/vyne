@@ -38,6 +38,7 @@ struct Value {
     >;
 
     VariantData data;
+    bool isReadOnly = false;
 
     Value() : data(std::monostate{}) {}
     Value(double n) : data(n) {}
@@ -73,6 +74,10 @@ struct Value {
     const std::shared_ptr<FunctionData>& asFunction() const { return std::get<std::shared_ptr<FunctionData>>(data); }
     const std::string& asModule() const { return std::get<std::string>(data); }
 
+    Value& setReadOnly(){
+        isReadOnly = true;
+        return *this;
+    }
 
     bool isTruthy() const {
         switch (data.index()) {

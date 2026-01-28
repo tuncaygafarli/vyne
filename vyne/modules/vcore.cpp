@@ -66,5 +66,5 @@ void setupBuiltIns(SymbolContainer& env) {
     vcore["sub@random"]   = Value(VCoreNative::random);
 
     // VCore properties
-    vcore["version"]      = Value("0.0.1-alpha");
+    vcore["version"]      = Value("v0.0.1-alpha").setReadOnly();
 }

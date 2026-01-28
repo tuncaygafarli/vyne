@@ -283,7 +283,7 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
             std::sort(target.asList().begin(), target.asList().end());
 
-            return Value(true); 
+            return Value(target); 
         }
 
         if(methodName == "place_all"){
@@ -300,6 +300,15 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
             }
 
             return Value(arr);
+        }
+
+        if(methodName == "reverse"){
+            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: reverse() called on non-array!");
+            if (arguments.size() > 0) throw std::runtime_error("Argument Error: reverse() expects 0 arguments, but got " + std::to_string(arguments.size()) + " instead.");
+
+            std::reverse(target.asList().begin(), target.asList().end());
+
+            return Value(target);
         }
     }
     

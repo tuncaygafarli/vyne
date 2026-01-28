@@ -63,9 +63,9 @@ int main(int argc, char* argv[]) {
 			}
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double, std::milli> ms = end - start;
-			std::cout << "\nExecution finished in: " << ms.count() << "ms";
+			std::cout << GREEN << "\nExecution finished in: " << ms.count() << "ms" << RESET;
 		} catch (const std::exception& e) {
-			std::cerr << "Compilation Error: " << e.what() << "\n";
+			std::cerr << RED << "Compilation Error: " << e.what() << "\n" << RESET;
 		}
 
 		return 0;

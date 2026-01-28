@@ -19,7 +19,7 @@ Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) con
         return env["global"][name];
     }
 
-    throw std::runtime_error("Variable '" + name + "' not found in " + targetGroup + " or global.");
+    throw std::runtime_error("Variable '" + name + "' not found in " + targetGroup + " or global at line " + std::to_string(lineNumber));
 }
 
 Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {

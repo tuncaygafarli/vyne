@@ -1,6 +1,6 @@
 module vcore;
 
-num = "2";
-numStr = type(vcore.string(num));
+os = vcore.platform();
+version = vcore.version;
 
-log(numStr);
+log("Hello from " + os + "! Using Vyne version : " + version);

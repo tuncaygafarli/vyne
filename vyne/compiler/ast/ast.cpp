@@ -181,13 +181,10 @@ Value ReturnNode::evaluate(SymbolContainer& env, std::string currentGroup) const
 }
 
 Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
-    // 1. Evaluate the receiver to get the actual Value (Module, Array, etc.)
     Value receiverVal = receiver->evaluate(env, currentGroup);
     
-    // 2. Intern the method name for Module lookup
     uint32_t methodId = StringPool::instance().intern(methodName);
 
-    // --- MODULE METHODS (vcore.platform(), etc.) ---
     if (receiverVal.getType() == Value::MODULE) {
         std::string modName = receiverVal.asModule();
         std::string modPath = "global." + modName;
@@ -205,7 +202,6 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
                     return funcVal.asFunction()->nativeFn(argValues);
                 }
             } catch (const std::exception& e) {
-                // Restored your specific error format
                 throw std::runtime_error("Compilation Error : line " + std::to_string(lineNumber) + ": " + e.what());
             }         
         }
@@ -214,12 +210,10 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
     // --- ARRAY METHODS ---
     if (receiverVal.getType() == Value::ARRAY) {
-        // We need the reference to the actual variable in the environment to modify it
         VariableNode* var = dynamic_cast<VariableNode*>(receiver.get());
         if (!var) throw std::runtime_error("Runtime Error: Cannot call methods on anonymous arrays at line " + std::to_string(lineNumber));
 
         std::string targetGroup = resolvePath(var->getScope(), currentGroup);
-        // CRITICAL: Fetching by NameId to match the new SymbolTable keys
         Value& target = env[targetGroup][var->getNameId()];
 
         if (methodName == "size") {

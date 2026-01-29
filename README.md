@@ -2,36 +2,69 @@
 
 [![Vyne CI](https://github.com/tuncaygafarli/vyne/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/tuncaygafarli/vyne/actions/workflows/c-cpp.yml)
 
-## DISCLAIMER
+> **DISCLAIMER:** This repository is currently under active maintenance. This README serves as a live technical manifest and personal scratchpad for engine development.
 
-This repository is under maintanance, meaning that current MD file is being used for personal note purposes.
+## 🚀 Feature Set & Roadmap
 
-## Current availabilities
+Vyne is currently in its early stages but already supports a robust set of core programming constructs, specialized for terminal-based logic and ASCII manipulation.
 
-1. Arithmetic operations ( +, -, \*, /, <, >, == )
-2. Built-in functions
-   - log()
-   - sizeof()
-   - type()
-   - string()
-3. Arrays
-   - Built-in array methods
-     - pop()
-     - push()
-     - delete()
-     - sort()
-     - place_all()
-     - reverse()
-     - clear()
-4. Functions
-   - Defined by `sub` keyword, taking arguments
-5. Groups
-   - Defined by `group` keyword, scoping is enabled
-6. While loops
-7. If statements
-8. Modules
-   - List of built-in modules
-     - vcore
+---
+
+### 🔢 Core Language Syntax
+
+| Feature        | Syntax Example             | Description                                                   |
+| :------------- | :------------------------- | :------------------------------------------------------------ |
+| **Arithmetic** | `(+, -, *, /, <, >, ==)`   | Standard mathematical and comparison operators.               |
+| **Functions**  | `sub calculate(x) { ... }` | Defined using the `sub` keyword with scoped arguments.        |
+| **Logic Flow** | `if (cond) { ... }`        | Standard conditional branching.                               |
+| **Loops**      | `while (cond) { ... }`     | Performance-optimized loops for animations.                   |
+| **Scoping**    | `group Graphics { ... }`   | Encapsulate logic and variables into named namespaces.        |
+| **Modules**    | `module vcore`             | Links high-performance native C++ libraries into your script. |
+
+---
+
+### 📦 Built-in Modules
+
+Vyne leverages native C++ modules to handle high-performance tasks that the interpreter shouldn't do alone.
+
+- 📡 **[vcore](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vcore)**: System-level utilities, sleep timers, and process management.
+- 🎨 **[vglib](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vglib)**: The "Visual Graphics Library"—home to the 3D ASCII donut and buffer management (in the future).
+
+---
+
+### 📚 Standard Library & Arrays
+
+#### Global Functions
+
+[use bash]
+log(x) # Print to terminal
+type(x) # Returns "number", "string", "array", or "function"
+sizeof(x) # Get length of strings or count of array elements
+string(x) # Cast values to string type
+
+#### Array Methods
+
+Arrays in Vyne are dynamic and come with built-in methods for data manipulation:
+
+- `arr.push(val)` / `arr.pop()` — Stack operations.
+- `arr.delete(val)` — Remove specific elements.
+- `arr.sort()` — In-place numeric sorting.
+- `arr.reverse()` — Flip array order.
+- `arr.place_all(val, count)` — Bulk initialize an array.
+- `arr.clear()` — Wipe all data from the instance.
+
+---
+
+### 🛠 Installation & Setup
+
+To build the interpreter from source, clone the repository and compile using your preferred C++ compiler:
+
+```bash
+git clone https://github.com/tuncaygafarli/vyne.git
+cd vyne
+
+# Follow the build instructions for your OS
+```
 
 ## 📘 Documentation Walkthrough
 

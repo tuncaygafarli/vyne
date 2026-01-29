@@ -26,7 +26,7 @@ Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) con
         }
     }
 
-    throw std::runtime_error("Runtime Error: Variable ID '" + std::to_string(nameId) + "' not found.");
+    throw std::runtime_error("Runtime Error: Variable '" + originalName + "' not found.");
 }
 
 /**

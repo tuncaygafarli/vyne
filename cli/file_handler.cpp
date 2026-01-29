@@ -38,4 +38,6 @@ int runFile(const std::string& filename, SymbolContainer& env){
     } catch (const std::exception& e) {
         std::cerr << RED << "Runtime/Compilation Error: " << e.what() << RESET << "\n";
     }
+
+    return 0;
 }

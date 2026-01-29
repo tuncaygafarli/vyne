@@ -132,7 +132,6 @@ struct Value {
                 return false;
         }
     }
-
 };
 
 class StringPool {
@@ -141,9 +140,10 @@ class StringPool {
 
 public:
     static StringPool& instance() {
-            static StringPool pool;
-            return pool;
-        }
+        static StringPool pool;
+        return pool;
+    }
+    
     uint32_t intern(const std::string& s);
 
     const std::string& get(uint32_t id) { return idToStr[id]; }

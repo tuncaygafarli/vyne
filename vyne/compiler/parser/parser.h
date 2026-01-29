@@ -14,6 +14,8 @@ private:
 	std::vector<Token> tokens;
 	size_t pos = 0;
 
+	// TODO ADD ENTRY POINT FOR STATEMENT SO IT WILL NOT BE PUBLIC MEMBER
+
 	// --- Literal Workers ---
 	std::unique_ptr<ASTNode> parseStringLiteral();
     std::unique_ptr<ASTNode> parseNumberLiteral();
@@ -22,7 +24,7 @@ private:
     std::unique_ptr<ASTNode> parseGroupingExpr();
     std::unique_ptr<ASTNode> parseIdentifierExpr();
 
-	// --- Statement Workers (The Chunking) ---
+	// --- Statement Workers ---
 	std::unique_ptr<ASTNode> parseBlock();
 	std::unique_ptr<ASTNode> parseReturnStatement();
 	std::unique_ptr<ASTNode> parseIfStatement();

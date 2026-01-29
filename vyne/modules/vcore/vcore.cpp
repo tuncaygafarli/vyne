@@ -1,9 +1,4 @@
 #include "vcore.h"
-#include <ctime>
-#include <chrono>
-#include <thread>
-#include <random>
-#include <iostream>
 
 /**
  * VCore Native Method Implementations

@@ -1,5 +1,6 @@
 #include "ast.h"
 #include "../../modules/vcore/vcore.h"
+#include "../../modules/vglib/vglib.h"
 
 Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     return Value(value);
@@ -120,9 +121,6 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     int i = static_cast<int>(idxVal.asNumber());
     return arrayVal.asList().at(i); 
 }
-
-#include "ast.h"
-#include <random>
 
 Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value funcValue(parameterIds, body);
@@ -328,6 +326,10 @@ Value BlockNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
 Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     if (originalName == "vcore") {
         setupVCore(env, StringPool::instance());
+    }
+
+    if (originalName == "vglib") {
+        setupVGLib(env, StringPool::instance());
     }
 
     env[currentGroup][moduleId] = Value(moduleId, originalName, true); 

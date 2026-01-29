@@ -32,3 +32,40 @@ This repository is under maintanance, meaning that current MD file is being used
 8. Modules
    - List of built-in modules
      - vcore
+
+## 📘 Documentation Walkthrough
+
+Vyne's engine architecture is fully documented using **Doxygen**. This allows you to explore the interpreter's internals through a searchable web interface, complete with class diagrams and function call graphs.
+
+### 🛠 Generating the Documentation
+
+To build the documentation locally, ensure you have [Doxygen](https://www.doxygen.nl/) and [Graphviz](https://graphviz.org/) installed, then run:
+
+```bash
+doxygen Doxyfile
+```
+
+Once the process finishes, open the following file in your browser:
+`docs/html/index.html`
+
+### 🔍 Navigating the Engine
+
+The documentation provides several powerful ways to understand how Vyne works:
+
+- **Abstract Syntax Tree (AST) Hierarchy**:
+  Navigate to `Classes -> Class Hierarchy`. This visualizes how every language feature (like `WhileNode`, `BinOpNode`, or `FunctionNode`) inherits from the base `ASTNode`.
+
+- **Collaboration Diagrams**:
+  Each class page features a diagram showing which other objects it depends on. For example, you can see how an `AssignmentNode` interacts with the `SymbolContainer`.
+
+- **Function Call Graphs**:
+  Every `evaluate()` method includes a flowchart showing which sub-functions are called during execution. This is extremely helpful for tracing how the interpreter processes complex Vyne scripts.
+
+- **Native Module Bindings**:
+  Explore the `modules` namespace to see the C++ implementation of `vglib` (the donut renderer) and `vcore`. You can view the raw C++ math directly alongside the documentation.
+
+### 🏗 Project Structure
+
+- **`vyne/compiler`**: The Lexer and Parser that turn source code into an AST.
+- **`vyne/core`**: The main execution engine and the `Value` system.
+- **`vyne/modules`**: Native C++ extensions that provide high-performance features to the language.

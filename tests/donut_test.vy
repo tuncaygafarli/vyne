@@ -8,5 +8,5 @@ while (true) {
     vglib.donut(A, B);
     A = A + 0.04;
     B = B + 0.02;
-    vcore.sleep(16);
+    vcore.sleep(10);
 }

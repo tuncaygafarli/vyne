@@ -132,8 +132,12 @@ void setupVCore(SymbolContainer& env, StringPool& pool) {
     vcore[pool.intern("string")]   = Value(VCoreNative::string);
     vcore[pool.intern("number")]   = Value(VCoreNative::number);
     vcore[pool.intern("input")]    = Value(VCoreNative::input);
-    vcore[pool.intern("clamp")]     = Value(VCoreNative::clamp);
+    vcore[pool.intern("clamp")]    = Value(VCoreNative::clamp);
 
     // VCore properties
     vcore[pool.intern("version")]  = Value("v0.0.1-alpha").setReadOnly();
+    vcore[pool.intern("engine")]   = Value("Vyne Native").setReadOnly();
+    vcore[pool.intern("build")]    = Value(std::string(__DATE__) + " " + std::string(__TIME__)).setReadOnly();
+    vcore[pool.intern("cwd")]      = Value(std::filesystem::current_path().string()).setReadOnly();
+
 }

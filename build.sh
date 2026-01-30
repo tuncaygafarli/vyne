@@ -5,7 +5,7 @@ set -e
 CXX=g++
 CXXFLAGS="-std=c++17 -g -Wall -Wextra -Wpedantic"
 OUT="vyne"
-SRC_FILES="main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/compiler/ast/value.cpp vyne/modules/vcore/vcore.cpp vyne/modules/vglib/vglib.cpp cli/file_handler.cpp cli/repl.cpp"
+SRC_FILES="main.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/compiler/ast/value.cpp vyne/modules/vcore/vcore.cpp vyne/modules/vglib/vglib.cpp vyne/modules/vmem/vmem.cpp cli/file_handler.cpp cli/repl.cpp"
 
 echo "---------------------------------------"
 echo "Building Vyne Interpreter (Linux/macOS)..."

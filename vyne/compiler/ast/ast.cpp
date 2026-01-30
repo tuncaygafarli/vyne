@@ -1,6 +1,8 @@
 #include "ast.h"
+
 #include "../../modules/vcore/vcore.h"
 #include "../../modules/vglib/vglib.h"
+#include "../../modules/vmem/vmem.h"
 
 Value ProgramNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value lastValue;
@@ -462,6 +464,10 @@ Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const
 
     if (originalName == "vglib") {
         setupVGLib(env, StringPool::instance());
+    }
+
+    if (originalName == "vmem") {
+        setupVMem(env, StringPool::instance());
     }
 
     env[currentGroup][moduleId] = Value(moduleId, originalName, true); 

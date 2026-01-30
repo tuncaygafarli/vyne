@@ -43,7 +43,7 @@ void init_REPL(std::string& input, SymbolContainer& env){
             auto tokens = tokenize(input);
             Parser parser(tokens);
 
-            auto root = parser.parseStatement();
+            auto root = parser.parseProgram();
             if (root) {
                 Value result;
                 try {

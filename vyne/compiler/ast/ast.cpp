@@ -423,7 +423,7 @@ Value DismissNode::evaluate(SymbolContainer& env, std::string currentGroup) cons
         }
     }
 
-    return Value(0.0);
+    throw std::runtime_error("Module Error: Could not dismiss non-existent module '" + originalName + "' at line " + std::to_string(lineNumber));
 }
 
 std::string resolvePath(std::vector<std::string> scope, std::string currentGroup) {

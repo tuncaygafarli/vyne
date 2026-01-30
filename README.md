@@ -30,6 +30,7 @@ Vyne leverages native C++ modules to handle high-performance tasks that the inte
 
 - 📡 **[vcore](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vcore)** System-level utilities, sleep timers, and process management.
 - 🎨 **[vglib](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vglib)** The "Vyne Graphics Library" — home to the 3D ASCII donut and buffer management (in the future).
+- 🧠 **[vmem](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vmem)** Memory management and introspection — track heap usage, inspect raw memory addresses, and monitor variable footprints.
 
 ---
 

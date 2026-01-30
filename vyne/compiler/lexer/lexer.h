@@ -5,49 +5,56 @@
 #include <cctype>
 
 enum class VTokenType {
-	// Data types
-	Number,
-	String,
-	Group,
-	Function,
-	False,
-	True,
-	Null,
-	// Arithmetic operations
-	Multiply,
-	Add,
-	Substract,
-	Division,
-	Greater,
-	Smaller,
-	Greater_Or_Equal,
-	Smaller_Or_Equal,
-	Left_Parenthese,
-	Right_Parenthese,
-	Identifier,
-	Equals,
-	And,
-	Or,
-	Left_CB,
-	Right_CB,
-	Left_Bracket,
-	Right_Bracket,
-	Comma,
-	Semicolon,
-	Dot,
-	Double_Equals,
-	Extends,
-	Type,
-	// Built-in keywords
-	BuiltIn,
-	While,
-	Return,
-	Break,
-	Continue,
-	Module,
-	Dismiss,
-	If,
-	End
+    // --- LITERALS & IDENTIFIERS ---
+    Identifier,         // Variable and function names
+    Number,             // 42, 3.14
+    String,             // String
+    True, False, Null,  // Keywords as literals
+
+    // --- KEYWORDS: STRUCTURE ---
+    Group,              // Class/Structure definition
+    Function,           // 'sub' or 'function' keyword
+    Extends,            // Inheritance/Injections
+    Module,             // Namespace declaration
+    Dismiss,            // Unload/Remove module
+    Type,               // Type checking
+
+    // --- KEYWORDS: CONTROL FLOW ---
+    If,
+    While,
+    Return,
+    Break,
+    Continue,
+
+    // --- OPERATORS: ARITHMETIC ---
+    Add,                // +
+    Substract,          // -
+    Multiply,           // *
+    Division,           // /
+
+    // --- OPERATORS: LOGIC & RELATIONAL ---
+    And, Or,            // &&, ||
+    Equals,             // = (Assignment)
+    Double_Equals,      // == (Comparison)
+    Greater,            // >
+    Smaller,            // <
+    Greater_Or_Equal,   // >=
+    Smaller_Or_Equal,   // <=
+
+    // --- DELIMITERS & SYMBOLS ---
+    Left_Parenthese,    // (
+    Right_Parenthese,   // )
+    Left_CB,            // {
+    Right_CB,           // }
+    Left_Bracket,       // [
+    Right_Bracket,      // ]
+    Comma,              // ,
+    Semicolon,          // ;
+    Dot,                // .
+
+    // --- SPECIAL ---
+    BuiltIn,            // Pre-defined functions
+    End                 // End of File (EOF)
 };
 
 struct Token {

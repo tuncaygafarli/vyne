@@ -142,21 +142,21 @@ std::vector<Token> tokenize(const std::string& input) {
             }
             case '&' : {
                 if(i + 1 < input.length() && input[i + 1] == '&'){
-                    tokens.emplace_back(VTokenType::And, currentLine, 0, "::");
+                    tokens.emplace_back(VTokenType::And, currentLine, 0, "&&");
                     i++;
                 }
                 break;
             }
             case '|' : {
                 if(i + 1 < input.length() && input[i + 1] == '|'){
-                    tokens.emplace_back(VTokenType::Or, currentLine, 0, "::");
+                    tokens.emplace_back(VTokenType::Or, currentLine, 0, "||");
                     i++;
                 }
                 break;
             }
             case '-' : {
                 if(i + 1 < input.length() && input[i + 1] == '>'){
-                    tokens.emplace_back(VTokenType::Type, currentLine, 0, "::");
+                    tokens.emplace_back(VTokenType::Type, currentLine, 0, "->");
                     i++;
                 } else {
                     tokens.emplace_back(VTokenType::Substract, currentLine, 0, "-");

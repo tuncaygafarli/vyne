@@ -29,6 +29,169 @@ Token Parser::lookAhead(int distance) {
     return Token(VTokenType::End, 0, 0, "");
 }
 
+
+Token Parser::consume(VTokenType expected) {
+    Token t = peekToken();
+    if (t.type == expected) {
+        return tokens[pos++];
+    }
+    throw std::runtime_error("Error: Unexpected token type! Expected " +
+        VTokenTypeToString(expected) + ", but got " +
+        VTokenTypeToString(peekToken().type) + " instead.");
+}
+
+void Parser::consumeSemicolon() {
+    Token t = peekToken();
+    if (t.type == VTokenType::Semicolon) {
+        consume(VTokenType::Semicolon);
+    } else if (t.type != VTokenType::End && t.type != VTokenType::Right_CB) {
+        throw std::runtime_error("Runtime/Compilation Error: Expected ';' at end of statement on line " 
+            + std::to_string(t.line) + 
+            ", but got '" + t.name + "' instead.");
+    }
+}
+
+std::unique_ptr<ProgramNode> Parser::parseProgram() {
+    std::vector<std::shared_ptr<ASTNode>> statements;
+    while (peekToken().type != VTokenType::End) {
+        statements.push_back(parseStatement());
+    }
+    return std::make_unique<ProgramNode>(std::move(statements));
+}
+
+std::unique_ptr<ASTNode> Parser::parseStatement() {
+    Token current = peekToken();
+    
+    switch (current.type) {
+        case VTokenType::Function:   return parseFunctionDefinition();
+        case VTokenType::Left_CB:    return parseBlock();
+        case VTokenType::Return:     return parseReturnStatement();
+        case VTokenType::If:         return parseIfStatement();
+        case VTokenType::While:      return parseWhileLoop();
+        case VTokenType::Group:      return parseGroupDefinition();
+        case VTokenType::Break:      
+        case VTokenType::Continue:   return parseLoopControl(); 
+        case VTokenType::Module:     return parseModuleStatement();
+        case VTokenType::Dismiss:    return parseDismissStatement();
+        case VTokenType::Identifier: {
+            int checkPos = 1;
+            while(lookAhead(checkPos).type == VTokenType::Dot || 
+                lookAhead(checkPos).type == VTokenType::Left_Bracket) {
+                
+                if (lookAhead(checkPos).type == VTokenType::Left_Bracket) {
+                    int bracketDepth = 1;
+                    checkPos++;
+                    while (bracketDepth > 0 && lookAhead(checkPos).type != VTokenType::End) {
+                        if (lookAhead(checkPos).type == VTokenType::Left_Bracket) bracketDepth++;
+                        if (lookAhead(checkPos).type == VTokenType::Right_Bracket) bracketDepth--;
+                        checkPos++;
+                    }
+                } else {
+                    checkPos += 2;
+                }
+            }
+            
+            if(lookAhead(checkPos).type == VTokenType::Equals) {
+                return parseAssignment(); 
+            }
+            
+            auto expr = parseExpression();
+            consumeSemicolon();
+            return expr;
+        }
+        default: {
+            auto expr = parseExpression();
+            consumeSemicolon(); 
+            return expr;
+        }
+    }
+}
+
+std::unique_ptr<ASTNode> Parser::parseExpression() {
+    return parseLogicalOr();
+}
+
+std::unique_ptr<ASTNode> Parser::parseLogicalOr() {
+    auto left = parseLogicalAnd();
+    while (peekToken().type == VTokenType::Or) {
+        Token opToken = getNextToken();
+        auto right = parseLogicalAnd();
+        left = std::make_unique<BinOpNode>(VTokenType::Or, std::move(left), std::move(right));
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseLogicalAnd() {
+    auto left = parseEquality();
+    while (peekToken().type == VTokenType::And) {
+        Token opToken = getNextToken();
+        auto right = parseEquality();
+        left = std::make_unique<BinOpNode>(VTokenType::And, std::move(left), std::move(right));
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseEquality() {
+    auto left = parseRelational();
+    while (peekToken().type == VTokenType::Double_Equals) {
+        Token opToken = getNextToken();
+        auto right = parseRelational();
+        left = std::make_unique<BinOpNode>(VTokenType::Double_Equals, std::move(left), std::move(right));
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseRelational() {
+    auto left = parseAdditive();
+    while (peekToken().type == VTokenType::Greater || peekToken().type == VTokenType::Smaller || 
+           peekToken().type == VTokenType::Greater_Or_Equal || peekToken().type == VTokenType::Smaller_Or_Equal) {
+        Token opToken = getNextToken();
+        auto right = parseAdditive();
+        left = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseTerm() {
+    auto left = parseFactor();
+    while (peekToken().type == VTokenType::Multiply || peekToken().type == VTokenType::Division) {
+        Token opToken = getNextToken();
+        auto right = parseFactor();
+        auto node = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
+        node->lineNumber = opToken.line;
+        left = std::move(node);
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseAdditive() {
+    auto left = parseTerm();
+    while (peekToken().type == VTokenType::Add || peekToken().type == VTokenType::Substract) {
+        Token opToken = getNextToken();
+        auto right = parseTerm();
+        left = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
+    }
+    return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseFactor() {
+    Token current = peekToken(); 
+    switch (current.type) {
+        case VTokenType::String:                  return parseStringLiteral();
+        case VTokenType::Number:                  return parseNumberLiteral();
+        case VTokenType::True:
+        case VTokenType::False:                   return parseBooleanLiteral();
+        case VTokenType::Identifier:              return parseIdentifierExpr();
+        case VTokenType::Left_Bracket:            return parseArrayLiteral();
+        case VTokenType::Left_Parenthese:         return parseGroupingExpr();
+        case VTokenType::BuiltIn:                 return parseBuiltInCall();
+        default:
+            throw std::runtime_error("Unexpected token in factor: " + current.name);
+    }
+
+    throw std::runtime_error("Expected number, identifier, or parenthesis");
+}
+
 std::unique_ptr<ASTNode> Parser::parseStringLiteral() {
     Token current = peekToken(); 
     int line = current.line;
@@ -371,163 +534,4 @@ std::unique_ptr<ASTNode> Parser::parseDismissStatement() {
     auto node = std::make_unique<DismissNode>(mId, nameToken.name);
     node->lineNumber = line;
     return node;
-}
-
-std::unique_ptr<ASTNode> Parser::parseFactor() {
-    Token current = peekToken(); 
-    switch (current.type) {
-        case VTokenType::String:                  return parseStringLiteral();
-        case VTokenType::Number:                  return parseNumberLiteral();
-        case VTokenType::True:
-        case VTokenType::False:                   return parseBooleanLiteral();
-        case VTokenType::Identifier:              return parseIdentifierExpr();
-        case VTokenType::Left_Bracket:            return parseArrayLiteral();
-        case VTokenType::Left_Parenthese:         return parseGroupingExpr();
-        case VTokenType::BuiltIn:                 return parseBuiltInCall();
-        default:
-            throw std::runtime_error("Unexpected token in factor: " + current.name);
-    }
-
-    throw std::runtime_error("Expected number, identifier, or parenthesis");
-}
-
-std::unique_ptr<ASTNode> Parser::parseTerm() {
-    auto left = parseFactor();
-    while (peekToken().type == VTokenType::Multiply || peekToken().type == VTokenType::Division) {
-        Token opToken = getNextToken();
-        auto right = parseFactor();
-        auto node = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
-        node->lineNumber = opToken.line;
-        left = std::move(node);
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseRelational() {
-    auto left = parseTerm();
-    while (peekToken().type == VTokenType::Greater || peekToken().type == VTokenType::Smaller || peekToken().type == VTokenType::Greater_Or_Equal || peekToken().type == VTokenType::Smaller_Or_Equal) {
-        Token opToken = getNextToken();
-        auto right = parseTerm();
-        left = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseLogicalOr() {
-    auto left = parseRelational();
-    while (peekToken().type == VTokenType::And) {
-        Token opToken = getNextToken();
-        auto right = parseRelational();
-        left = std::make_unique<BinOpNode>(VTokenType::Or, std::move(left), std::move(right));
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseLogicalAnd() {
-    auto left = parseLogicalOr();
-    while (peekToken().type == VTokenType::And) {
-        Token opToken = getNextToken();
-        auto right = parseLogicalOr();
-        left = std::make_unique<BinOpNode>(VTokenType::And, std::move(left), std::move(right));
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseEquality() {
-    auto left = parseLogicalAnd();
-    while (peekToken().type == VTokenType::Double_Equals) {
-        Token opToken = getNextToken();
-        auto right = parseRelational();
-        left = std::make_unique<BinOpNode>(VTokenType::Double_Equals, std::move(left), std::move(right));
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseExpression() {
-    auto left = parseEquality();
-    while (peekToken().type == VTokenType::Add || peekToken().type == VTokenType::Substract) {
-        Token opToken = getNextToken();
-        auto right = parseTerm();
-        auto node = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
-        node->lineNumber = opToken.line;
-        left = std::move(node);
-    }
-    return left;
-}
-
-std::unique_ptr<ASTNode> Parser::parseStatement() {
-    Token current = peekToken();
-    
-    switch (current.type) {
-        case VTokenType::Function:   return parseFunctionDefinition();
-        case VTokenType::Left_CB:    return parseBlock();
-        case VTokenType::Return:     return parseReturnStatement();
-        case VTokenType::If:         return parseIfStatement();
-        case VTokenType::While:      return parseWhileLoop();
-        case VTokenType::Group:      return parseGroupDefinition();
-        case VTokenType::Break:      
-        case VTokenType::Continue:   return parseLoopControl(); 
-        case VTokenType::Module:     return parseModuleStatement();
-        case VTokenType::Dismiss:    return parseDismissStatement();
-        case VTokenType::Identifier: {
-            int checkPos = 1;
-            while(lookAhead(checkPos).type == VTokenType::Dot || 
-                lookAhead(checkPos).type == VTokenType::Left_Bracket) {
-                
-                if (lookAhead(checkPos).type == VTokenType::Left_Bracket) {
-                    int bracketDepth = 1;
-                    checkPos++;
-                    while (bracketDepth > 0 && lookAhead(checkPos).type != VTokenType::End) {
-                        if (lookAhead(checkPos).type == VTokenType::Left_Bracket) bracketDepth++;
-                        if (lookAhead(checkPos).type == VTokenType::Right_Bracket) bracketDepth--;
-                        checkPos++;
-                    }
-                } else {
-                    checkPos += 2;
-                }
-            }
-            
-            if(lookAhead(checkPos).type == VTokenType::Equals) {
-                return parseAssignment(); 
-            }
-            
-            auto expr = parseExpression();
-            consumeSemicolon();
-            return expr;
-        }
-        default: {
-            auto expr = parseExpression();
-            consumeSemicolon(); 
-            return expr;
-        }
-    }
-}
-
-std::unique_ptr<ProgramNode> Parser::parseProgram() {
-    std::vector<std::shared_ptr<ASTNode>> statements;
-    while (peekToken().type != VTokenType::End) {
-        statements.push_back(parseStatement());
-    }
-    return std::make_unique<ProgramNode>(std::move(statements));
-}
-
-Token Parser::consume(VTokenType expected) {
-    Token t = peekToken();
-    if (t.type == expected) {
-        return tokens[pos++];
-    }
-    throw std::runtime_error("Error: Unexpected token type! Expected " +
-        VTokenTypeToString(expected) + ", but got " +
-        VTokenTypeToString(peekToken().type) + " instead.");
-}
-
-void Parser::consumeSemicolon() {
-    Token t = peekToken();
-    if (t.type == VTokenType::Semicolon) {
-        consume(VTokenType::Semicolon);
-    } else if (t.type != VTokenType::End && t.type != VTokenType::Right_CB) {
-        throw std::runtime_error("Runtime/Compilation Error: Expected ';' at end of statement on line " 
-            + std::to_string(t.line) + 
-            ", but got '" + t.name + "' instead.");
-    }
 }

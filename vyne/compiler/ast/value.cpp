@@ -110,11 +110,11 @@ int Value::toNumber() const {
 };
 
 bool Value::isTruthy() const {
-    switch (data.index()) {
-        case 0: return false;
-        case 1: return std::get<double>(data) != 0;
-        case 2: return !std::get<std::shared_ptr<std::string>>(data)->empty();
-        default: return true; 
+    switch(getType()) {
+        case Value::NUMBER:  return asNumber() != 0;
+        case Value::STRING:  return !asString().empty();
+        case Value::ARRAY:   return !asList().empty();
+        default:             return false;
     }
 }
 

@@ -71,7 +71,18 @@ struct Value {
     Value(const Value&) = default;
 
     // safe getters
-    int getType() const { return static_cast<int>(data.index()); }
+    int getType()     const { return static_cast<int>(data.index()); }
+    std::string getTypeName() const { 
+        int type = getType();
+        switch(type) {
+            case Value::NUMBER: return "number";
+            case Value::STRING: return "string";
+            case Value::ARRAY:  return "array";
+            case Value::FUNCTION: return "function";
+            case Value::MODULE: return "module";
+            default: return "unknown";
+        }
+    }
 
     double asNumber() const { 
         return std::get<double>(this->data); 

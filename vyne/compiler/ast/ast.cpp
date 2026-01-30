@@ -104,44 +104,49 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     Value l = left->evaluate(env, currentGroup);
 
     if (op == VTokenType::And) {
-        if (l.asNumber() == 0) return Value(0.0);
-        return Value(right->evaluate(env, currentGroup).asNumber() != 0 ? 1.0 : 0.0);
+        if (!l.isTruthy()) return Value(0.0);
+        return Value(right->evaluate(env, currentGroup).isTruthy() ? 1.0 : 0.0);
     }
     
     if (op == VTokenType::Or) {
-        if (l.asNumber() != 0) return Value(1.0);
-        return Value(right->evaluate(env, currentGroup).asNumber() != 0 ? 1.0 : 0.0);
+        if (l.isTruthy()) return Value(1.0);
+        return Value(right->evaluate(env, currentGroup).isTruthy() ? 1.0 : 0.0);
     }
 
     Value r = right->evaluate(env, currentGroup);
 
-    if (l.getType() == Value::STRING && r.getType() == Value::STRING) {
-        if (op == VTokenType::Add) return Value(l.asString() + r.asString());
-        throw std::runtime_error("Type Error: Only '+' allowed for strings.");
+    if (op == VTokenType::Add && (l.getType() == Value::STRING || r.getType() == Value::STRING)) {
+        return Value(l.toString() + r.toString()); 
     }
 
     if (l.getType() == Value::ARRAY && r.getType() == Value::ARRAY) {
         if (op == VTokenType::Add) {
             Value result = l;
-            result.asList().insert(result.asList().end(), r.asList().begin(), r.asList().end());
+            auto& resList = result.asList();
+            auto& rList = r.asList();
+            resList.insert(resList.end(), rList.begin(), rList.end());
             return result;
         }
     }
 
-    switch (op) {
-        case VTokenType::Add: return Value(l.asNumber() + r.asNumber());
-        case VTokenType::Substract: return Value(l.asNumber() - r.asNumber());
-        case VTokenType::Multiply: return Value(l.asNumber() * r.asNumber());
-        case VTokenType::Division:
-            if (r.asNumber() == 0) throw std::runtime_error("Division by zero!");
-            return Value(l.asNumber() / r.asNumber());
-        case VTokenType::Smaller: return Value(l.asNumber() < r.asNumber());
-        case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
-        case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
-        case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
-        case VTokenType::Double_Equals: return Value(l == r);
-        default: return Value(0.0);
+    if(l.getType() == Value::NUMBER && r.getType() == Value::NUMBER){
+        switch (op) {
+            case VTokenType::Add: return Value(l.asNumber() + r.asNumber());
+            case VTokenType::Substract: return Value(l.asNumber() - r.asNumber());
+            case VTokenType::Multiply: return Value(l.asNumber() * r.asNumber());
+            case VTokenType::Division:
+                if (r.asNumber() == 0) throw std::runtime_error("Division by zero!");
+                return Value(l.asNumber() / r.asNumber());
+            case VTokenType::Smaller: return Value(l.asNumber() < r.asNumber());
+            case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
+            case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
+            case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
+            case VTokenType::Double_Equals: return Value(l == r);
+            default: return Value(0.0);
+        }
     }
+
+    throw std::runtime_error("Type Error: Invalid operation '" + VTokenTypeToString(op) + "' between " + l.getTypeName() + " and " + r.getTypeName());
 }
 
 Value ArrayNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
@@ -159,15 +164,7 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) 
         return Value();
     }
     if (funcName == "type") {
-        int type = argValues[0].getType();
-        switch(type) {
-            case Value::NUMBER: return Value("number");
-            case Value::STRING: return Value("string");
-            case Value::ARRAY:  return Value("array");
-            case Value::FUNCTION: return Value("function");
-            case Value::MODULE: return Value("module");
-            default: return Value("unknown");
-        }
+        return argValues[0].getTypeName();
     }
 
     if(funcName == "string"){

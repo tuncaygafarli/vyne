@@ -2,10 +2,38 @@
 
 #ifdef _WIN32
     #include <process.h>
+    #include <windows.h>
+    #include <psapi.h>
     #define getpid _getpid
-#else
+#elif __linux__
     #include <unistd.h>
+    #include <fstream>
+#elif __APPLE__
+    #include <mach/mach.h>
 #endif
+
+double getPhysicalMemoryUsage() {
+#ifdef _WIN32
+    PROCESS_MEMORY_COUNTERS pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
+        return static_cast<double>(pmc.WorkingSetSize);
+    }
+#elif __linux__
+    long rss = 0L;
+    std::ifstream fp("/proc/self/statm");
+    if (fp >> rss) {
+        // Linux returns pages; multiply by page size (usually 4096)
+        return static_cast<double>(rss) * sysconf(_SC_PAGESIZE);
+    }
+#elif __APPLE__
+    struct mach_task_basic_info info;
+    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+    if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &count) == KERN_SUCCESS) {
+        return static_cast<double>(info.resident_size);
+    }
+#endif
+    return 0.0;
+}
 
 /**
  * VCore Native Method Implementations
@@ -148,5 +176,5 @@ void setupVCore(SymbolContainer& env, StringPool& pool) {
     vcore[pool.intern("cwd")]             = Value(std::filesystem::current_path().string()).setReadOnly();
     vcore[pool.intern("processor_count")] = Value(std::thread::hardware_concurrency());
     vcore[pool.intern("pid")]             = Value(static_cast<double>(getpid()));
-
+    vcore[pool.intern("memory_usage")]    = Value(getPhysicalMemoryUsage()).setReadOnly();
 }

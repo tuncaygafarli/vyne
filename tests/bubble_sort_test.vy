@@ -19,6 +19,6 @@ sub checkSorted(arr, size) {
         row = row + 1;
     }
     return sortedStatus;
-};
+}
 
 log(checkSorted(numbers, numbers.size()));

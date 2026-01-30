@@ -274,5 +274,4 @@ struct ContinueNode : public ASTNode {
     }
 };
 
-
 std::string resolvePath(std::vector<std::string> scope, std::string currentGroup);

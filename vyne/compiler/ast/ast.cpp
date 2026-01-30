@@ -432,12 +432,16 @@ Value WhileNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
         } catch (const BreakException&) { break; }
           catch (const ContinueException&) { continue; }
     }
-    return lastResult; 
+    return lastResult;
 }
 
 Value IfNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
-    if(condition->evaluate(env, currentGroup).isTruthy()){
-        return body->evaluate(env, currentGroup);
+    try{
+        if(condition->evaluate(env, currentGroup).isTruthy()){
+            return body->evaluate(env, currentGroup);
+        }
+    } catch (BreakException& breakException){
+        throw;
     }
     return Value();
 }

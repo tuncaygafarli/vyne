@@ -40,7 +40,26 @@ void Value::print(std::ostream& os) const {
     }
 }
 
-size_t Value::getBytes() const {
+size_t Value::getDeepBytes() const {
+    switch(data.index()){
+        case 1: return sizeof(double);
+        case 2: {
+            auto& s = *std::get<std::shared_ptr<std::string>>(data);
+            return sizeof(std::string) + s.capacity();
+        }
+        case 3: {
+            auto& v = *std::get<std::shared_ptr<std::vector<Value>>>(data);
+            size_t total = sizeof(std::vector<Value>) + (v.capacity() * sizeof(Value));
+            for (const auto& item : v) total += item.getDeepBytes();
+            return total;
+        }
+        
+        // TODO HANDLE FUNCTIONS AND MODULES
+        default: return 0;
+    }
+}
+
+size_t Value::getShallowBytes() const {
     switch(data.index()){
         case 1:
             return sizeof(double);
@@ -51,7 +70,7 @@ size_t Value::getBytes() const {
 
             const auto& list = *std::get<std::shared_ptr<std::vector<Value>>>(data);
             for (const auto& v : list) {
-                total += v.getBytes();
+                total += v.getShallowBytes();
             }
 
             return total;

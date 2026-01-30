@@ -71,7 +71,7 @@ struct Value {
     Value(const Value&) = default;
 
     // safe getters
-    int getType()     const { return static_cast<int>(data.index()); }
+    int getType() const { return static_cast<int>(data.index()); }
     std::string getTypeName() const { 
         int type = getType();
         switch(type) {
@@ -112,7 +112,8 @@ struct Value {
     Value& setReadOnly();
     bool isTruthy() const;
     void print(std::ostream& os) const;
-    size_t getBytes() const;
+    size_t getDeepBytes() const;
+    size_t getShallowBytes() const;
     bool equals(const Value& other) const;
     std::string toString() const;
     int toNumber() const;

@@ -186,7 +186,7 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     if(funcName == "sizeof"){
         if(argValues.size() != 1) throw std::runtime_error("Argument Error : sizeof() expects 1 arguments, but got " + std::to_string(argValues.size()) + " instead at line " + std::to_string(lineNumber));
 
-        return Value(argValues[0].getBytes());
+        return Value(argValues[0].getShallowBytes());
     }
 
     if(funcName == "sequence"){

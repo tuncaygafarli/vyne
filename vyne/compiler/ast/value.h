@@ -156,7 +156,7 @@ public:
         return pool;
     }
     
-    uint32_t intern(const std::string& s);
+    static uint32_t intern(const std::string& s);
 
     const std::string& get(uint32_t id) { return idToStr[id]; }
 };

@@ -147,11 +147,14 @@ bool Value::isTruthy() const {
 }
 
 uint32_t StringPool::intern(const std::string& s) {
-    auto it = strToId.find(s);
-    if (it != strToId.end()) return it->second;
+    StringPool& pool = StringPool::instance();
 
-    uint32_t newId = static_cast<uint32_t>(idToStr.size());
-    idToStr.push_back(s);
-    strToId[s] = newId;
+    auto it = pool.strToId.find(s);
+    if (it != pool.strToId.end()) return it->second;
+
+    uint32_t newId = static_cast<uint32_t>(pool.idToStr.size());
+    pool.idToStr.push_back(s);
+    pool.strToId[s] = newId;
+
     return newId;
 }

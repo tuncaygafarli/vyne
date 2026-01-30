@@ -125,7 +125,7 @@ std::unique_ptr<ASTNode> Parser::parseFunctionDefinition() {
     if(targetModule == "vcore" || targetModule == "vglib"){
         throw std::runtime_error("Permission Error : Cannot inject function '" + funcName + "' to built-in module " + targetModule + " at line " + std::to_string(line));
     }
-    
+
     funcId = StringPool::instance().intern(funcName);
 
     consume(VTokenType::Left_Parenthese);
@@ -405,7 +405,7 @@ std::unique_ptr<ASTNode> Parser::parseTerm() {
 
 std::unique_ptr<ASTNode> Parser::parseRelational() {
     auto left = parseTerm();
-    while (peekToken().type == VTokenType::Greater || peekToken().type == VTokenType::Smaller) {
+    while (peekToken().type == VTokenType::Greater || peekToken().type == VTokenType::Smaller || peekToken().type == VTokenType::Greater_Or_Equal || peekToken().type == VTokenType::Smaller_Or_Equal) {
         Token opToken = getNextToken();
         auto right = parseTerm();
         left = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));

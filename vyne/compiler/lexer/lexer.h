@@ -20,6 +20,8 @@ enum class VTokenType {
 	Division,
 	Greater,
 	Smaller,
+	Greater_Or_Equal,
+	Smaller_Or_Equal,
 	Left_Parenthese,
 	Right_Parenthese,
 	Identifier,

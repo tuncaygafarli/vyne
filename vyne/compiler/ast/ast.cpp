@@ -136,7 +136,9 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
             if (r.asNumber() == 0) throw std::runtime_error("Division by zero!");
             return Value(l.asNumber() / r.asNumber());
         case VTokenType::Smaller: return Value(l.asNumber() < r.asNumber());
+        case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
         case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
+        case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
         case VTokenType::Double_Equals: return Value(l == r);
         default: return Value(0.0);
     }

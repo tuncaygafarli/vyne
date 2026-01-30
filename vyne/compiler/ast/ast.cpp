@@ -12,6 +12,17 @@ Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const
     return Value(value);
 }
 
+/**
+ * @brief Retrieves a variable's value from the SymbolContainer.
+ * * @details Performs a scoped lookup:
+ * 1. Checks the specific group (if provided, e.g., Nihad.score).
+ * 2. Checks the current local group.
+ * 3. Falls back to the "global" group if not found locally.
+ * @see AssignmentNode::evaluate
+ * * @throw std::runtime_error If the variable cannot be found in any accessible scope.
+ * @return Value The stored value of the variable.
+ */
+
 Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     std::string targetGroup = specificGroup.empty() ? currentGroup : "global";
     if (!specificGroup.empty()) {

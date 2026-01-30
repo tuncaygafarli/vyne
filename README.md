@@ -64,7 +64,8 @@ To build the interpreter from source, clone the repository and compile using you
 git clone https://github.com/tuncaygafarli/vyne.git
 cd vyne
 
-# Follow the build instructions for your OS
+./build.bat # For Windows
+./build.sh  # For Linux
 ```
 
 ## 📘 Documentation Walkthrough

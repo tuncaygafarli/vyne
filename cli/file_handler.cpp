@@ -21,17 +21,12 @@ int runFile(const std::string& filename, SymbolContainer& env){
         auto tokens = tokenize(content);
         Parser parser(tokens);
         
+        auto programRoot = parser.parseProgram();
+
         auto start = std::chrono::high_resolution_clock::now();
-        while (parser.peekToken().type != TokenType::End) {
-            auto ast = parser.parseStatement();
-            if (ast) {
-                try {
-                    ast->evaluate(env);
-                } catch (const ReturnException&) {
-                    break; 
-                }
-            }
-        }
+
+        programRoot->evaluate(env);
+
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> ms = end - start;
         std::cout << GREEN << "\nExecution finished in: " << ms.count() << "ms" << RESET;

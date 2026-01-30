@@ -34,24 +34,26 @@ private:
 	std::unique_ptr<ASTNode> parseModuleStatement();
 	std::unique_ptr<ASTNode> parseDismissStatement();
 	std::unique_ptr<ASTNode> parseLoopControl();
+
 public:
 	// --- Navigation ---
     Token peekToken();
 	Token getNextToken();
     Token lookAhead(int distance);
     Token consume(TokenType expected);
-    void consumeSemicolon();
+    void  consumeSemicolon();
 
 	Parser(std::vector<Token> t) : tokens(std::move(t)) {};
 
-	std::unique_ptr<ASTNode> parseFunctionDefinition();
-	std::unique_ptr<ASTNode> parseBuiltInCall();
-	std::unique_ptr<ASTNode> parseFactor();
-	std::unique_ptr<ASTNode> parseTerm();
-	std::unique_ptr<ASTNode> parseRelational();
-	std::unique_ptr<ASTNode> parseLogicalOr();
-	std::unique_ptr<ASTNode> parseLogicalAnd();
-	std::unique_ptr<ASTNode> parseEquality();
-	std::unique_ptr<ASTNode> parseExpression();
+	std::unique_ptr<ASTNode>   parseFunctionDefinition();
+	std::unique_ptr<ASTNode>   parseBuiltInCall();
+	std::unique_ptr<ASTNode>   parseFactor();
+	std::unique_ptr<ASTNode>   parseTerm();
+	std::unique_ptr<ASTNode>   parseRelational();
+	std::unique_ptr<ASTNode>   parseLogicalOr();
+	std::unique_ptr<ASTNode>   parseLogicalAnd();
+	std::unique_ptr<ASTNode>   parseEquality();
+	std::unique_ptr<ASTNode>   parseExpression();
 	std::unique_ptr<ASTNode> parseStatement();
+	std::unique_ptr<BlockNode> parseProgram();
 };

@@ -282,7 +282,7 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
 
     std::string varName = path.back();
     uint32_t varId = StringPool::instance().intern(varName);
-    path.pop_back(); // The remaining path is the module/scope path
+    path.pop_back();
 
     consume(TokenType::Equals);
     auto rhs = parseExpression();
@@ -480,6 +480,14 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
             return expr;
         }
     }
+}
+
+std::unique_ptr<BlockNode> Parser::parseProgram() {
+    std::vector<std::shared_ptr<ASTNode>> statements;
+    while (peekToken().type != TokenType::End) {
+        statements.push_back(parseStatement());
+    }
+    return std::make_unique<BlockNode>(std::move(statements));
 }
 
 Token Parser::consume(TokenType expected) {

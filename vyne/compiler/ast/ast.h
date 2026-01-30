@@ -205,7 +205,7 @@ public:
     BlockNode(std::vector<std::shared_ptr<ASTNode>> stmts) 
         : statements(std::move(stmts)) {}
 
-    Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 
 class ModuleNode : public ASTNode {

@@ -380,6 +380,8 @@ public:
 
 // exception structs
 struct BreakNode : public ASTNode {
+    BreakNode() : ASTNode(NodeType::BREAK) {}
+
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override {
         throw BreakException();
     }
@@ -387,6 +389,8 @@ struct BreakNode : public ASTNode {
 };
 
 struct ContinueNode : public ASTNode {
+    ContinueNode() : ASTNode(NodeType::CONTINUE) {}
+
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override {
         throw ContinueException();
     }

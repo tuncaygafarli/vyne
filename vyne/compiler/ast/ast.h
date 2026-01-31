@@ -29,10 +29,52 @@ struct ReturnException {
 struct BreakException {};
 struct ContinueException {};
 
+enum class NodeType {
+    PROGRAM,
+    GROUP,
+
+    NUMBER,
+    STRING,
+    BOOLEAN,
+    VARIABLE,
+    ASSIGNMENT,
+
+    BINARY_OP,
+    POSTFIX,
+
+    ARRAY,
+    RANGE,
+    INDEX_ACCESS,
+
+    FUNCTION,
+    FUNCTION_CALL,
+    BUILTIN_CALL,
+    METHOD_CALL,
+    RETURN,
+
+    WHILE,
+    FOR,
+    BLOCK,
+    IF,
+
+    MODULE,
+    DISMISS,
+
+    BREAK,
+    CONTINUE
+};
+
+
 class ASTNode {
 public:
     int lineNumber = 0;
+    NodeType nodeType;
+
+    ASTNode(NodeType t) : nodeType(t) {}
+
     virtual ~ASTNode() = default;
+
+    NodeType type() const { return nodeType; }
     virtual Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const = 0;
     virtual void compile(Emitter& e) const = 0;
 };
@@ -42,7 +84,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> statements;
 
     ProgramNode(std::vector<std::shared_ptr<ASTNode>> stmts) 
-        : statements(std::move(stmts)) {}
+        : ASTNode(NodeType::PROGRAM), statements(std::move(stmts)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -53,7 +95,7 @@ class GroupNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> statements;
 public:
     GroupNode(std::string name, std::vector<std::unique_ptr<ASTNode>> stmts)
-        : groupName(name), statements(std::move(stmts)) {
+        : ASTNode(NodeType::GROUP), groupName(name), statements(std::move(stmts)) {
     }
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
@@ -63,7 +105,7 @@ public:
 class NumberNode : public ASTNode {
     double value;
 public:
-    NumberNode(double val) : value(val) {}
+    NumberNode(double val) : ASTNode(NodeType::GROUP), value(val) {}
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
 };
@@ -75,7 +117,7 @@ class VariableNode : public ASTNode {
 
 public:
     VariableNode(uint32_t id, std::string name, std::vector<std::string> group = {})
-        : nameId(id), originalName(std::move(name)), specificGroup(std::move(group)) {}
+        : ASTNode(NodeType::VARIABLE), nameId(id), originalName(std::move(name)), specificGroup(std::move(group)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -98,7 +140,8 @@ public:
                    std::unique_ptr<ASTNode> rhs_ptr, 
                    std::unique_ptr<ASTNode> idx_ptr = nullptr,
                    std::vector<std::string> path = {})
-        : identifierId(id), 
+        : ASTNode(NodeType::ASSIGNMENT),
+          identifierId(id), 
           originalName(std::move(on)), 
           rhs(std::move(rhs_ptr)), 
           indexExpr(std::move(idx_ptr)),
@@ -116,7 +159,7 @@ class BinOpNode : public ASTNode {
     std::unique_ptr<ASTNode> right;
 public:
     BinOpNode(VTokenType op, std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r)
-        : op(op), left(std::move(l)), right(std::move(r)) {
+        : ASTNode(NodeType::BINARY_OP), op(op), left(std::move(l)), right(std::move(r)) {
     }
     
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
@@ -128,7 +171,7 @@ class PostFixNode : public ASTNode {
     std::unique_ptr<ASTNode> left;
 public:
     PostFixNode(VTokenType op, std::unique_ptr<ASTNode> lhs)
-        : op(op), left(std::move(lhs)) {}
+        : ASTNode(NodeType::POSTFIX), op(op), left(std::move(lhs)) {}
     
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -139,7 +182,8 @@ class BuiltInCallNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> arguments;
 public:
     BuiltInCallNode(std::string name, std::vector<std::unique_ptr<ASTNode>> args) 
-        : funcName(std::move(name)), arguments(std::move(args)) {}
+        : ASTNode(NodeType::BUILTIN_CALL), 
+        funcName(std::move(name)), arguments(std::move(args)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -148,7 +192,8 @@ public:
 class StringNode : public ASTNode {
     std::string text;
 public:
-    StringNode(std::string t) : text(std::move(t)) {}
+    StringNode(std::string t) : ASTNode(NodeType::STRING), text(std::move(t)) {}
+    
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override {
         return Value(text);
     }
@@ -159,7 +204,7 @@ public:
 class BooleanNode : public ASTNode {
     bool condition;
 public :
-    BooleanNode(bool c) : condition(c) {}
+    BooleanNode(bool c) : ASTNode(NodeType::BOOLEAN), condition(c) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override {
         return Value(condition);
@@ -170,7 +215,7 @@ public :
 class ArrayNode : public ASTNode {
     std::vector<std::unique_ptr<ASTNode>> elements;
 public:
-    ArrayNode(std::vector<std::unique_ptr<ASTNode>> elm) : elements(std::move(elm)) {}
+    ArrayNode(std::vector<std::unique_ptr<ASTNode>> elm) : ASTNode(NodeType::ARRAY), elements(std::move(elm)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -180,7 +225,9 @@ class RangeNode : public ASTNode {
     std::unique_ptr<ASTNode> left;
     std::unique_ptr<ASTNode> right;
 public:
-    RangeNode(std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r) : left(std::move(l)), right(std::move(r)) {}
+    RangeNode(std::unique_ptr<ASTNode> l, std::unique_ptr<ASTNode> r) :
+    ASTNode(NodeType::RANGE),
+    left(std::move(l)), right(std::move(r)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -194,7 +241,7 @@ class IndexAccessNode : public ASTNode {
 
 public :
     IndexAccessNode(uint32_t n, std::string on, std::vector<std::string> s, std::unique_ptr<ASTNode> idx)
-        : nameId(n), originalName(std::move(on)), scope(std::move(s)), index(std::move(idx)) {}
+        : ASTNode(NodeType::INDEX_ACCESS), nameId(n), originalName(std::move(on)), scope(std::move(s)), index(std::move(idx)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -210,7 +257,7 @@ class FunctionNode : public ASTNode {
 public:
     FunctionNode(std::string tm, uint32_t n,std::string on, std::vector<uint32_t> pid, 
                  std::vector<std::shared_ptr<ASTNode>> body)
-        : targetModule(tm), funcNameId(n), originalName(std::move(on)), parameterIds(pid), body(std::move(body)) {}
+        : ASTNode(NodeType::FUNCTION), targetModule(tm), funcNameId(n), originalName(std::move(on)), parameterIds(pid), body(std::move(body)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -223,7 +270,7 @@ class FunctionCallNode : public ASTNode {
 
 public:
     FunctionCallNode(uint32_t fn, std::string name, std::vector<std::unique_ptr<ASTNode>> args)
-        : funcNameId(fn), originalName(std::move(name)), arguments(std::move(args)) {}
+        : ASTNode(NodeType::FUNCTION_CALL), funcNameId(fn), originalName(std::move(name)), arguments(std::move(args)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -232,7 +279,7 @@ public:
 class ReturnNode : public ASTNode {
     std::unique_ptr<ASTNode> expression;
 public:
-    ReturnNode(std::unique_ptr<ASTNode> expr) : expression(std::move(expr)) {}
+    ReturnNode(std::unique_ptr<ASTNode> expr) : ASTNode(NodeType::RETURN), expression(std::move(expr)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -246,7 +293,8 @@ class MethodCallNode : public ASTNode {
 public:
     MethodCallNode(std::unique_ptr<ASTNode> recv, std::string method, 
                    std::vector<std::unique_ptr<ASTNode>> args)
-        : receiver(std::move(recv)), methodName(std::move(method)), arguments(std::move(args)) {}
+        : ASTNode(NodeType::METHOD_CALL),
+        receiver(std::move(recv)), methodName(std::move(method)), arguments(std::move(args)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -258,7 +306,7 @@ class WhileNode : public ASTNode {
 
 public:
     WhileNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b)
-        : condition(std::move(c)), body(std::move(b)) {}
+        : ASTNode(NodeType::WHILE), condition(std::move(c)), body(std::move(b)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -273,7 +321,7 @@ class ForNode : public ASTNode {
 
 public:
     ForNode(std::unique_ptr<ASTNode> i, std::unique_ptr<ASTNode> b, std::string in, ForMode m)
-        : iterable(std::move(i)), body(std::move(b)), iteratorName(std::move(in)), mode(m) {}
+        : ASTNode(NodeType::FOR), iterable(std::move(i)), body(std::move(b)), iteratorName(std::move(in)), mode(m) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -291,7 +339,7 @@ public:
     std::vector<std::shared_ptr<ASTNode>> statements;
 
     BlockNode(std::vector<std::shared_ptr<ASTNode>> stmts) 
-        : statements(std::move(stmts)) {}
+        : ASTNode(NodeType::BLOCK), statements(std::move(stmts)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -302,7 +350,7 @@ public:
     uint32_t moduleId;
     std::string originalName;
 
-    ModuleNode(uint32_t mId, std::string mName) : moduleId(mId), originalName(std::move(mName)) {}
+    ModuleNode(uint32_t mId, std::string mName) : ASTNode(NodeType::MODULE), moduleId(mId), originalName(std::move(mName)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -313,7 +361,7 @@ public:
     uint32_t moduleId;
     std::string originalName;
 
-    DismissNode(uint32_t mId, std::string mName) : moduleId(mId), originalName(std::move(mName)) {}
+    DismissNode(uint32_t mId, std::string mName) : ASTNode(NodeType::DISMISS), moduleId(mId), originalName(std::move(mName)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
@@ -324,7 +372,7 @@ public:
     std::unique_ptr<ASTNode> condition;
     std::unique_ptr<ASTNode> body;
 
-    IfNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b) : condition(std::move(c)), body(std::move(b)) {}
+    IfNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b) : ASTNode(NodeType::IF), condition(std::move(c)), body(std::move(b)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;

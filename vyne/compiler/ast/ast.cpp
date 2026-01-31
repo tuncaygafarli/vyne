@@ -166,10 +166,11 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
-    auto varNode = dynamic_cast<VariableNode*>(left.get());
-    if (!varNode) {
+    if (left->type() != NodeType::VARIABLE) {
         throw std::runtime_error("Type Error: Cannot increment a non-variable.");
     }
+
+    auto* varNode = static_cast<VariableNode*>(left.get());
 
     Value oldValue = left->evaluate(env, currentGroup);
 
@@ -287,6 +288,8 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
     }
 
     std::vector<Value> evaluatedArgs;
+    evaluatedArgs.reserve(arguments.size());
+
     for (const auto& arg : arguments) {
         evaluatedArgs.emplace_back(arg->evaluate(env, currentGroup));
     }
@@ -300,7 +303,7 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
     }
     
     for (size_t i = 0; i < params.size(); ++i) {
-        env[localScope][params[i]] = evaluatedArgs[i];
+        env[localScope][params[i]] = std::move(evaluatedArgs[i]);
     }
 
     Value result;
@@ -382,8 +385,11 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
 
     // --- ARRAY METHODS ---
     if (receiverVal.getType() == Value::ARRAY) {
-        VariableNode* var = dynamic_cast<VariableNode*>(receiver.get());
-        if (!var) throw std::runtime_error("Runtime Error: Cannot call methods on anonymous arrays at line " + std::to_string(lineNumber));
+        if (receiver->type() != NodeType::VARIABLE) {
+            throw std::runtime_error("Runtime Error: Cannot call methods on anonymous arrays at line " + std::to_string(lineNumber));
+        }
+
+        auto* var = static_cast<VariableNode*>(receiver.get());
 
         std::string targetGroup = resolvePath(var->getScope(), currentGroup);
         Value& target = env[targetGroup][var->getNameId()];
@@ -486,7 +492,7 @@ Value WhileNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
         try {
             lastResult = body->evaluate(env, currentGroup);
         } catch (const BreakException&) { break; }
-          catch (const ContinueException&) { continue; }
+        catch (const ContinueException&) { continue; }
     }
     return lastResult;
 }
@@ -531,7 +537,7 @@ Value ForNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
             }
 
         } catch (const BreakException&) { break; }
-          catch (const ContinueException&) { continue; }
+        catch (const ContinueException&) { continue; }
     }
 
     if (hadIt) scope[itId] = savedIt;

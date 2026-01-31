@@ -2,9 +2,23 @@
 setlocal
 
 set CXX=g++
-set CXXFLAGS=-std=c++17 -g -Wall -Wextra -Wpedantic
+set CXXFLAGS=-std=c++17 -O3 -Wall -Wextra
 set OUT=vyne.exe
-set SRC_FILES=main.cpp vyne/vm/vm.cpp vyne/compiler/codegen/chunk.cpp vyne/compiler/codegen/codegen.cpp vyne/compiler/lexer/lexer.cpp vyne/compiler/parser/parser.cpp vyne/compiler/ast/ast.cpp vyne/compiler/ast/value.cpp vyne/modules/vcore/vcore.cpp vyne/modules/vglib/vglib.cpp vyne/modules/vmem/vmem.cpp cli/repl.cpp cli/file_handler.cpp
+
+set SRC_FILES=main.cpp ^
+vyne/vm/vm.cpp ^
+vyne/compiler/compiler.cpp ^
+vyne/compiler/codegen/chunk.cpp ^
+vyne/compiler/codegen/codegen.cpp ^
+vyne/compiler/lexer/lexer.cpp ^
+vyne/compiler/parser/parser.cpp ^
+vyne/compiler/ast/ast.cpp ^
+vyne/compiler/ast/value.cpp ^
+vyne/modules/vcore/vcore.cpp ^
+vyne/modules/vglib/vglib.cpp ^
+vyne/modules/vmem/vmem.cpp ^
+cli/repl.cpp ^
+cli/file_handler.cpp
 
 echo ---------------------------------------
 echo Building Vyne Interpreter (Windows)...
@@ -17,13 +31,17 @@ if %ERRORLEVEL% EQU 0 (
     
     if "%1"=="--test" (
         if not "%2"=="" (
-            echo Running tests/%2_test.vy...
-            .\%OUT% tests/%2_test.vy
+            echo Running tests/%2.vy with Bytecode...
+            .\%OUT% --bytecode tests/%2.vy
         ) else (
-            echo Running default stress_test.vy...
-            .\%OUT% tests/stress_test.vy
+            echo Running default bench.vy...
+            .\%OUT% --bytecode tests/bench.vy
         )
     )
+) else (
+    echo.
+    echo [ERROR] Build failed. Check the errors above.
+    pause
 )
 
 endlocal

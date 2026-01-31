@@ -21,16 +21,8 @@ jobs:
 
       - name: Compile Vyne
         run: |
-          g++ -std=c++17 main.cpp \
-              vyne/compiler/lexer/lexer.cpp \
-              vyne/compiler/parser/parser.cpp \
-              vyne/compiler/ast/ast.cpp \
-              vyne/compiler/ast/value.cpp \
-              vyne/modules/vcore/vcore.cpp \
-              vyne/modules/vglib/vglib.cpp \
-              vyne/modules/vmem/vmem.cpp \
-              cli/repl.cpp \
-              cli/file_handler.cpp \
+          g++ -std=c++17 -O3 \
+              $(find . -name "*.cpp") \
               -o vyne_run -Wall -Wextra
 
       - name: Run Tests
@@ -38,7 +30,7 @@ jobs:
           for testfile in tests/*.vy; do
             if [ -f "$testfile" ]; then
               echo "---------------------------------------"
-              echo "Running $testfile..."
+              echo "Running AST: $testfile..."
               ./vyne_run --ast "$testfile"
             fi
           done

@@ -421,13 +421,23 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
         }
 
         if (methodName == "place_all") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: place_all() called on non-array at line " + std::to_string(lineNumber));
-            if (arguments.size() > 2) throw std::runtime_error("Argument Error: place_all() expects 2 arguments, but got " + std::to_string(arguments.size()) + " instead at line " + std::to_string(lineNumber));
+            if (target.getType() != Value::ARRAY) 
+                throw std::runtime_error("Type Error: place_all() called on non-array");
+
             Value element = arguments[0]->evaluate(env, currentGroup);
-            Value count = arguments[1]->evaluate(env, currentGroup);
-            std::vector<Value> arr;
-            for (size_t i = 0; i < count.asNumber(); i++) arr.emplace_back(element);
-            return Value(arr);
+            Value countVal = arguments[1]->evaluate(env, currentGroup);
+            int count = static_cast<int>(countVal.asNumber());
+
+            auto& targetVec = target.asList();
+            
+            targetVec.clear(); 
+            targetVec.reserve(count);
+            
+            for (int i = 0; i < count; i++) {
+                targetVec.emplace_back(element);
+            }
+
+            return target; 
         }
 
         if (methodName == "reverse") {

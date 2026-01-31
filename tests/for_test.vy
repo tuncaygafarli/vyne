@@ -1,5 +1,6 @@
-names = ["Tuncay", "Ferhad"];
+x = [];
+x.place_all(2,25);
 
-through name::names -> loop {
-    log(name);
+through 0..x.size() -> loop {
+    log("Sup");
 }

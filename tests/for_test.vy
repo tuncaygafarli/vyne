@@ -1,5 +1,5 @@
-z = through it::1..30 -> filter {
-    it % 2 == 0;
+z = through a::1..30 -> filter {
+    a % 2 == 0;
 };
 
 log(z);

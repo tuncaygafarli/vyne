@@ -522,12 +522,15 @@ std::unique_ptr<ASTNode> Parser::parseGroupDefinition() {
     
     std::vector<std::unique_ptr<ASTNode>> statements;
     while (peekToken().type != VTokenType::Right_CB && peekToken().type != VTokenType::End) {
+        if (peekToken().type == VTokenType::Function) {
+            throw std::runtime_error("Syntax Error: Cannot define a function inside group '" + treeName + "' at line " + std::to_string(peekToken().line));
+        }
         statements.emplace_back(parseStatement());
     }
     
     consume(VTokenType::Right_CB);
     consumeSemicolon();
-    
+
     auto node = std::make_unique<GroupNode>(treeName, std::move(statements));
     node->lineNumber = line;
     return node;

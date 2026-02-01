@@ -189,6 +189,9 @@ std::vector<Token> tokenize(const std::string& input) {
                 if(i + 1 < input.length() && input[i + 1] == '|'){
                     tokens.emplace_back(VTokenType::Or, currentLine, 0, "||");
                     i++;
+                } else if(i + 1 < input.length() && input[i + 1] == '>'){
+                    tokens.emplace_back(VTokenType::Pipeline, currentLine, 0, "|>");
+                    i++;
                 }
                 break;
             }

@@ -47,6 +47,7 @@ enum class VTokenType {
     Smaller,            // <
     Greater_Or_Equal,   // >=
     Smaller_Or_Equal,   // <=
+    Pipeline,           // |>
 
     // --- DELIMITERS & SYMBOLS ---
     Left_Parenthese,    // (

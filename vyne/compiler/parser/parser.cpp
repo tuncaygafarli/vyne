@@ -476,7 +476,7 @@ std::unique_ptr<ASTNode> Parser::parseForLoop() {
     int line = peekToken().line;
     consume(VTokenType::Through);
     
-    std::string iteratorName = "it";
+    std::string iteratorName = "_";
 
     if (peekToken().type == VTokenType::Identifier && lookAhead(1).type == VTokenType::Extends) {
         iteratorName = consume(VTokenType::Identifier).name;

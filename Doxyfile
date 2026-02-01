@@ -25,3 +25,10 @@ CALL_GRAPH             = YES
 CALLER_GRAPH           = YES
 
 DOT_PATH               =
+
+HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-awesome.css
+
+GENERATE_TREEVIEW      = YES
+
+HTML_EXTRA_FILES       = docs/theme/doxygen-awesome-paragraph-link.js \
+                         docs/theme/doxygen-awesome-interactive-toc.js

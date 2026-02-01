@@ -168,7 +168,7 @@ std::vector<Token> tokenize(const std::string& input) {
                     i++;
                 }
                 i--; 
-                break;
+                break;  
             }
             case ':' : {
                 if(i + 1 < input.length() && input[i + 1] == ':'){

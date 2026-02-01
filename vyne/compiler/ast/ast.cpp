@@ -162,7 +162,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
         }
     }
 
-    throw std::runtime_error("Type Error: Invalid operation '" + VTokenTypeToString(op) + "' between " + l.getTypeName() + " and " + r.getTypeName());
+    throw std::runtime_error("Type Error: Invalid operation '" + VTokenTypeToString(op) + "' between " + l.getTypeName() + " and " + r.getTypeName() + " at line " + std::to_string(lineNumber));
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
@@ -254,14 +254,20 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) 
 
 Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     std::string targetGroup = resolvePath(scope, currentGroup);
-    auto it = env[targetGroup].find(nameId);
+    
+    if (env.count(targetGroup) && env[targetGroup].count(nameId)) {
+        Value& arrayVal = env[targetGroup][nameId];
+        Value idxVal = index->evaluate(env, currentGroup);
+        return arrayVal.asList().at(static_cast<size_t>(idxVal.asNumber()));
+    }
 
-    if (it == env[targetGroup].end()) throw std::runtime_error("Array not found.");
-    Value& arrayVal = it->second;
+    if (targetGroup != "global" && env["global"].count(nameId)) {
+        Value& arrayVal = env["global"][nameId];
+        Value idxVal = index->evaluate(env, currentGroup);
+        return arrayVal.asList().at(static_cast<size_t>(idxVal.asNumber()));
+    }
 
-    Value idxVal = index->evaluate(env, currentGroup);
-    int i = static_cast<int>(idxVal.asNumber());
-    return arrayVal.asList().at(i); 
+    throw std::runtime_error("Runtime Error: Array '" + originalName + "' not found.");
 }
 
 Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
@@ -390,65 +396,79 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
         }
 
         auto* var = static_cast<VariableNode*>(receiver.get());
-
         std::string targetGroup = resolvePath(var->getScope(), currentGroup);
-        Value& target = env[targetGroup][var->getNameId()];
+        Value* target = nullptr;
+
+        if (env.count(targetGroup) && env[targetGroup].count(var->getNameId())) {
+            target = &env[targetGroup][var->getNameId()];
+        } 
+        else if (targetGroup != "global" && env["global"].count(var->getNameId())) {
+            target = &env["global"][var->getNameId()];
+        }
+
+        if (!target) {
+            throw std::runtime_error("Runtime Error: Variable '" + var->getOriginalName() + "' not found.");
+        }
 
         if (methodName == "size") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method size() on non-array at line " + std::to_string(lineNumber));
-            return Value(static_cast<double>(target.asList().size()));
+            return Value(static_cast<double>(target->asList().size()));
+        }
+
+        if (methodName == "size") {
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method size() on non-array at line " + std::to_string(lineNumber));
+            return Value(static_cast<double>(target->asList().size()));
         }
 
         if (methodName == "push") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method push() on non-array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method push() on non-array at line " + std::to_string(lineNumber));
 
             for(auto& arg : arguments){
                 Value val = arg->evaluate(env, currentGroup);
-                target.asList().emplace_back(val);
+                target->asList().emplace_back(val);
             }
 
             return receiverVal;
         }
 
         if (methodName == "pop") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method pop() on non-array at line " + std::to_string(lineNumber));
-            if (target.asList().empty()) throw std::runtime_error("Index Error: pop() from empty array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method pop() on non-array at line " + std::to_string(lineNumber));
+            if (target->asList().empty()) throw std::runtime_error("Index Error: pop() from empty array at line " + std::to_string(lineNumber));
             if (!arguments.empty()) throw std::runtime_error("Argument Error: pop() expects 0 arguments, but got " + std::to_string(arguments.size()) + " at line " + std::to_string(lineNumber));
 
-            target.asList().pop_back();
+            target->asList().pop_back();
             return Value(true);
         }
 
         if (methodName == "delete") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method delete() on non-array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method delete() on non-array at line " + std::to_string(lineNumber));
             if (arguments.size() != 1) throw std::runtime_error("Argument Error: delete() expects exactly 1 argument, but got " + std::to_string(arguments.size()) + " instead at line " + std::to_string(lineNumber));
 
             Value val = arguments[0]->evaluate(env, currentGroup);
-            auto it = std::find(target.asList().begin(), target.asList().end(), val);
-            if (it == std::end(target.asList())) throw std::runtime_error("Value error : Could not find given value in array!");
-            target.asList().erase(it);
+            auto it = std::find(target->asList().begin(), target->asList().end(), val);
+            if (it == std::end(target->asList())) throw std::runtime_error("Value error : Could not find given value in array!");
+            target->asList().erase(it);
             return Value(true);
         }
 
         if (methodName == "sort") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error: sort() called on non-array at line " + std::to_string(lineNumber));
             if (!arguments.empty()) throw std::runtime_error("Argument Error: sort() expects 0 arguments.");
-            for (auto& el : target.asList()) {
+            for (auto& el : target->asList()) {
                 if (el.getType() != Value::NUMBER) throw std::runtime_error("Value Error: Cannot sort string values at line " + std::to_string(lineNumber));
             }
-            std::sort(target.asList().begin(), target.asList().end());
-            return Value(target); 
+            std::sort(target->asList().begin(), target->asList().end());
+            return Value(*target); 
         }
 
         if (methodName == "place_all") {
-            if (target.getType() != Value::ARRAY) 
+            if (target->getType() != Value::ARRAY) 
                 throw std::runtime_error("Type Error: place_all() called on non-array");
 
             Value element = arguments[0]->evaluate(env, currentGroup);
             Value countVal = arguments[1]->evaluate(env, currentGroup);
             int count = static_cast<int>(countVal.asNumber());
 
-            auto& targetVec = target.asList();
+            auto& targetVec = target->asList();
             
             targetVec.clear(); 
             targetVec.reserve(count);
@@ -457,21 +477,21 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
                 targetVec.emplace_back(element);
             }
 
-            return target; 
+            return *target; 
         }
 
         if (methodName == "reverse") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: reverse() called on non-array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error: reverse() called on non-array at line " + std::to_string(lineNumber));
             if (arguments.size() > 0) throw std::runtime_error("Argument Error: reverse() expects 0 arguments, but got " + std::to_string(arguments.size()) + " instead at line " + std::to_string(lineNumber));
-            std::reverse(target.asList().begin(), target.asList().end());
-            return Value(target);
+            std::reverse(target->asList().begin(), target->asList().end());
+            return Value(*target);
         }
 
         if (methodName == "clear") {
-            if (target.getType() != Value::ARRAY) throw std::runtime_error("Type Error: clear() called on non-array at line " + std::to_string(lineNumber));
+            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error: clear() called on non-array at line " + std::to_string(lineNumber));
             if (arguments.size() > 0) throw std::runtime_error("Argument Error: clear() expects 0 arguments, but got " + std::to_string(arguments.size()) + " instead at line " + std::to_string(lineNumber));
-            target.asList().clear();
-            return Value(target);
+            target->asList().clear();
+            return Value(*target);
         }
     }
     

@@ -8,11 +8,32 @@
 
 #include "../lexer/lexer.h"
 #include "../ast/ast.h"
+#include "../types.h"
+
+struct SymbolInfo {
+    VType type;
+    bool isExplicit; 
+};
 
 class Parser {
 private:
 	std::vector<Token> tokens;
 	size_t pos = 0;
+	std::vector<std::unordered_map<uint32_t, SymbolInfo>> scopeStack;
+
+	void pushScope() { scopeStack.push_back({}); }
+	void popScope()  { scopeStack.pop_back(); }
+	void defineSymbol(uint32_t id, VType type, bool explicitType){
+		if(scopeStack.empty()) pushScope();
+		scopeStack.back()[id] = {type, explicitType};
+	}
+
+	SymbolInfo* lookupSymbol(uint32_t id) {
+		for (auto it = scopeStack.rbegin(); it != scopeStack.rend(); ++it) {
+			if (it->count(id)) return &((*it)[id]);
+		}
+		return nullptr;
+	}
 
 	// --- Literal Workers ---
 	std::unique_ptr<ASTNode> parseStringLiteral();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeFlow Documentation</title>
+    <title>Vyne Documentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -14,8 +14,8 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-code logo-icon"></i>
-                    <h2>CodeFlow Docs</h2>
+                    <img src="vyne.png" alt="" width="90" height="90" style="margin-bottom: 5px;">
+                    <h2>Vyne</h2>
                 </div>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -29,7 +29,6 @@
                     <ul class="nav-links">
                         <li><a href="#introduction" class="active">Introduction</a></li>
                         <li><a href="#installation">Installation</a></li>
-                        <li><a href="#first-program">Your First Program</a></li>
                         <li><a href="#syntax-basics">Syntax Basics</a></li>
                     </ul>
                 </div>
@@ -69,6 +68,16 @@
                 <i class="fas fa-sun"></i>
                 <span>Light Mode</span>
             </div>
+                <div style="margin-top: 10px;">
+                    <a href="#" class="btn btn-outline">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+                
+                <div style="margin-top: 10px;"><a href="#" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download
+                </a></div>
+                    
         </aside>
         
         <!-- Main Content -->
@@ -81,30 +90,22 @@
                     </button>
                 </div>
                 <div class="header-title">
-                    <h1>CodeFlow Language Documentation</h1>
+                    <h1>Vyne Documentation</h1>
                     <div class="header-subtitle">Version 1.5.2 | Last updated: June 2023</div>
-                </div>
-                <div class="header-actions">
-                    <a href="#" class="btn btn-outline">
-                        <i class="fab fa-github"></i> GitHub
-                    </a>
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-download"></i> Download
-                    </a>
                 </div>
             </header>
             
             <!-- Documentation Content -->
             <section id="introduction">
                 <h2>Introduction to CodeFlow</h2>
-                <p>CodeFlow is a modern, statically-typed programming language designed for building scalable and maintainable applications. It combines the simplicity of Python with the performance of Go, making it an excellent choice for everything from small scripts to large distributed systems.</p>
+                <p>Vyne is an interpreted programming language where code is executed line by line by an interpreter at runtime, rather than being compiled into machine code beforehand. This allows developers to run and test programs quickly without a separate compilation step. Vyne is best at educational purposes such as data structures and algorithms, and designed for those who want to improve problem-solving skills without writing heavy codes.</p>
                 
                 <div class="explanation">
                     <div class="explanation-title">
                         <i class="fas fa-lightbulb"></i>
-                        Why CodeFlow?
+                        Why Vyne?
                     </div>
-                    <p>CodeFlow was created to address common pain points in modern software development: slow compilation times, complex syntax, and poor error messages. With CodeFlow, you get fast compile times, clean and readable syntax, and helpful error messages that guide you to the solution.</p>
+                    <p>Vyne was created to support multiple data types, to run fast, and to simplify algorithms in a way that helps people understand them easily. Since Vyne has similar syntax with other well-known languages, it is much easier to write programs and execute without any problem.</p>
                 </div>
                 
                 <div class="example">
@@ -112,35 +113,20 @@
                         <i class="fas fa-code"></i>
                         Simple Example
                     </div>
-                    <p>Here's what a simple CodeFlow program looks like:</p>
+                    <p>Here's what "Hello World!" in Vyne looks like:</p>
                     <div class="code">
                         <div class="code-header">
                             <div class="code-title">
                                 <i class="fas fa-file-code"></i>
-                                hello.flow
+                                main.vy
                             </div>
                             <button class="copy-btn" onclick="copyCode(this)">Copy Code</button>
                         </div>
-                        <pre><code>// This is a simple CodeFlow program
-func main() {
-    // Print a message to the console
-    print("Hello, World!")
-    
-    // Variables with type inference
-    name := "Alice"
-    age := 30
-    
-    // String interpolation
-    print(f"Hello, {name}! You are {age} years old.")
-    
-    // Conditional statement
-    if age >= 18 {
-        print("You are an adult.")
-    } else {
-        print("You are a minor.")
-    }
-}</code></pre>
+                        <pre><code>
+log("Hello World!")
+                        </code></pre>
                     </div>
+                    <p>Output: Hello World!</p>
                 </div>
                 
                 <div class="note">
@@ -148,7 +134,7 @@ func main() {
                         <i class="fas fa-exclamation-circle"></i>
                         Note
                     </div>
-                    <p>CodeFlow uses a minimalistic syntax that reduces boilerplate while maintaining readability. The language is designed to be easy to learn for programmers familiar with C-style languages.</p>
+                    <p>Vyne uses a minimalistic syntax that reduces boilerplate while maintaining readability. The language is designed to be easy to learn for programmers familiar with C-style languages.</p>
                 </div>
             </section>
             
@@ -423,7 +409,7 @@ final := applyTwice(square, 2)    // 16 (square(square(2)))</code></pre>
         </main>
     </div>
 
-    <script src="script.js">
+    <script src="index.js">
       
     </script>
 </body>

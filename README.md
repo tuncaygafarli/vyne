@@ -1,6 +1,7 @@
 # 🌿 Vyne
 
 [![Vyne CI](https://github.com/tuncaygafarli/vyne/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/tuncaygafarli/vyne/actions/workflows/c-cpp.yml)
+[![pages-build-deployment](https://github.com/tuncaygafarli/vyne/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/tuncaygafarli/vyne/actions/workflows/pages/pages-build-deployment)
 
 > **DISCLAIMER:** This repository is currently under active maintenance. This README serves as a live technical manifest and personal scratchpad for engine development.
 

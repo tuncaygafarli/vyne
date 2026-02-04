@@ -5,3 +5,4 @@ x64/*
 *.exe
 vyne-docs/*
 .vscode/*
+vendor/*

@@ -23,6 +23,45 @@ Vyne is currently in its early stages but already supports a robust set of core 
 | **Scoping**    | `group Graphics { ... }`   | Encapsulate logic and variables into named namespaces.     |
 | **Modules**    | `module vcore`             | Interfaces with native C++ libraries and system resources. |
 
+### 🛡️ Typing & Assignment Rules
+
+Vyne employs a hybrid type system that supports both **Explicit Declaration** and **Inferred Typing**. This allows for flexible scripting while maintaining the safety required for complex logic.
+
+---
+
+#### 1. Assignment Modes
+
+| Mode         | Syntax Example       | Description                                                                 |
+| :----------- | :------------------- | :-------------------------------------------------------------------------- |
+| **Inferred** | `score = 95`         | Type is determined at runtime based on the assigned value.                  |
+| **Explicit** | `age :: Number = 30` | The variable is "locked" to a specific type; future assignments must match. |
+| **Constant** | `const PI = 3.14`    | Immutable binding. Reassignment attempts will trigger a Runtime Error.      |
+
+#### 2. Built-in Primitive Types
+
+Vyne recognizes the following core types during explicit declaration:
+
+- **`Number`**: 64-bit floating point (handles both integers and decimals).
+- **`String`**: UTF-8 encoded character sequences.
+- **`Boolean`**: Logical `true` or `false`.
+- **`Array`**: Dynamic list of `Value` objects.
+
+#### 3. Safety Constraints
+
+To ensure engine stability, the following rules are enforced:
+
+> [ Note: Type Mismatch ]
+> If a variable is declared as `val :: Number`, assigning a `String` to it later will result in a `Type Error`.
+
+> [ Note: Constant Protection ]
+> Constants must be initialized at the moment of declaration. Once set, they are read-only for the duration of the program execution.
+
+#### 4. Type Coercion (Implicit Casting)
+
+Vyne avoids "hidden" type casting to prevent bugs, with one primary exception:
+
+- **String Promotion**: Using the `+` operator with a `String` and a `Number` will automatically promote the `Number` to a `String` for concatenation.
+
 ---
 
 ### 📦 Built-in Modules

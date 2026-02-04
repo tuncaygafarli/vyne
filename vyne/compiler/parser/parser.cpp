@@ -599,7 +599,7 @@ std::unique_ptr<ASTNode> Parser::parseReturnStatement() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseLoopControl() {
-    Token tok = getNextToken(); // Handles Break or Continue
+    Token tok = getNextToken();
     consumeSemicolon();
     
     std::unique_ptr<ASTNode> node;

@@ -1,499 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vyne Documentation</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
     <div class="container">
-      <!-- Sidebar Navigation -->
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-          <div class="logo">
-            <img
-              src="vyne.png"
-              alt=""
-              width="90"
-              height="90"
-              style="margin-bottom: 5px"
-            />
-            <h2>Vyne</h2>
-          </div>
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Search documentation..."
-            />
-          </div>
-        </div>
-
-        <nav class="sidebar-nav">
-          <div class="nav-section">
-            <h4 class="nav-section-title">Getting Started</h4>
-            <ul class="nav-links">
-              <li><a href="#introduction" class="active">Introduction</a></li>
-              <li><a href="#installation">Installation</a></li>
-              <li><a href="#syntax-basics">Syntax Basics</a></li>
-            </ul>
-          </div>
-
-          <div class="nav-section">
-            <h4 class="nav-section-title">Core Concepts</h4>
-            <ul class="nav-links">
-              <li><a href="#variables">Variables & Data Types</a></li>
-              <li><a href="#control-flow">Control Flow</a></li>
-              <li><a href="#functions">Functions</a></li>
-              <li><a href="#modules">Modules & Packages</a></li>
-            </ul>
-          </div>
-
-          <div class="nav-section">
-            <h4 class="nav-section-title">Advanced Topics</h4>
-            <ul class="nav-links">
-              <li><a href="#error-handling">Error Handling</a></li>
-              <li><a href="#concurrency">Concurrency</a></li>
-              <li><a href="#metaprogramming">Metaprogramming</a></li>
-              <li><a href="#performance">Performance Tips</a></li>
-            </ul>
-          </div>
-
-          <div class="nav-section">
-            <h4 class="nav-section-title">API Reference</h4>
-            <ul class="nav-links">
-              <li><a href="#standard-library">Standard Library</a></li>
-              <li><a href="#builtin-functions">Built-in Functions</a></li>
-              <li><a href="#decorators">Decorators</a></li>
-              <li><a href="#interfaces">Interfaces</a></li>
-            </ul>
-          </div>
-        </nav>
-
-        <div class="theme-toggle" id="themeToggle">
-          <i class="fas fa-sun"></i>
-          <span>Light Mode</span>
-        </div>
-        <div style="margin-top: 10px">
-          <a
-            href="https://github.com/tuncaygafarli/vyne"
-            class="btn btn-outline"
-          >
-            <i class="fab fa-github"></i> GitHub
-          </a>
-        </div>
-
-        <div style="margin-top: 10px">
-          <a href="#" class="btn btn-primary">
-            <i class="fas fa-download"></i> Download
-          </a>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-          <div>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-              <i class="fas fa-bars"></i>
-            </button>
-          </div>
-          <div class="header-title">
-            <h1>Vyne Documentation</h1>
-            <div class="header-subtitle">
-              Version 1.5.2 | Last updated: June 2023
-            </div>
-          </div>
-        </header>
-
-        <!-- Documentation Content -->
-        <section id="introduction">
-          <h2>Introduction to CodeFlow</h2>
-          <p>
-            Vyne is an interpreted programming language where code is executed
-            line by line by an interpreter at runtime, rather than being
-            compiled into machine code beforehand. This allows developers to run
-            and test programs quickly without a separate compilation step. Vyne
-            is best at educational purposes such as data structures and
-            algorithms, and designed for those who want to improve
-            problem-solving skills without writing heavy codes.
-          </p>
-
-          <div class="explanation">
-            <div class="explanation-title">
-              <i class="fas fa-lightbulb"></i>
-              Why Vyne?
-            </div>
-            <p>
-              Vyne was created to support multiple data types, to run fast, and
-              to simplify algorithms in a way that helps people understand them
-              easily. Since Vyne has similar syntax with other well-known
-              languages, it is much easier to write programs and execute without
-              any problem.
-            </p>
-          </div>
-
-          <div class="example">
-            <div class="example-title">
-              <i class="fas fa-code"></i>
-              Simple Example
-            </div>
-            <p>Here's what "Hello World!" in Vyne looks like:</p>
-            <div class="code">
-              <div class="code-header">
-                <div class="code-title">
-                  <i class="fas fa-file-code"></i>
-                  main.vy
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="vyne.png" alt="" width="90" height="90" style="margin-bottom: 5px;">
+                    <h2>Vyne</h2>
                 </div>
-                <button class="copy-btn" onclick="copyCode(this)">
-                  Copy Code
-                </button>
-              </div>
-              <pre><code>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search documentation...">
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h4 class="nav-section-title">Getting Started</h4>
+                    <ul class="nav-links">
+                        <li><a href="#introduction" class="active">Introduction</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="#syntax-basics">Syntax Basics</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4 class="nav-section-title">Core Concepts</h4>
+                    <ul class="nav-links">
+                        <li><a href="#variables">Variables & Data Types</a></li>
+                        <li><a href="#control-flow">Control Flow</a></li>
+                        <li><a href="#functions">Functions</a></li>
+                        <li><a href="#modules">Modules & Packages</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4 class="nav-section-title">Advanced Topics</h4>
+                    <ul class="nav-links">
+                        <li><a href="#error-handling">Error Handling</a></li>
+                        <li><a href="#concurrency">Concurrency</a></li>
+                        <li><a href="#metaprogramming">Metaprogramming</a></li>
+                        <li><a href="#performance">Performance Tips</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4 class="nav-section-title">API Reference</h4>
+                    <ul class="nav-links">
+                        <li><a href="#standard-library">Standard Library</a></li>
+                        <li><a href="#builtin-functions">Built-in Functions</a></li>
+                        <li><a href="#decorators">Decorators</a></li>
+                        <li><a href="#interfaces">Interfaces</a></li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <div class="theme-toggle" id="themeToggle">
+                <i class="fas fa-sun"></i>
+                <span>Light Mode</span>
+            </div>
+                <div style="margin-top: 10px;">
+                    <a href="#" class="btn btn-outline">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+                
+                <div style="margin-top: 10px;"><a href="#" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download
+                </a></div>
+                    
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="header-title">
+                    <h1>Vyne Documentation</h1>
+                    <div class="header-subtitle">Version 1.5.2 | Last updated: June 2023</div>
+                </div>
+            </header>
+            
+            <!-- Documentation Content -->
+            <section id="introduction">
+                <h2>Introduction to CodeFlow</h2>
+                <p>Vyne is an interpreted programming language where code is executed line by line by an interpreter at runtime, rather than being compiled into machine code beforehand. This allows developers to run and test programs quickly without a separate compilation step. Vyne is best at educational purposes such as data structures and algorithms, and designed for those who want to improve problem-solving skills without writing heavy codes.</p>
+                
+                <div class="explanation">
+                    <div class="explanation-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Why Vyne?
+                    </div>
+                    <p>Vyne was created to support multiple data types, to run fast, and to simplify algorithms in a way that helps people understand them easily. Since Vyne has similar syntax with other well-known languages, it is much easier to write programs and execute without any problem.</p>
+                </div>
+                
+                <div class="example">
+                    <div class="example-title">
+                        <i class="fas fa-code"></i>
+                        Simple Example
+                    </div>
+                    <p>Here's what "Hello World!" in Vyne looks like:</p>
+                    <div class="code">
+                        <div class="code-header">
+                            <div class="code-title">
+                                <i class="fas fa-file-code"></i>
+                                main.vy
+                            </div>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fa-regular fa-clipboard"></i>
+                            Copy</button>
+                        </div>
+                        <pre><code>
 log("Hello World!")
                         </code></pre>
-            </div>
-            <p>Output: Hello World!</p>
-          </div>
-
-          <div class="note">
-            <div class="note-title">
-              <i class="fas fa-exclamation-circle"></i>
-              Note
-            </div>
-            <p>
-              Vyne uses a minimalistic syntax that reduces boilerplate while
-              maintaining readability. The language is designed to be easy to
-              learn for programmers familiar with C-style languages.
-            </p>
-          </div>
-        </section>
-
-        <section id="variables">
-          <h2>Variables and Data Types</h2>
-          <p>
-            CodeFlow is statically typed, but it includes powerful type
-            inference so you rarely need to explicitly write types. The compiler
-            can infer types from the context in most cases.
-          </p>
-
-          <div class="definition">
-            <div class="definition-title">Variable Declaration</div>
-            <p>
-              Variables in CodeFlow can be declared using the
-              <code>:=</code> operator for type inference, or with explicit type
-              annotation using the <code>var</code> keyword.
-            </p>
-          </div>
-
-          <div class="code">
-            <div class="code-header">
-              <div class="code-title">
-                <i class="fas fa-file-code"></i>
-                variables.flow
-              </div>
-              <button class="copy-btn" onclick="copyCode(this)">
-                Copy Code
-              </button>
-            </div>
-            <pre><code># Explicit type declaration (recommended)
-name      :: String  = "Alice";      // string
-age       :: Number  = 30;           // int
-height    :: Number  = 5.8;          // float
-isStudent :: Boolean = true          // bool
-
-# Type inference
-score       = 95;
-temperature = 72.5;
-message     = "Hello";
-
-// Constants
-const PI = 3.14159;
-const APP_NAME = "MyApp";
-
-// Multiple assignment
-x, y := 10, 20
-a, b, c := "foo", 42, false
-
-// Type annotations for function parameters
-sub add(a, b) {
-    return a + b;
-}</code></pre>
-          </div>
-
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data Type</th>
-                  <th>Description</th>
-                  <th>Example</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>int</code></td>
-                  <td>Integer numbers</td>
-                  <td><code>42, -7, 0</code></td>
-                </tr>
-                <tr>
-                  <td><code>float</code></td>
-                  <td>Floating point numbers</td>
-                  <td><code>3.14, -0.001</code></td>
-                </tr>
-                <tr>
-                  <td><code>string</code></td>
-                  <td>Text data</td>
-                  <td><code>"Hello", 'World'</code></td>
-                </tr>
-                <tr>
-                  <td><code>bool</code></td>
-                  <td>Boolean values</td>
-                  <td><code>true, false</code></td>
-                </tr>
-                <tr>
-                  <td><code>array[T]</code></td>
-                  <td>Fixed-size collection</td>
-                  <td><code>[1, 2, 3]</code></td>
-                </tr>
-                <tr>
-                  <td><code>list[T]</code></td>
-                  <td>Dynamic-size collection</td>
-                  <td><code>list[int]{1, 2, 3}</code></td>
-                </tr>
-                <tr>
-                  <td><code>map[K]V</code></td>
-                  <td>Key-value mapping</td>
-                  <td><code>map[string]int{"age": 30}</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="tip">
-            <div class="tip-title">
-              <i class="fas fa-check-circle"></i>
-              Tip
-            </div>
-            <p>
-              Use type inference (<code>:=</code>) for local variables to keep
-              your code concise. Use explicit type annotations for function
-              parameters and return types to improve readability and catch type
-              errors early.
-            </p>
-          </div>
-        </section>
-
-        <section id="control-flow">
-          <h2>Control Flow</h2>
-          <p>
-            CodeFlow provides familiar control flow constructs with some
-            enhancements for safety and expressiveness.
-          </p>
-
-          <div class="example">
-            <div class="example-title">
-              <i class="fas fa-code"></i>
-              Control Flow Examples
-            </div>
-            <p>
-              CodeFlow supports if/else statements, loops, and pattern matching
-              for complex conditional logic.
-            </p>
-            <div class="code">
-              <div class="code-header">
-                <div class="code-title">
-                  <i class="fas fa-file-code"></i>
-                  control.flow
+                    </div>
+                    <p>Output: Hello World!</p>
                 </div>
-                <button class="copy-btn" onclick="copyCode(this)">
-                  Copy Code
-                </button>
-              </div>
-              <pre><code>// If-else statement
-func checkNumber(n: int) {
-    if n > 0 {
-        print("Positive")
-    } else if n < 0 {
-        print("Negative")
-    } else {
-        print("Zero")
-    }
-}
+                
+                <div class="note">
+                    <div class="note-title">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Note
+                    </div>
+                    <p>Vyne uses a minimalistic syntax that reduces boilerplate while maintaining readability. The language is designed to be easy to learn for programmers familiar with C-style languages.</p>
+                </div>
+            </section>
 
-// For loop (like a while loop)
-i := 0
-for i < 5 {
-    print(i)
-    i += 1
-}
+            <!--Installation-->
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>To build the interpreter from source, clone the repository and compile using your preferred C++ compiler:</p>
+                <div class="code">
+                    <div class="code-header">
+                        <div class="code-title">bash</div>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fa-regular fa-clipboard"></i>
+                            Copy</button>
+                    </div>
+                <pre><code>
+git clone https://github.com/tuncaygafarli/vyne.git
+cd vyne
 
-// For loop with range
-for i in range(0, 10) {
-    print(i * 2)
-}
-
-// For-each loop
-names := ["Alice", "Bob", "Charlie"]
-for name in names {
-    print(f"Hello, {name}!")
-}
-
-// Pattern matching (switch with superpowers)
-func describe(x: any) {
-    match x {
-        case 0:
-            print("Zero")
-        case s: string if len(s) > 5:
-            print(f"Long string: {s}")
-        case n: int:
-            print(f"Number: {n}")
-        case _:
-            print("Something else")
-    }
-}
-
-// Error handling with try/catch
-func riskyOperation() {
-    try {
-        result := potentiallyFailingFunction()
-        print(f"Success: {result}")
-    } catch err: IOError {
-        print(f"IO Error: {err.message}")
-    } catch err: ValueError {
-        print(f"Value Error: {err.message}")
-    } catch err {
-        print(f"Unexpected error: {err}")
-    }
-}</code></pre>
+./build.bat # For Windows
+./build.sh  # For Linux
+                        </code></pre>
+                </div>
+            </section>
+            
+            
+            
+            <!-- Page Navigation -->
+            <div class="page-nav">
+                <a href="#introduction" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Previous: Introduction
+                </a>
+                <a href="#" class="btn btn-outline">
+                    Next: Modules & Packages <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-          </div>
-
-          <div class="warning">
-            <div class="warning-title">
-              <i class="fas fa-exclamation-triangle"></i>
-              Warning
-            </div>
-            <p>
-              Unlike some languages, CodeFlow does not have traditional C-style
-              for loops (<code>for (i=0; i&lt;n; i++)</code>). Use
-              <code>for i in range(start, end)</code> instead, which is safer
-              and less error-prone.
-            </p>
-          </div>
-        </section>
-
-        <section id="functions">
-          <h2>Functions</h2>
-          <p>
-            Functions are first-class citizens in CodeFlow. They can be assigned
-            to variables, passed as arguments, and returned from other
-            functions.
-          </p>
-
-          <div class="code">
-            <div class="code-header">
-              <div class="code-title">
-                <i class="fas fa-file-code"></i>
-                functions.flow
-              </div>
-              <button class="copy-btn" onclick="copyCode(this)">
-                Copy Code
-              </button>
-            </div>
-            <pre><code>// Basic function with parameters and return type
-func add(a: int, b: int) -> int {
-    return a + b
-}
-
-// Function with multiple return values
-func divide(a: float, b: float) -> (float, bool) {
-    if b == 0 {
-        return 0, false  // Division by zero
-    }
-    return a / b, true   // Success
-}
-
-// Function with default parameters
-func greet(name: string, greeting: string = "Hello") {
-    print(f"{greeting}, {name}!")
-}
-
-// Variadic function (accepts any number of arguments)
-func sum(numbers: ...int) -> int {
-    total := 0
-    for n in numbers {
-        total += n
-    }
-    return total
-}
-
-// Higher-order function (takes function as parameter)
-func applyTwice(f: func(int) -> int, x: int) -> int {
-    return f(f(x))
-}
-
-// Anonymous function (lambda)
-square := func(x: int) -> int {
-    return x * x
-}
-
-// Using the functions
-result := add(5, 3)                // 8
-value, ok := divide(10.0, 2.0)    // 5.0, true
-greet("Alice")                     // "Hello, Alice!"
-greet("Bob", "Hi")                 // "Hi, Bob!"
-total := sum(1, 2, 3, 4, 5)       // 15
-final := applyTwice(square, 2)    // 16 (square(square(2)))</code></pre>
-          </div>
-
-          <div class="explanation">
-            <div class="explanation-title">
-              <i class="fas fa-lightbulb"></i>
-              Function Signatures
-            </div>
-            <p>
-              Every function in CodeFlow has a signature that defines its
-              parameter types and return type. The compiler uses these
-              signatures to ensure type safety across your entire program.
-              Function signatures are also used for function overloading and
-              interface implementation.
-            </p>
-          </div>
-        </section>
-
-        <!-- Page Navigation -->
-        <div class="page-nav">
-          <a href="#" class="btn btn-outline">
-            <i class="fas fa-arrow-left"></i> Previous: Introduction
-          </a>
-          <a href="#" class="btn btn-outline">
-            Next: Modules & Packages <i class="fas fa-arrow-right"></i>
-          </a>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-          <p>CodeFlow Documentation &copy; 2023. All rights reserved.</p>
-          <p>
-            Found an issue? <a href="#">Edit this page on GitHub</a> or
-            <a href="#">report a problem</a>.
-          </p>
-        </footer>
-      </main>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <p>CodeFlow Documentation &copy; 2023. All rights reserved.</p>
+                <p>Found an issue? <a href="#">Edit this page on GitHub</a> or <a href="#">report a problem</a>.</p>
+            </footer>
+        </main>
     </div>
 
-    <script src="index.js"></script>
-  </body>
+    <script src="index.js">
+      
+    </script>
+</body>
 </html>

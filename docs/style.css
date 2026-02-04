@@ -519,11 +519,13 @@ tr:hover {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  padding: 0.5rem 1rem;
+  padding: 0.2rem 0.7rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.85rem;
+  width: 100px;
+  justify-self: end;
 }
 .copy-btn:hover {
   background-color: var(--primary-color);
@@ -575,4 +577,11 @@ tr:hover {
   .sidebar{
     height: 100%;
   }
+}
+
+.code-header{
+  display: grid;
+  grid-template-columns: 1fr 70fr;
+  gap: 10px;
+
 }

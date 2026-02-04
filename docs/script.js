@@ -1,0 +1,174 @@
+
+// Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile && !sidebar.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const themeText = themeToggle.querySelector('span');
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            
+            if (document.body.classList.contains('light-theme')) {
+                // Switch to light theme
+                document.documentElement.style.setProperty('--bg-dark', '#f8f9fa');
+                document.documentElement.style.setProperty('--bg-card', '#ffffff');
+                document.documentElement.style.setProperty('--bg-sidebar', '#e9ecef');
+                document.documentElement.style.setProperty('--text-primary', '#212529');
+                document.documentElement.style.setProperty('--text-secondary', '#495057');
+                document.documentElement.style.setProperty('--border-color', '#dee2e6');
+                document.documentElement.style.setProperty('--example-bg', 'rgba(0, 0, 0, 0.03)');
+                document.documentElement.style.setProperty('--code-bg', '#f1f3f5');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                // Switch to dark theme (default)
+                document.documentElement.style.setProperty('--bg-dark', '#121826');
+                document.documentElement.style.setProperty('--bg-card', '#1c2333');
+                document.documentElement.style.setProperty('--bg-sidebar', '#151b2d');
+                document.documentElement.style.setProperty('--text-primary', '#f8f9fa');
+                document.documentElement.style.setProperty('--text-secondary', '#adb5bd');
+                document.documentElement.style.setProperty('--border-color', '#2d3748');
+                document.documentElement.style.setProperty('--example-bg', 'rgba(255, 255, 255, 0.03)');
+                document.documentElement.style.setProperty('--code-bg', '#0d1117');
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+            }
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                const parentLi = link.parentElement;
+                
+                if (text.includes(searchTerm)) {
+                    parentLi.style.display = 'block';
+                } else {
+                    parentLi.style.display = 'none';
+                }
+            });
+        });
+        
+        // Active navigation link highlighting
+        const sections = document.querySelectorAll('section');
+        const navLinksArray = Array.from(navLinks);
+        
+        function updateActiveNavLink() {
+            let currentSectionId = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                const scrollPosition = window.scrollY;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentSectionId = section.id;
+                }
+            });
+            
+            navLinksArray.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateActiveNavLink);
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu after clicking a link
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+        });
+        
+        // Copy code button functionality
+        window.copyCode = function(button) {
+            const codeBlock = button.closest('.code');
+            const codeElement = codeBlock.querySelector('code');
+            const textToCopy = codeElement.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.backgroundColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            });
+        };
+        
+        // Initialize syntax highlighting (simple implementation)
+        function highlightCodeBlocks() {
+            const codeBlocks = document.querySelectorAll('code');
+            
+            codeBlocks.forEach(block => {
+                let code = block.textContent;
+                
+                // Simple keyword highlighting
+                const keywords = ['func', 'if', 'else', 'for', 'in', 'return', 'var', 'const', 'try', 'catch', 'match', 'case'];
+                keywords.forEach(keyword => {
+                    const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+                    code = code.replace(regex, `<span class="token keyword">${keyword}</span>`);
+                });
+                
+                // String highlighting
+                code = code.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="token string">$&</span>');
+                
+                // Comment highlighting
+                code = code.replace(/\/\/.*$/gm, '<span class="token comment">$&</span>');
+                
+                // Number highlighting
+                code = code.replace(/\b\d+\b/g, '<span class="token number">$&</span>');
+                
+                // Function highlighting
+                code = code.replace(/\b(print|range|len)\b/g, '<span class="token function">$1</span>');
+                
+                block.innerHTML = code;
+            });
+        }
+        
+        // Call highlight function on page load
+        document.addEventListener('DOMContentLoaded', highlightCodeBlocks);
+        
+        // Add active class to current section on page load
+        updateActiveNavLink();

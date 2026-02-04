@@ -13,6 +13,7 @@
 #include <cmath>
 
 #include "../lexer/lexer.h"
+#include "../types.h"
 #include "value.h"
 
 class Emitter;
@@ -75,6 +76,7 @@ public:
     virtual ~ASTNode() = default;
 
     NodeType type() const { return nodeType; }
+    virtual VType getStaticType() const { return VType::Unknown; }
     virtual Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const = 0;
     virtual void compile(Emitter& e) const = 0;
 };
@@ -108,6 +110,7 @@ public:
     NumberNode(double val) : ASTNode(NodeType::NUMBER), value(val) {}
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Number; }
 };
 
 class VariableNode : public ASTNode {
@@ -164,6 +167,26 @@ public:
     
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
+
+    VType getStaticType() const override {
+        switch(op) {
+            case VTokenType::Add:
+            case VTokenType::Substract:
+            case VTokenType::Multiply:
+            case VTokenType::Division:
+            case VTokenType::Floor_Divide:
+            case VTokenType::Modulo:
+                return VType::Number;
+            case VTokenType::And:
+            case VTokenType::Or:
+            case VTokenType::Double_Equals:
+            case VTokenType::Greater:
+            case VTokenType::Smaller:
+                return VType::Number;
+            default:
+                return VType::Unknown;
+        }
+    }
 };
 
 class PostFixNode : public ASTNode {
@@ -175,6 +198,7 @@ public:
     
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Number; }
 };
 
 class BuiltInCallNode : public ASTNode {
@@ -199,6 +223,7 @@ public:
     }
 
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::String; }
 };
 
 class BooleanNode : public ASTNode {
@@ -210,6 +235,7 @@ public :
         return Value(condition);
     };
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Number; }
 };
 
 class ArrayNode : public ASTNode {
@@ -219,6 +245,7 @@ public:
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Array; }
 };
 
 class RangeNode : public ASTNode {
@@ -231,6 +258,7 @@ public:
 
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Array; }
 };
 
 class IndexAccessNode : public ASTNode {
@@ -261,6 +289,7 @@ public:
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Function; }
 };
 
 class FunctionCallNode : public ASTNode {
@@ -354,6 +383,7 @@ public:
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Module; }
 };
 
 class DismissNode : public ASTNode {

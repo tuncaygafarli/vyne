@@ -77,6 +77,7 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
         case VTokenType::Dismiss:    return parseDismissStatement();
         case VTokenType::Identifier: {
             int checkPos = 1;
+            
             while(lookAhead(checkPos).type == VTokenType::Dot || 
                 lookAhead(checkPos).type == VTokenType::Left_Bracket) {
                 
@@ -91,6 +92,10 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
                 } else {
                     checkPos += 2;
                 }
+            }
+
+            if (lookAhead(checkPos).type == VTokenType::Extends) {
+                checkPos += 2;
             }
             
             if(lookAhead(checkPos).type == VTokenType::Equals) {
@@ -368,8 +373,17 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
         throw std::runtime_error("Syntax Error: Unexpected keyword '" + tok.name + "'");
     }
 
-    uint32_t currentId = StringPool::instance().intern(tok.name);
     std::string lastName = tok.name;
+    uint32_t currentId = StringPool::instance().intern(lastName);
+
+    VType explicitType = VType::Unknown;
+    if (peekToken().type == VTokenType::Extends) {
+        consume(VTokenType::Extends);
+        Token typeTok = consume(VTokenType::Identifier);
+        explicitType = stringToVType(typeTok.name);
+        
+        defineSymbol(currentId, explicitType, true);
+    }
     std::vector<std::string> scope;
     std::unique_ptr<ASTNode> node;
 
@@ -505,25 +519,32 @@ std::unique_ptr<ASTNode> Parser::parseForLoop() {
 
 std::unique_ptr<ASTNode> Parser::parseAssignment() {
     int line = peekToken().line;
-    
     Token varTok = consume(VTokenType::Identifier);
     uint32_t varId = StringPool::instance().intern(varTok.name);
     
-    std::unique_ptr<ASTNode> indexExpr = nullptr;
+    VType explicitType = VType::Unknown;
 
-    if (peekToken().type == VTokenType::Left_Bracket) {
-        consume(VTokenType::Left_Bracket);
-        indexExpr = parseExpression();
-        consume(VTokenType::Right_Bracket);
+    if (peekToken().type == VTokenType::Extends) {
+        consume(VTokenType::Extends);
+        Token typeTok = consume(VTokenType::Identifier);
+        explicitType = stringToVType(typeTok.name); 
     }
 
     consume(VTokenType::Equals);
     auto rhs = parseExpression();
     consumeSemicolon();
 
-    auto node = std::make_unique<AssignmentNode>(varId, varTok.name, std::move(rhs), std::move(indexExpr));
-    node->lineNumber = line;
-    return node;
+    if (explicitType != VType::Unknown) {
+        VType rhsType = rhs->getStaticType(); // You'll need this method in ASTNodes
+        if (rhsType != VType::Unknown && rhsType != explicitType) {
+            throw std::runtime_error("Type Error: Cannot assign " + VTypeToString(rhsType) + 
+                                     " to " + varTok.name + " (expected " + VTypeToString(explicitType) + ")");
+        }
+    }
+
+    defineSymbol(varId, explicitType, explicitType != VType::Unknown);
+
+    return std::make_unique<AssignmentNode>(varId, varTok.name, std::move(rhs), nullptr);
 }
 
 std::unique_ptr<ASTNode> Parser::parseGroupDefinition() {

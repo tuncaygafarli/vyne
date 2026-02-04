@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -185,4 +185,231 @@ cd vyne
       
     </script>
 </body>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vyne Documentation</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <img
+              src="vyne.png"
+              alt=""
+              width="90"
+              height="90"
+              style="margin-bottom: 5px"
+            />
+            <h2>Vyne</h2>
+          </div>
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search documentation..."
+            />
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <h4 class="nav-section-title">Getting Started</h4>
+            <ul class="nav-links">
+              <li><a href="#introduction" class="active">Introduction</a></li>
+              <li><a href="#installation">Installation</a></li>
+              <li><a href="#syntax-basics">Syntax Basics</a></li>
+            </ul>
+          </div>
+
+          <div class="nav-section">
+            <h4 class="nav-section-title">Core Concepts</h4>
+            <ul class="nav-links">
+              <li><a href="#variables">Variables & Data Types</a></li>
+              <li><a href="#control-flow">Control Flow</a></li>
+              <li><a href="#functions">Functions</a></li>
+              <li><a href="#modules">Modules & Packages</a></li>
+            </ul>
+          </div>
+
+          <div class="nav-section">
+            <h4 class="nav-section-title">Advanced Topics</h4>
+            <ul class="nav-links">
+              <li><a href="#error-handling">Error Handling</a></li>
+              <li><a href="#concurrency">Concurrency</a></li>
+              <li><a href="#metaprogramming">Metaprogramming</a></li>
+              <li><a href="#performance">Performance Tips</a></li>
+            </ul>
+          </div>
+
+          <div class="nav-section">
+            <h4 class="nav-section-title">API Reference</h4>
+            <ul class="nav-links">
+              <li><a href="#standard-library">Standard Library</a></li>
+              <li><a href="#builtin-functions">Built-in Functions</a></li>
+              <li><a href="#decorators">Decorators</a></li>
+              <li><a href="#interfaces">Interfaces</a></li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="theme-toggle" id="themeToggle">
+          <i class="fas fa-sun"></i>
+          <span>Light Mode</span>
+        </div>
+        <div style="margin-top: 10px">
+          <a href="#" class="btn btn-outline">
+            <i class="fab fa-github"></i> GitHub
+          </a>
+        </div>
+
+        <div style="margin-top: 10px">
+          <a href="#" class="btn btn-primary">
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+          <div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+          <div class="header-title">
+            <h1>Vyne Documentation</h1>
+            <div class="header-subtitle">
+              Version 1.5.2 | Last updated: June 2023
+            </div>
+          </div>
+        </header>
+
+        <!-- Documentation Content -->
+        <section id="introduction">
+          <h2>Introduction to Vyne</h2>
+          <p>
+            Vyne is an interpreted programming language where code is executed
+            line by line by an interpreter at runtime, rather than being
+            compiled into machine code beforehand. This allows developers to run
+            and test programs quickly without a separate compilation step. Vyne
+            is best at educational purposes such as data structures and
+            algorithms, and designed for those who want to improve
+            problem-solving skills without writing heavy codes.
+          </p>
+
+          <div class="explanation">
+            <div class="explanation-title">
+              <i class="fas fa-lightbulb"></i>
+              Why Vyne?
+            </div>
+            <p>
+              Vyne was created to support multiple data types, to run fast, and
+              to simplify algorithms in a way that helps people understand them
+              easily. Since Vyne has similar syntax with other well-known
+              languages, it is much easier to write programs and execute without
+              any problem.
+            </p>
+          </div>
+
+          <div class="example">
+            <div class="example-title">
+              <i class="fas fa-code"></i>
+              Simple Example
+            </div>
+            <p>Here's what "Hello World!" in Vyne looks like:</p>
+            <div class="code">
+              <div class="code-header">
+                <div class="code-title">
+                  <i class="fas fa-file-code"></i>
+                  main.vy
+                </div>
+                <button class="copy-btn" onclick="copyCode(this)">
+                  <i class="fa-regular fa-clipboard"></i>
+                  Copy
+                </button>
+              </div>
+              <pre><code>
+log("Hello World!")
+                        </code></pre>
+            </div>
+            <p>Output: Hello World!</p>
+          </div>
+
+          <div class="note">
+            <div class="note-title">
+              <i class="fas fa-exclamation-circle"></i>
+              Note
+            </div>
+            <p>
+              Vyne uses a minimalistic syntax that reduces boilerplate while
+              maintaining readability. The language is designed to be easy to
+              learn for programmers familiar with C-style languages.
+            </p>
+          </div>
+        </section>
+
+        <!--Installation-->
+        <section id="installation">
+          <h2>Installation</h2>
+          <p>
+            To build the interpreter from source, clone the repository and
+            compile using your preferred C++ compiler:
+          </p>
+          <div class="code">
+            <div class="code-header">
+              <div class="code-title">bash</div>
+              <button class="copy-btn" onclick="copyCode(this)">
+                <i class="fa-regular fa-clipboard"></i>
+                Copy
+              </button>
+            </div>
+            <pre><code>
+git clone https://github.com/tuncaygafarli/vyne.git
+cd vyne
+
+./build.bat # For Windows
+./build.sh  # For Linux
+                        </code></pre>
+          </div>
+        </section>
+
+        <!-- Page Navigation -->
+        <div class="page-nav">
+          <a href="#introduction" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Previous: Introduction
+          </a>
+          <a href="#" class="btn btn-outline">
+            Next: Modules & Packages <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <p>CodeFlow Documentation &copy; 2023. All rights reserved.</p>
+          <p>
+            Found an issue? <a href="#">Edit this page on GitHub</a> or
+            <a href="#">report a problem</a>.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
 </html>

@@ -57,6 +57,11 @@ Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) con
 
 Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value val = rhs->evaluate(env, currentGroup);
+
+    if (isConstant) {
+        val.setReadOnly();
+    }
+
     std::string targetGroup = resolvePath(scopePath, currentGroup);
     auto& table = env[targetGroup];
 
@@ -101,6 +106,44 @@ Value GroupNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     }
     return Value();
 }
+
+/**
+ * @brief Evaluates binary operations between two AST nodes.
+ * * This method implements the core logic for binary operators, including arithmetic,
+ * comparisons, logical short-circuiting, and type-specific operations (like string 
+ * concatenation or array merging).
+ * * @param env The SymbolContainer providing access to the current variable environment.
+ * @param currentGroup The string identifier for the current scope/group (defaults to "global").
+ * * @details 
+ * ### Execution Flow:
+ * 1. **Short-Circuit Logic**: For `AND` and `OR`, the right-hand side is only evaluated if 
+ * the left-hand side does not determine the final result.
+ * 2. **String Concatenation**: If the operator is `+` and either operand is a string, 
+ * both are converted to strings and concatenated.
+ * 3. **Array Merging**: If both operands are arrays and the operator is `+`, a new array 
+ * is returned containing elements of both.
+ * 4. **Numeric Operations**: Standard arithmetic and comparison operations for doubles.
+ * * 
+ * * ### Supported Operators:
+ * | Category   | Tokens |
+ * | :---       | :---   |
+ * | **Logical**| `And`, `Or` |
+ * | **Arithmetic** | `Add`, `Substract`, `Multiply`, `Division`, `Floor_Divide`, `Modulo` |
+ * | **Comparison** | `Smaller`, `Smaller_Or_Equal`, `Greater`, `Greater_Or_Equal`, `Double_Equals` |
+ * * @return Value The result of the binary operation.
+ * * @throw std::runtime_error Thrown in the following scenarios:
+ * - Division or Modulo by zero.
+ * - Type mismatch (e.g., trying to subtract a string from a number).
+ * - Unsupported operator for the given operand types.
+ * * @note 
+ * - **Short-circuiting**: `And` and `Or` operators do not evaluate the right-hand side 
+ * if the result is determined by the left-hand side.
+ * - **String Promotion**: The `+` operator favors string concatenation if any operand 
+ * is a string, effectively "promoting" the other operand to a string type.
+ * - **Numeric Precision**: All numeric operations are performed using `double` 
+ * precision; comparison operations return `1.0` for true and `0.0` for false to 
+ * maintain type consistency within the `Value` system.
+ */
 
 Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value l = left->evaluate(env, currentGroup);
@@ -268,7 +311,7 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     }
 
     throw std::runtime_error("Runtime Error: Array '" + originalName + "' not found [ line " + std::to_string(lineNumber) + " ]");
-}
+}   
 
 Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     Value funcValue(parameterIds, body);

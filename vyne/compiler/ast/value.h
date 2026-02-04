@@ -105,7 +105,7 @@ struct Value {
     }
 
     const std::string& asModule() const { 
-        return std::get<ModuleData>(data).name; 
+        return std::get<ModuleData>(data).name;
     }
 
     // core value functions

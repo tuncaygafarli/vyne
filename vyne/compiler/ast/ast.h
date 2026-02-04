@@ -136,11 +136,13 @@ class AssignmentNode : public ASTNode {
     std::unique_ptr<ASTNode> rhs;
     std::unique_ptr<ASTNode> indexExpr;
     std::vector<std::string> scopePath;
+    bool isConstant;
 
 public:
     AssignmentNode(uint32_t id, 
                    std::string on, 
                    std::unique_ptr<ASTNode> rhs_ptr, 
+                   bool ic,
                    std::unique_ptr<ASTNode> idx_ptr = nullptr,
                    std::vector<std::string> path = {})
         : ASTNode(NodeType::ASSIGNMENT),
@@ -148,8 +150,8 @@ public:
           originalName(std::move(on)), 
           rhs(std::move(rhs_ptr)), 
           indexExpr(std::move(idx_ptr)),
-          scopePath(std::move(path)) {
-    }
+          scopePath(std::move(path)),
+          isConstant(ic) {}
 
     void compile(Emitter& e) const override;
 

@@ -75,33 +75,42 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
         case VTokenType::Continue:   return parseLoopControl(); 
         case VTokenType::Module:     return parseModuleStatement();
         case VTokenType::Dismiss:    return parseDismissStatement();
-        case VTokenType::Identifier: {
-            int checkPos = 1;
-            
-            while(lookAhead(checkPos).type == VTokenType::Dot || 
-                lookAhead(checkPos).type == VTokenType::Left_Bracket) {
-                
-                if (lookAhead(checkPos).type == VTokenType::Left_Bracket) {
-                    int bracketDepth = 1;
-                    checkPos++;
-                    while (bracketDepth > 0 && lookAhead(checkPos).type != VTokenType::End) {
-                        if (lookAhead(checkPos).type == VTokenType::Left_Bracket) bracketDepth++;
-                        if (lookAhead(checkPos).type == VTokenType::Right_Bracket) bracketDepth--;
-                        checkPos++;
+        case VTokenType::Identifier:
+        case VTokenType::Const: {
+            int checkPos = 0;
+            bool hasConst = (peekToken().type == VTokenType::Const);
+            if (hasConst) checkPos++;
+
+            if (lookAhead(checkPos).type == VTokenType::Identifier) {
+                checkPos++;
+
+                while (lookAhead(checkPos).type == VTokenType::Dot || 
+                    lookAhead(checkPos).type == VTokenType::Left_Bracket) {
+                    if (lookAhead(checkPos).type == VTokenType::Left_Bracket) {
+                        int depth = 1; checkPos++;
+                        while (depth > 0 && lookAhead(checkPos).type != VTokenType::End) {
+                            if (lookAhead(checkPos).type == VTokenType::Left_Bracket) depth++;
+                            if (lookAhead(checkPos).type == VTokenType::Right_Bracket) depth--;
+                            checkPos++;
+                        }
+                    } else {
+                        checkPos += 2;
                     }
-                } else {
+                }
+
+                if (lookAhead(checkPos).type == VTokenType::Extends) {
                     checkPos += 2;
+                }
+
+                if (lookAhead(checkPos).type == VTokenType::Equals) {
+                    return parseAssignment();
                 }
             }
 
-            if (lookAhead(checkPos).type == VTokenType::Extends) {
-                checkPos += 2;
+            if (hasConst) {
+                throw std::runtime_error("Syntax Error: 'const' can only be used in assignments at line " + std::to_string(current.line));
             }
-            
-            if(lookAhead(checkPos).type == VTokenType::Equals) {
-                return parseAssignment(); 
-            }
-            
+
             auto expr = parseExpression();
             consumeSemicolon();
             return expr;
@@ -519,6 +528,13 @@ std::unique_ptr<ASTNode> Parser::parseForLoop() {
 
 std::unique_ptr<ASTNode> Parser::parseAssignment() {
     int line = peekToken().line;
+    bool isConst = false;
+
+    if (peekToken().type == VTokenType::Const) {
+        consume(VTokenType::Const);
+        isConst = true;
+    }
+
     Token varTok = consume(VTokenType::Identifier);
     uint32_t varId = StringPool::instance().intern(varTok.name);
     
@@ -535,7 +551,7 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
     consumeSemicolon();
 
     if (explicitType != VType::Unknown) {
-        VType rhsType = rhs->getStaticType(); // You'll need this method in ASTNodes
+        VType rhsType = rhs->getStaticType();
         if (rhsType != VType::Unknown && rhsType != explicitType) {
             throw std::runtime_error("Type Error: Cannot assign " + VTypeToString(rhsType) + 
                                      " to " + varTok.name + " (expected " + VTypeToString(explicitType) + ")");
@@ -544,7 +560,7 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
 
     defineSymbol(varId, explicitType, explicitType != VType::Unknown);
 
-    return std::make_unique<AssignmentNode>(varId, varTok.name, std::move(rhs), nullptr);
+    return std::make_unique<AssignmentNode>(varId, varTok.name, std::move(rhs), isConst);
 }
 
 std::unique_ptr<ASTNode> Parser::parseGroupDefinition() {
@@ -583,7 +599,7 @@ std::unique_ptr<ASTNode> Parser::parseReturnStatement() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseLoopControl() {
-    Token tok = getNextToken(); // Handles Break or Continue
+    Token tok = getNextToken();
     consumeSemicolon();
     
     std::unique_ptr<ASTNode> node;

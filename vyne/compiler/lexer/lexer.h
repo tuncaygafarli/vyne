@@ -18,6 +18,7 @@ enum class VTokenType {
     Module,             // Namespace declaration
     Dismiss,            // Unload/Remove module
     Arrow,              // Loop sequencer
+    Const,              // Constant declaration
 
     // --- KEYWORDS: CONTROL FLOW ---
     If,

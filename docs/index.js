@@ -170,7 +170,4 @@
         document.addEventListener('DOMContentLoaded', highlightCodeBlocks);
         
         // Add active class to current section on page load
-        updateActiveNavLink();
-
-
-        
+        updateActiveNavLink();      

@@ -4,9 +4,6 @@
 int main(int argc, char* argv[]) {
     SymbolContainer env;
     env["global"] = {};
-    
-    uint32_t piId = StringPool::instance().intern("pi");
-    env["global"][piId] = Value(3.14159);
 
     if (argc == 3) {
         std::string flag = argv[1];

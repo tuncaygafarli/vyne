@@ -250,7 +250,7 @@ Value RangeNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
 
 Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     std::vector<Value> argValues;
-    for (auto& arg : arguments) argValues.push_back(arg->evaluate(env, currentGroup));
+    for (auto& arg : arguments) argValues.emplace_back(arg->evaluate(env, currentGroup));
 
     if (funcName == "log") {
         if (!argValues.empty()) { argValues[0].print(std::cout); std::cout << std::endl; }

@@ -143,8 +143,8 @@ public:
                    std::string on, 
                    std::unique_ptr<ASTNode> rhs_ptr, 
                    bool ic,
-                   std::unique_ptr<ASTNode> idx_ptr = nullptr,
-                   std::vector<std::string> path = {})
+                   std::vector<std::string> path = {},
+                   std::unique_ptr<ASTNode> idx_ptr = nullptr)
         : ASTNode(NodeType::ASSIGNMENT),
           identifierId(id), 
           originalName(std::move(on)), 
@@ -154,7 +154,6 @@ public:
           isConstant(ic) {}
 
     void compile(Emitter& e) const override;
-
     Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
 };
 

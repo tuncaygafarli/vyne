@@ -28,6 +28,18 @@ private:
 		scopeStack.back()[id] = {type, explicitType};
 	}
 
+	void defineScopedSymbol(const std::vector<std::string>& scope, uint32_t id, VType type, bool explicitType) {
+		std::string fullName = "";
+		for (const auto& s : scope) fullName += s + ".";
+		
+		std::string originalName = StringPool::instance().get(id);
+		uint32_t scopedId = StringPool::instance().intern(fullName + originalName);
+
+		if(!scopeStack.empty()) {
+			scopeStack.front()[scopedId] = {type, explicitType};
+		}
+	}
+
 	SymbolInfo* lookupSymbol(uint32_t id) {
 		for (auto it = scopeStack.rbegin(); it != scopeStack.rend(); ++it) {
 			if (it->count(id)) return &((*it)[id]);

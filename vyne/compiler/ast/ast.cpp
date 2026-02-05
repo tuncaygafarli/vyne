@@ -664,7 +664,8 @@ Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const
     if (originalName == "vmem") {
         setupVMem(env, StringPool::instance());
     }
-
+    
+    // TODO this shit clashes with group names
     env[currentGroup][moduleId] = Value(moduleId, originalName, true); 
     
     return env[currentGroup][moduleId];

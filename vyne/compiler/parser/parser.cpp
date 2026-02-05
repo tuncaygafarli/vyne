@@ -380,7 +380,7 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
 
     if (tok.name == "return" || tok.name == "sub" || tok.name == "log") {
         throw std::runtime_error("Syntax Error: Unexpected keyword '" + tok.name + "'");
-    }
+    }   
 
     std::string lastName = tok.name;
     uint32_t currentId = StringPool::instance().intern(lastName);
@@ -535,32 +535,36 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
         isConst = true;
     }
 
-    Token varTok = consume(VTokenType::Identifier);
-    uint32_t varId = StringPool::instance().intern(varTok.name);
+    auto lhsNode = parseIdentifierExpr(); 
     
-    VType explicitType = VType::Unknown;
-
-    if (peekToken().type == VTokenType::Extends) {
-        consume(VTokenType::Extends);
-        Token typeTok = consume(VTokenType::Identifier);
-        explicitType = stringToVType(typeTok.name); 
-    }
-
     consume(VTokenType::Equals);
     auto rhs = parseExpression();
     consumeSemicolon();
 
-    if (explicitType != VType::Unknown) {
-        VType rhsType = rhs->getStaticType();
-        if (rhsType != VType::Unknown && rhsType != explicitType) {
-            throw std::runtime_error("Type Error: Cannot assign " + VTypeToString(rhsType) + 
-                                     " to " + varTok.name + " (expected " + VTypeToString(explicitType) + ")");
+    if (lhsNode->type() == NodeType::VARIABLE) {
+        auto* var = static_cast<VariableNode*>(lhsNode.get());
+        uint32_t varId = var->getNameId();
+        
+        VType varType = var->getStaticType(); 
+        
+        if (var->getScope().empty()) {
+            defineSymbol(varId, varType, varType != VType::Unknown);
+        } else {
+            defineScopedSymbol(var->getScope(), varId, varType, varType != VType::Unknown);
         }
+
+        auto node = std::make_unique<AssignmentNode>(
+            varId, 
+            var->getOriginalName(), 
+            std::move(rhs), 
+            isConst,
+            var->getScope()
+        );
+        node->lineNumber = line;
+        return node;
     }
 
-    defineSymbol(varId, explicitType, explicitType != VType::Unknown);
-
-    return std::make_unique<AssignmentNode>(varId, varTok.name, std::move(rhs), isConst);
+    throw std::runtime_error("Syntax Error: Invalid assignment target.");
 }
 
 std::unique_ptr<ASTNode> Parser::parseGroupDefinition() {

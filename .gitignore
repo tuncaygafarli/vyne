@@ -3,6 +3,8 @@ x64/*
 *.filters
 *.vcxproj
 *.exe
+**/open.bat
+.vs/*
 vyne-docs/*
 .vscode/*
 vendor/*

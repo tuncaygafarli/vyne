@@ -40,7 +40,18 @@ double getPhysicalMemoryUsage() {
 namespace VCoreNative {
 
     Value now(std::vector<Value>& args) {
-        return Value(static_cast<double>(std::time(0)));
+        Value now(std::vector<Value>&args) {
+            const std::time_t t = std::time(nullptr);
+            std::tm tm{};
+#ifdef _WIN32
+            localtime_s(&tm, &t);
+#else
+            localtime_r(&t, &tm);
+#endif
+            std::ostringstream oss;
+            oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+            return Value(oss.str());
+        }
     }
 
     Value sleep(std::vector<Value>& args) {

@@ -2,10 +2,10 @@
   --primary-color: #4dabf7;
   --primary-dark: #339af0;
   --secondary-color: #da77f2;
-  --bg-dark: #121826;
-  --bg-card: #1c2333;
-  --bg-sidebar: #151b2d;
-  --text-primary: #f8f9fa;
+  --bg-dark: #202629;
+  --bg-card: #2e3134;
+  --bg-sidebar: #242a2e;
+  --text-primary: #dee7ef;
   --text-secondary: #adb5bd;
   --text-muted: #6c757d;
   --border-color: #2d3748;
@@ -121,6 +121,16 @@ li {
   border-right: 1px solid var(--border-color);
   transition: transform 0.3s ease;
   z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+
+.sidebar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 .sidebar-header {

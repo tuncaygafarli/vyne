@@ -130,6 +130,18 @@ struct Value {
         }
     }
 
+    bool operator!=(const Value& other) const {
+        if (this->data.index() != other.data.index()) return false;
+
+        switch (this->data.index()) {
+            case 0: return false;
+            case 1: return std::get<double>(this->data) != std::get<double>(other.data);
+            case 2: return *std::get<std::shared_ptr<std::string>>(this->data) != *std::get<std::shared_ptr<std::string>>(other.data);
+            case 3: return *std::get<std::shared_ptr<std::vector<Value>>>(this->data) != *std::get<std::shared_ptr<std::vector<Value>>>(other.data);
+            default: return true; 
+        }
+    }
+
     bool operator<(const Value& other) const {
         if (data.index() != other.data.index()) {
             return data.index() < other.data.index();

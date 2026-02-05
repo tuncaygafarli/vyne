@@ -39,11 +39,13 @@ enum class VTokenType {
     Double_Decrement,   // --
     Floor_Divide,       //
     Modulo,             // %
+    Exclamatory,        // !
 
     // --- OPERATORS: LOGIC & RELATIONAL ---
     And, Or,            // &&, ||
     Equals,             // = (Assignment)
     Double_Equals,      // == (Comparison)
+    Not_Equal,          // !=
     Greater,            // >
     Smaller,            // <
     Greater_Or_Equal,   // >=

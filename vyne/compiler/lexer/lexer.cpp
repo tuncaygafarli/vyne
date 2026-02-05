@@ -165,6 +165,15 @@ std::vector<Token> tokenize(const std::string& input) {
                 }
                 break;
             }
+            case '!' : {
+                if (i + 1 < input.length() && input[i + 1] == '=') {
+                    tokens.emplace_back(VTokenType::Not_Equal, currentLine, 0, "!=");
+                    i++;
+                } else {
+                    tokens.emplace_back(VTokenType::Exclamatory, currentLine, 0, "!");
+                }
+                break;
+            }
             case '#': {
                 while (i < input.length() && input[i] != '\n') {
                     i++;

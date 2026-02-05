@@ -160,10 +160,10 @@ std::unique_ptr<ASTNode> Parser::parseLogicalAnd() {
 
 std::unique_ptr<ASTNode> Parser::parseEquality() {
     auto left = parseRelational();
-    while (peekToken().type == VTokenType::Double_Equals) {
+    while (peekToken().type == VTokenType::Double_Equals || peekToken().type == VTokenType::Not_Equal) {
         Token opToken = getNextToken();
         auto right = parseRelational();
-        left = std::make_unique<BinOpNode>(VTokenType::Double_Equals, std::move(left), std::move(right));
+        left = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
     }
     return left;
 }

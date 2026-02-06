@@ -238,8 +238,11 @@ Value UnaryNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
         case VTokenType::Exclamatory : {
             return Value(!val.isTruthy());
         }
+        
+        case VTokenType::Substract : {
+            return Value(-val.asNumber());
+        }
     }
-
 }
 
 Value ArrayNode::evaluate(SymbolContainer& env, std::string currentGroup) const {

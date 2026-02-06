@@ -202,7 +202,7 @@ std::unique_ptr<ASTNode> Parser::parseTerm() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseUnary() {
-    if (peekToken().type == VTokenType::Exclamatory) {
+    if (peekToken().type == VTokenType::Exclamatory || peekToken().type == VTokenType::Substract) {
         Token opToken = getNextToken();
         
         auto right = parseUnary(); 

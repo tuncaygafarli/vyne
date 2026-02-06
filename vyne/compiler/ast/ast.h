@@ -286,7 +286,7 @@ class FunctionNode : public ASTNode {
 public:
     FunctionNode(std::string tm, uint32_t n,std::string on, std::vector<uint32_t> pid, 
                  std::vector<std::shared_ptr<ASTNode>> body)
-        : ASTNode(NodeType::FUNCTION), targetModule(tm), funcNameId(n), originalName(std::move(on)), parameterIds(pid), body(std::move(body)) {}
+        : ASTNode(NodeType::FUNCTION), targetModule(tm), funcNameId(n), originalName(std::move(on)), parameterIds(std::move(pid)), body(std::move(body)) {}
 
     Value evaluate(SymbolContainer& env, std::string currentGroup) const override;
     void compile(Emitter& e) const override;

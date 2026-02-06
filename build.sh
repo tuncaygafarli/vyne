@@ -1,10 +1,19 @@
 #!/bin/bash
-
 set -e
 
 CXX=g++
-CXXFLAGS="-std=c++17 -O3 -g -Wall -Wextra -Wpedantic"
 OUT="vyne"
+
+if [[ "$*" == *"--asan"* ]]; then
+    echo "Building with AddressSanitizer..."
+    EXTRA_FLAGS="-g -fsanitize=address -fsanitize=undefined"
+else
+    EXTRA_FLAGS="-O3"
+fi
+
+CXXFLAGS="-std=c++17 $EXTRA_FLAGS -Wall -Wextra -Wpedantic"
+
+LDFLAGS="-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl"
 
 SRC_FILES="main.cpp \
 vyne/vm/vm.cpp \
@@ -21,19 +30,16 @@ cli/file_handler.cpp \
 cli/repl.cpp"
 
 echo "---------------------------------------"
-echo "Building Vyne Interpreter (Linux/macOS)..."
+echo "Building Vyne Interpreter (Unix-like)..."
+echo "Mode: ${EXTRA_FLAGS}"
 echo "---------------------------------------"
 
-$CXX $CXXFLAGS $SRC_FILES -o $OUT
+$CXX $CXXFLAGS $SRC_FILES -o $OUT $LDFLAGS
 
 echo "Build Successful: $OUT created."
 
 if [ "$1" == "--test" ]; then
-    if [ -n "$2" ]; then
-        echo "Running tests/$2.vy with Bytecode..."
-        ./$OUT --bytecode "tests/$2.vy"
-    else
-        echo "Running default bench.vy..."
-        ./$OUT --bytecode "tests/bench.vy"
-    fi
+    TEST_FILE=${2:-bench}
+    echo "Running tests/$TEST_FILE.vy with Bytecode..."
+    ./$OUT --bytecode "tests/$TEST_FILE.vy"
 fi

@@ -7,8 +7,18 @@ on:
     branches: ["master"]
 
 jobs:
-  build:
+  test-suite:
+    name: ${{ matrix.build_type }} Build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Performance, Memory-Safety]
+        include:
+          - build_type: Performance
+            flags: "-O3"
+          - build_type: Memory-Safety
+            flags: "-g -fsanitize=address -fsanitize=undefined"
 
     steps:
       - name: Checkout Code
@@ -21,16 +31,20 @@ jobs:
 
       - name: Compile Vyne
         run: |
-          g++ -std=c++17 -O3 \
+          g++ -std=c++17 ${{ matrix.flags }} \
               $(find . -name "*.cpp") \
-              -o vyne_run -Wall -Wextra
+              -o vyne_run -Wall -Wextra -Wpedantic
 
       - name: Run Tests
         run: |
           for testfile in tests/*.vy; do
             if [ -f "$testfile" ]; then
-              echo "---------------------------------------"
-              echo "Running AST: $testfile..."
-              ./vyne_run --ast "$testfile"
+              echo "::group::Testing $testfile"
+              ./vyne_run --ast "$testfile" || { echo "$testfile failed!"; exit 1; }
+              echo "::endgroup::"
             fi
           done
+
+      - name: Binary Size Report
+        if: matrix.build_type == 'Performance'
+        run: ls -lh vyne_run

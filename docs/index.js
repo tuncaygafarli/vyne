@@ -29,21 +29,24 @@
                 document.documentElement.style.setProperty('--bg-sidebar', '#e9ecef');
                 document.documentElement.style.setProperty('--text-primary', '#212529');
                 document.documentElement.style.setProperty('--text-secondary', '#495057');
-                document.documentElement.style.setProperty('--border-color', '#dee2e6');
+                document.documentElement.style.setProperty('--border-color','#b5bac0');
                 document.documentElement.style.setProperty('--example-bg', 'rgba(0, 0, 0, 0.03)');
                 document.documentElement.style.setProperty('--code-bg', '#f1f3f5');
+                document.getElementById("vyneLogo").src = "assets/lightModeVyneLogo.png"
+                document.getElementById("vyneLogo").style = "width:100px; height: 100px"
                 themeIcon.className = 'fas fa-moon';
                 themeText.textContent = 'Dark Mode';
             } else {
                 // Switch to dark theme (default)
-                document.documentElement.style.setProperty('--bg-dark', '#121826');
-                document.documentElement.style.setProperty('--bg-card', '#1c2333');
-                document.documentElement.style.setProperty('--bg-sidebar', '#151b2d');
-                document.documentElement.style.setProperty('--text-primary', '#f8f9fa');
+                document.documentElement.style.setProperty('--bg-dark', '#242a2d');
+                document.documentElement.style.setProperty('--bg-card', '#2e3134');
+                document.documentElement.style.setProperty('--bg-sidebar', '#2B3033');
+                document.documentElement.style.setProperty('--text-primary', '#dee7ef');
                 document.documentElement.style.setProperty('--text-secondary', '#adb5bd');
-                document.documentElement.style.setProperty('--border-color', '#2d3748');
-                document.documentElement.style.setProperty('--example-bg', 'rgba(255, 255, 255, 0.03)');
+                document.documentElement.style.setProperty('--border-color', '#545d6d');
+                document.documentElement.style.setProperty('--example-bg', 'rgba(217, 0, 0, 0.03)');
                 document.documentElement.style.setProperty('--code-bg', '#0d1117');
+                document.getElementById("vyneLogo").src = "assets/sidebarVyneLogo.png"
                 themeIcon.className = 'fas fa-sun';
                 themeText.textContent = 'Light Mode';
             }

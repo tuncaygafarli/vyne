@@ -2,13 +2,13 @@
   --primary-color: #4dabf7;
   --primary-dark: #339af0;
   --secondary-color: #da77f2;
-  --bg-dark: #202629;
+  --bg-dark: #242a2d;
   --bg-card: #2e3134;
-  --bg-sidebar: #242a2e;
+  --bg-sidebar: #2B3033;
   --text-primary: #dee7ef;
   --text-secondary: #adb5bd;
   --text-muted: #6c757d;
-  --border-color: #2d3748;
+  --border-color: #545d6d;
   --success-color: #40c057;
   --warning-color: #fab005;
   --danger-color: #fa5252;
@@ -391,7 +391,7 @@ code {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.3rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
   cursor: pointer;
@@ -500,6 +500,7 @@ tr:hover {
   background-color: var(--bg-card);
   border-radius: var(--radius-sm);
   cursor: pointer;
+  border: 1px solid var(--border-color);
 }
 
 .theme-toggle i {

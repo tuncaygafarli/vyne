@@ -2,9 +2,9 @@
   --primary-color: #4dabf7;
   --primary-dark: #339af0;
   --secondary-color: #da77f2;
-  --bg-dark: #242a2d;
+  --bg-dark: #2B3033;   /* #242a2d*/
   --bg-card: #2e3134;
-  --bg-sidebar: #2B3033;
+  --bg-sidebar: #242a2d;
   --text-primary: #dee7ef;
   --text-secondary: #adb5bd;
   --text-muted: #6c757d;
@@ -208,9 +208,9 @@ li {
 }
 
 .header {
-  display: flex;
-  justify-content: start;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 80fr 2fr ;
+  gap: 10px;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border-color);
@@ -501,6 +501,7 @@ tr:hover {
   border-radius: var(--radius-sm);
   cursor: pointer;
   border: 1px solid var(--border-color);
+  justify-self: end;
 }
 
 .theme-toggle i {
@@ -569,7 +570,7 @@ tr:hover {
 
   .header {
   display: grid;
-  grid-template-columns: 1fr 70fr;
+  grid-template-columns: 70fr 10fr;
   gap: 10px;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
@@ -593,4 +594,5 @@ tr:hover {
 .code-header{
   display: grid;
   grid-template-columns: 1fr 70fr;
-  gap: 10px}
+  gap: 10px
+}

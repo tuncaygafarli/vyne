@@ -38,9 +38,9 @@
                 themeText.textContent = 'Dark Mode';
             } else {
                 // Switch to dark theme (default)
-                document.documentElement.style.setProperty('--bg-dark', '#242a2d');
+                document.documentElement.style.setProperty('--bg-dark', '#2B3033');
                 document.documentElement.style.setProperty('--bg-card', '#2e3134');
-                document.documentElement.style.setProperty('--bg-sidebar', '#2B3033');
+                document.documentElement.style.setProperty('--bg-sidebar', '#242a2d');
                 document.documentElement.style.setProperty('--text-primary', '#dee7ef');
                 document.documentElement.style.setProperty('--text-secondary', '#adb5bd');
                 document.documentElement.style.setProperty('--border-color', '#545d6d');

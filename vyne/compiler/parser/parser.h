@@ -83,6 +83,7 @@ public:
 	std::unique_ptr<ASTNode>     parseFactor();
 	std::unique_ptr<ASTNode>     parseTerm();
 	std::unique_ptr<ASTNode>     parsePostfix();
+	std::unique_ptr<ASTNode>     parseUnary();
 	std::unique_ptr<ASTNode>     parseAdditive();
 	std::unique_ptr<ASTNode>     parseRelational();
 	std::unique_ptr<ASTNode>     parseEquality();

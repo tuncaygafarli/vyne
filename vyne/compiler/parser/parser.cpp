@@ -190,15 +190,28 @@ std::unique_ptr<ASTNode> Parser::parseAdditive() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseTerm() {
-    auto left = parsePostfix();
+    auto left = parseUnary();
     while (peekToken().type == VTokenType::Multiply || peekToken().type == VTokenType::Division) {
         Token opToken = getNextToken();
-        auto right = parseFactor();
+        auto right = parseUnary();
         auto node = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));
         node->lineNumber = opToken.line;
         left = std::move(node);
     }
     return left;
+}
+
+std::unique_ptr<ASTNode> Parser::parseUnary() {
+    if (peekToken().type == VTokenType::Exclamatory || peekToken().type == VTokenType::Substract) {
+        Token opToken = getNextToken();
+        
+        auto right = parseUnary(); 
+
+        auto node = std::make_unique<UnaryNode>(opToken.type, std::move(right));
+        node->lineNumber = opToken.line;
+        return node;
+    }
+    return parsePostfix();
 }
 
 std::unique_ptr<ASTNode> Parser::parsePostfix() {

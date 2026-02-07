@@ -231,6 +231,20 @@ Value PostFixNode::evaluate(SymbolContainer& env, std::string currentGroup) cons
     return newVal;
 }
 
+Value UnaryNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+    Value val = right->evaluate(env, currentGroup);
+
+    switch(op){
+        case VTokenType::Exclamatory : {
+            return Value(!val.isTruthy());
+        }
+        
+        case VTokenType::Substract : {
+            return Value(-val.asNumber());
+        }
+    }
+}
+
 Value ArrayNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     std::vector<Value> results;
     for (const auto& node : elements) results.emplace_back(node->evaluate(env, currentGroup));

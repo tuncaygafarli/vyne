@@ -42,6 +42,7 @@ enum class NodeType {
 
     BINARY_OP,
     POSTFIX,
+    UNARY,
 
     ARRAY,
     RANGE,
@@ -201,6 +202,19 @@ public:
     void compile(Emitter& e) const override;
     VType getStaticType() const override { return VType::Number; }
 };
+
+class UnaryNode : public ASTNode {
+    VTokenType op;
+    std::unique_ptr<ASTNode> right;
+
+public: 
+    UnaryNode(VTokenType op, std::unique_ptr<ASTNode> rhs)
+        : ASTNode(NodeType::UNARY), op(op), right(std::move(rhs)) {}
+    
+    Value evaluate(SymbolContainer& env, std::string currentGroup = "global") const override;
+    void compile(Emitter& e) const override;
+    VType getStaticType() const override { return VType::Number; }
+};   
 
 class BuiltInCallNode : public ASTNode {
     std::string funcName;

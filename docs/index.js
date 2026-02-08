@@ -39,13 +39,13 @@
             } else {
                 // Switch to dark theme (default)
                 document.documentElement.style.setProperty('--bg-dark', '#2B3033');
-                document.documentElement.style.setProperty('--bg-card', '#2e3134');
+                document.documentElement.style.setProperty('--bg-card', '#3e4247');
                 document.documentElement.style.setProperty('--bg-sidebar', '#242a2d');
                 document.documentElement.style.setProperty('--text-primary', '#dee7ef');
                 document.documentElement.style.setProperty('--text-secondary', '#adb5bd');
                 document.documentElement.style.setProperty('--border-color', '#545d6d');
-                document.documentElement.style.setProperty('--example-bg', 'rgba(217, 0, 0, 0.03)');
-                document.documentElement.style.setProperty('--code-bg', '#0d1117');
+                document.documentElement.style.setProperty('--example-bg', 'rgba(255, 255, 255, 0.03)');
+                document.documentElement.style.setProperty('--code-bg', '#141920');
                 document.getElementById("vyneLogo").src = "assets/sidebarVyneLogo.png"
                 themeIcon.className = 'fas fa-sun';
                 themeText.textContent = 'Light Mode';

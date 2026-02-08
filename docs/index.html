@@ -32,16 +32,17 @@
                         <li><a href="#introduction" class="active">Introduction</a></li>
                         <li><a href="#installation">Installation</a></li>
                         <li><a href="#project-structure">Project structure</a></li>
+                        <li><a href="#syntax">Syntax</a></li>
                     </ul>
                 </div>
                 
                 <div class="nav-section">
                     <h4 class="nav-section-title">Core Concepts</h4>
                     <ul class="nav-links">
-                        <li><a href="#variables">Variables & Data Types</a></li>
-                        <li><a href="#control-flow">Control Flow</a></li>
-                        <li><a href="#functions">Functions</a></li>
-                        <li><a href="#modules">Modules & Packages</a></li>
+                        <li><a href="core-concepts.html">Variables & Data Types</a></li>
+                        <li><a href="core-concepts.html/#control-flow">Control Flow</a></li>
+                        <li><a href="core-concepts.html/#functions">Functions</a></li>
+                        <li><a href="core-concepts.html/#modules">Modules & Packages</a></li>
                     </ul>
                 </div>
                 
@@ -92,7 +93,7 @@
                 </div>
                 <div class="header-title">
                     <h1>Vyne Documentation</h1>
-                    <div class="header-subtitle">Version 1.5.2 | Last updated: June 2023</div>
+                    <div class="header-subtitle">Version 1.5.2 | Last updated: June 2026</div>
                 </div>
                 
             </header>
@@ -216,6 +217,59 @@ vyne/
     </table>
 </div>
             </section>
+
+            <!--Syntax-->
+            <section id="syntax">
+                <h2>Syntax</h2>
+                <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Syntax Example</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Arithmetic</strong></td>
+                <td><code>(+, -, *, /, &lt;, &gt;, ==)</code></td>
+                <td>Standard mathematical and comparison operators.</td>
+            </tr>
+            <tr>
+                <td><strong>Bitwise</strong></td>
+                <td><code>(&&, ||)</code></td>
+                <td>Low-level bit manipulation for flags and binary data.</td>
+            </tr>
+            <tr>
+                <td><strong>Functions</strong></td>
+                <td><code>sub calculate(x) { ... }</code></td>
+                <td>Defined using the <code>sub</code> keyword with scoped arguments.</td>
+            </tr>
+            <tr>
+                <td><strong>Logic Flow</strong></td>
+                <td><code>if cond { ... }</code></td>
+                <td>Standard conditional branching.</td>
+            </tr>
+            <tr>
+                <td><strong>Loops</strong></td>
+                <td><code>while cond { ... }</code></td>
+                <td>Standard iteration for repeated execution logic.</td>
+            </tr>
+            <tr>
+                <td><strong>Scoping</strong></td>
+                <td><code>group Graphics { ... }</code></td>
+                <td>Encapsulate logic and variables into named namespaces.</td>
+            </tr>
+            <tr>
+                <td><strong>Modules</strong></td>
+                <td><code>module vcore</code></td>
+                <td>Interfaces with native C++ libraries and system resources.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+            </section>
             
             
             
@@ -224,7 +278,7 @@ vyne/
                 <a href="#introduction" class="btn btn-outline">
                     <i class="fa-solid fa-flag-checkered"></i> Back to start
                 </a>
-                <a href="#" class="btn btn-outline">
+                <a href="core-concepts.html" class="btn btn-outline">
                     Next: Core Concepts <i class="fas fa-arrow-right"></i>
                 </a>
             </div>

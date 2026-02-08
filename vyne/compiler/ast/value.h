@@ -46,6 +46,7 @@ struct Value {
     VariantData data;
     bool isReadOnly = false;
 
+    // constructors
     Value() : data(std::monostate{}) {}
     Value(double n) : data(n) {}
     Value(std::string s) 

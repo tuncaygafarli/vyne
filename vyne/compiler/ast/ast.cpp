@@ -4,13 +4,13 @@
 #include "../../modules/vglib/vglib.h"
 #include "../../modules/vmem/vmem.h"
 
-Value ProgramNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value ProgramNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value lastValue;
     for (const auto& statement : statements) lastValue = statement->evaluate(env, currentGroup);
     return lastValue; 
 }
 
-Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value NumberNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     return Value(value);
 }
 
@@ -25,7 +25,7 @@ Value NumberNode::evaluate(SymbolContainer& env, std::string currentGroup) const
  * @return Value The stored value of the variable.
  */
 
-Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value VariableNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     std::string targetGroup = specificGroup.empty() ? currentGroup : "global";
     if (!specificGroup.empty()) {
         for (const auto& g : specificGroup) targetGroup += "." + g;
@@ -55,7 +55,7 @@ Value VariableNode::evaluate(SymbolContainer& env, std::string currentGroup) con
  * * @return Value The value being assigned (allows for chained assignments like a = b = 1).
  */
 
-Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value AssignmentNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value val = rhs->evaluate(env, currentGroup);
 
     if (isConstant) {
@@ -99,7 +99,7 @@ Value AssignmentNode::evaluate(SymbolContainer& env, std::string currentGroup) c
     return val;
 }
 
-Value GroupNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value GroupNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     std::string nextGroup = currentGroup + "." + groupName;
     for (const auto& stmt : statements) {
         stmt->evaluate(env, nextGroup);
@@ -145,7 +145,7 @@ Value GroupNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
  * maintain type consistency within the `Value` system.
  */
 
-Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value l = left->evaluate(env, currentGroup);
 
     if (op == VTokenType::And) {
@@ -209,7 +209,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     throw std::runtime_error("Type Error: Invalid operation '" + VTokenTypeToString(op) + "' between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
 }
 
-Value PostFixNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value PostFixNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     if (left->type() != NodeType::VARIABLE) {
         throw std::runtime_error("Type Error: Cannot increment a non-variable [ line " + std::to_string(lineNumber) + " ]");
     }
@@ -231,7 +231,7 @@ Value PostFixNode::evaluate(SymbolContainer& env, std::string currentGroup) cons
     return newVal;
 }
 
-Value UnaryNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value UnaryNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value val = right->evaluate(env, currentGroup);
 
     switch(op){
@@ -245,13 +245,13 @@ Value UnaryNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     }
 }
 
-Value ArrayNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value ArrayNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     std::vector<Value> results;
     for (const auto& node : elements) results.emplace_back(node->evaluate(env, currentGroup));
     return Value(results);
 }
 
-Value RangeNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value RangeNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     double start = left->evaluate(env, currentGroup).asNumber();
     double end = right->evaluate(env, currentGroup).asNumber();
     
@@ -262,7 +262,7 @@ Value RangeNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     return Value(rangeArray);
 }
 
-Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value BuiltInCallNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     std::vector<Value> argValues;
     for (auto& arg : arguments) argValues.emplace_back(arg->evaluate(env, currentGroup));
 
@@ -310,7 +310,7 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     throw std::runtime_error("Unknown built-in: " + funcName + " [ line " + std::to_string(lineNumber) + " ]");
 }
 
-Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value IndexAccessNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     std::string targetGroup = resolvePath(scope, currentGroup);
     
     if (env.count(targetGroup) && env[targetGroup].count(nameId)) {
@@ -328,7 +328,7 @@ Value IndexAccessNode::evaluate(SymbolContainer& env, std::string currentGroup) 
     throw std::runtime_error("Runtime Error: Array '" + originalName + "' not found [ line " + std::to_string(lineNumber) + " ]");
 }   
 
-Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value FunctionNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value funcValue(parameterIds, body);
 
     std::string destination = targetModule.empty() ? currentGroup : "global." + targetModule;
@@ -338,7 +338,7 @@ Value FunctionNode::evaluate(SymbolContainer& env, std::string currentGroup) con
     return funcValue;
 }
 
-Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value FunctionCallNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     auto it = env["global"].find(funcNameId);
     
     if (it == env["global"].end()) {
@@ -387,7 +387,7 @@ Value FunctionCallNode::evaluate(SymbolContainer& env, std::string currentGroup)
     return result;
 }
 
-Value ReturnNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value ReturnNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     throw ReturnException{expression->evaluate(env, currentGroup)};
 }
 
@@ -413,7 +413,7 @@ Value ReturnNode::evaluate(SymbolContainer& env, std::string currentGroup) const
  * * @return Value The result of the function execution or the modified receiver object.
  */
 
-Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value MethodCallNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value receiverVal = receiver->evaluate(env, currentGroup);
     uint32_t methodId = StringPool::instance().intern(methodName);
 
@@ -575,7 +575,7 @@ Value MethodCallNode::evaluate(SymbolContainer& env, std::string currentGroup) c
  * - @b Continue: Caught via ContinueException to skip to the next iteration.
  * * */
 
-Value WhileNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value WhileNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value lastResult;
     while (condition->evaluate(env, currentGroup).isTruthy()) {
         try {
@@ -586,7 +586,7 @@ Value WhileNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
     return lastResult;
 }
 
-Value ForNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value ForNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value collection = iterable->evaluate(env, currentGroup);
     if (collection.getType() != Value::ARRAY) {
         throw std::runtime_error("Runtime Error: 'through' requires a sequence or range [ line " + std::to_string(lineNumber) + " ]");
@@ -601,6 +601,7 @@ Value ForNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     if (hadIt) savedIt = scope[itId];
 
     std::vector<Value> resultList;
+    std::set<Value> seen;
     Value lastVal;
 
     for (const auto& element : elements) {
@@ -619,6 +620,13 @@ Value ForNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
                 case ForMode::LOOP: 
                     lastVal = currentResult;
                     break;
+                case ForMode::UNIQUE : {
+                    if(seen.find(element) == seen.end()){
+                        seen.insert(element);
+                        resultList.emplace_back(element);
+                    }
+                    break;
+                }
                 case ForMode::EVERY:
                 default:
                     lastVal = currentResult;
@@ -632,13 +640,13 @@ Value ForNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     if (hadIt) scope[itId] = savedIt;
     else scope.erase(itId);
 
-    if (mode == ForMode::COLLECT || mode == ForMode::FILTER) {
+    if (mode == ForMode::COLLECT || mode == ForMode::FILTER || mode == ForMode::UNIQUE) {
         return Value(resultList);
     }
     return lastVal;
 }
 
-Value IfNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value IfNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     try{
         if(condition->evaluate(env, currentGroup).isTruthy()){
             return body->evaluate(env, currentGroup);
@@ -651,7 +659,7 @@ Value IfNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
     return Value();
 }
 
-Value BlockNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value BlockNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value lastValue;
     for (const auto& statement : statements) lastValue = statement->evaluate(env, currentGroup);
     return lastValue; 
@@ -666,7 +674,7 @@ Value BlockNode::evaluate(SymbolContainer& env, std::string currentGroup) const 
  * @return Value The Module-typed value representing the loaded library.
  */
 
-Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value ModuleNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     if (originalName == "vcore") {
         setupVCore(env, StringPool::instance());
     }
@@ -685,7 +693,7 @@ Value ModuleNode::evaluate(SymbolContainer& env, std::string currentGroup) const
     return env[currentGroup][moduleId];
 }
 
-Value DismissNode::evaluate(SymbolContainer& env, std::string currentGroup) const {
+Value DismissNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     bool erasedSomething = false;
     uint32_t nameId = StringPool::instance().intern(originalName);
 
@@ -704,7 +712,7 @@ Value DismissNode::evaluate(SymbolContainer& env, std::string currentGroup) cons
     throw std::runtime_error("Module Error: Could not dismiss '" + originalName + "' [ line " + std::to_string(lineNumber) + " ]");
 }
 
-std::string resolvePath(std::vector<std::string> scope, std::string currentGroup) {
+std::string resolvePath(std::vector<std::string> scope, const std::string& currentGroup) {
     if (scope.empty()) return currentGroup;
     std::string targetGroup = "global";
     for (const auto& g : scope) targetGroup += "." + g;

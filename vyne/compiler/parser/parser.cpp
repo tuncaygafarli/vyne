@@ -531,8 +531,13 @@ std::unique_ptr<ASTNode> Parser::parseForLoop() {
     }
 
     std::string modeStr = consume(VTokenType::LoopMode).name;
+    std::unique_ptr<ASTNode> body;
     
-    auto body = parseBlock();
+    if (peekToken().type == VTokenType::Left_CB) {
+        body = parseBlock();
+    } else {
+        body = std::make_unique<VariableNode>(StringPool::instance().intern(iteratorName), iteratorName);
+    }
 
     auto node = std::make_unique<ForNode>(std::move(iterable), std::move(body), iteratorName, ForNode::getForMode(modeStr));
     node->lineNumber = line;

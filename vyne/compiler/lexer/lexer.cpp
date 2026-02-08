@@ -87,6 +87,7 @@ std::vector<Token> tokenize(const std::string& input) {
             else if (buffer == "through") tokens.emplace_back(VTokenType::Through, currentLine, 0, buffer);
             else if (buffer == "loop") tokens.emplace_back(VTokenType::LoopMode, currentLine, 0, buffer);
             else if (buffer == "collect") tokens.emplace_back(VTokenType::LoopMode, currentLine, 0, buffer);
+            else if (buffer == "unique") tokens.emplace_back(VTokenType::LoopMode, currentLine, 0, buffer);
             else if (buffer == "every") tokens.emplace_back(VTokenType::LoopMode, currentLine, 0, buffer);
             else if (buffer == "filter") tokens.emplace_back(VTokenType::LoopMode, currentLine, 0, buffer);
             else if (buffer == "break") tokens.emplace_back(VTokenType::Break, currentLine, 0, buffer);

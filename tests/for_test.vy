@@ -1,3 +1,2 @@
-x = through num::1..30 -> filter {
-    num % 2 == 0;
-};
+x = through num::1..30 -> unique;
+log(x);

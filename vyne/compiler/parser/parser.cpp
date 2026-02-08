@@ -421,7 +421,7 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
         consume(VTokenType::Right_Parenthese);
         node = std::make_unique<FunctionCallNode>(currentId, lastName, std::move(args));
     } else {
-        node = std::make_unique<VariableNode>(currentId, tok.name);
+        node = std::make_unique<VariableNode>(currentId, tok.name, explicitType);
     }
 
     while (peekToken().type == VTokenType::Dot || peekToken().type == VTokenType::Left_Bracket) {
@@ -444,7 +444,7 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
                 scope.emplace_back(lastName);
                 lastName = member.name;
                 uint32_t memberId = StringPool::instance().intern(member.name);
-                node = std::make_unique<VariableNode>(memberId, lastName, scope);
+                node = std::make_unique<VariableNode>(memberId, lastName, explicitType, scope);
             }
         } 
         else if (peekToken().type == VTokenType::Left_Bracket) {
@@ -576,11 +576,13 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
             var->getOriginalName(), 
             std::move(rhs), 
             isConst,
+            varType,
             var->getScope()
         );
         node->lineNumber = line;
         return node;
     }
+
 
     throw std::runtime_error("Syntax Error: Invalid assignment target.");
 }

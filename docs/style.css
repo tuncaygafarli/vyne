@@ -13,7 +13,7 @@
   --warning-color: #fab005;
   --danger-color: #fa5252;
   --info-color: #4dabf7;
-  --code-bg: #0d1117;
+  --code-bg: #141920;
   --example-bg: rgba(255, 255, 255, 0.03);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
@@ -431,6 +431,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
 }
 
 th {

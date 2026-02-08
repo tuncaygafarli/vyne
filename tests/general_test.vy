@@ -1,4 +1,4 @@
-sub unique(arr) {
+sub unique_arr(arr) {
     result = [];
     i = 0;
     size = arr.size();
@@ -27,7 +27,7 @@ sub unique(arr) {
 }
 
 raw = [1, 2, 2, 3, 1, 4, 5, 4];
-cleaned = unique(raw);
+cleaned = unique_arr(raw);
 
 log("Original:");
 log(raw);

@@ -39,7 +39,7 @@ Token Parser::consume(VTokenType expected) {
     }
     throw std::runtime_error("Error: Unexpected token type! Expected " +
         VTokenTypeToString(expected) + ", but got " +
-        VTokenTypeToString(peekToken().type) + " instead.");
+        VTokenTypeToString(peekToken().type) + " instead [ line " + std::to_string(t.line) + " ]");
 }
 
 void Parser::consumeSemicolon() {

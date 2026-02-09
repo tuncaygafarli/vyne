@@ -159,6 +159,8 @@ struct Value {
     }
 };
 
+// TODO ADD POOL CLEARING FEATURE WHEN THE DISMISS IS TRIGGERED
+
 class StringPool {
     std::vector<std::string> idToStr;
     std::unordered_map<std::string, uint32_t> strToId;

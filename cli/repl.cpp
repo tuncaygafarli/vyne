@@ -1,5 +1,12 @@
 #include "repl.h"
 
+void printRAMUsage() {
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+    SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+    std::cout << "RAM Usage: " << physMemUsedByMe / 1024 << " KB" << std::endl;
+}
+
 void init_REPL(std::string& input, SymbolContainer& env){
     std::cout << BOLD << CYAN << "Vyne Interpreter v1.0" << RESET << "\n";
     std::cout << "Type " << RED << "exit" << RESET << " to quit.\n\n";
@@ -36,6 +43,11 @@ void init_REPL(std::string& input, SymbolContainer& env){
                 std::cout << "(no variables defined)" << "\n";
             }
             std::cout << YELLOW << "-----------------------------" << RESET << "\n";
+            continue;
+        }
+
+        if (input == "view usage") {
+            printRAMUsage();
             continue;
         }
 

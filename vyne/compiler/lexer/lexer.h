@@ -83,5 +83,76 @@ struct Token {
 };
 
 std::vector<Token> tokenize(const std::string& input);
-std::string VTokenTypeToString(VTokenType type);
 char advance();
+
+inline std::string VTokenTypeToString(VTokenType type) {
+    switch (type) {
+        // --- LITERALS & IDENTIFIERS ---
+        case VTokenType::Identifier:       return "Identifier";
+        case VTokenType::Number:           return "Number";
+        case VTokenType::String:           return "String";
+        case VTokenType::True:             return "'true'";
+        case VTokenType::False:            return "'false'";
+        case VTokenType::Null:             return "'null'";
+
+        // --- KEYWORDS: STRUCTURE ---
+        case VTokenType::Group:            return "'group'";
+        case VTokenType::Function:         return "'sub'";
+        case VTokenType::Extends:          return "'::'";
+        case VTokenType::Module:           return "'module'";
+        case VTokenType::Dismiss:          return "'dismiss'";
+        case VTokenType::Arrow:            return "'->'";
+        case VTokenType::Const:            return "'const'";
+
+        // --- KEYWORDS: CONTROL FLOW ---
+        case VTokenType::If:               return "'if'";
+        case VTokenType::Else:             return "'else'";
+        case VTokenType::While:            return "'while'";
+        case VTokenType::Through:          return "'through'";
+        case VTokenType::LoopMode:         return "LoopMode Keyword";
+        case VTokenType::Return:           return "'return'";
+        case VTokenType::Break:            return "'break'";
+        case VTokenType::Continue:         return "'continue'";
+
+        // --- OPERATORS: ARITHMETIC ---
+        case VTokenType::Add:              return "'+'";
+        case VTokenType::Substract:        return "'-'";
+        case VTokenType::Multiply:         return "'*'";
+        case VTokenType::Division:         return "'/'";
+        case VTokenType::Double_Increment: return "'++'";
+        case VTokenType::Double_Decrement: return "'--'";
+        case VTokenType::Floor_Divide:     return "'//'";
+        case VTokenType::Modulo:           return "'%'";
+        case VTokenType::Exclamatory:      return "'!'";
+
+        // --- OPERATORS: LOGIC & RELATIONAL ---
+        case VTokenType::And:              return "'&&'";
+        case VTokenType::Or:               return "'||'";
+        case VTokenType::Equals:           return "'='";
+        case VTokenType::Double_Equals:    return "'=='";
+        case VTokenType::Not_Equal:        return "'!='";
+        case VTokenType::Greater:          return "'>'";
+        case VTokenType::Smaller:          return "'<'";
+        case VTokenType::Greater_Or_Equal: return "'>='";
+        case VTokenType::Smaller_Or_Equal: return "'<='";
+        case VTokenType::Pipeline:         return "'|>'";
+
+        // --- DELIMITERS & SYMBOLS ---
+        case VTokenType::Left_Parenthese:  return "'('";
+        case VTokenType::Right_Parenthese: return "')'";
+        case VTokenType::Left_CB:          return "'{'";
+        case VTokenType::Right_CB:         return "'}'";
+        case VTokenType::Left_Bracket:     return "'['";
+        case VTokenType::Right_Bracket:    return "']'";
+        case VTokenType::Comma:            return "','";
+        case VTokenType::Semicolon:        return "';'";
+        case VTokenType::Dot:              return "'.'";
+        case VTokenType::Double_Dot:       return "'..'";
+
+        // --- SPECIAL ---
+        case VTokenType::BuiltIn:          return "Built-in Function";
+        case VTokenType::End:              return "End of File";
+
+        default:                           return "Unknown Token (" + std::to_string((int)type) + ")";
+    }
+}

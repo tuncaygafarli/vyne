@@ -56,7 +56,7 @@ void Parser::consumeSemicolon() {
 std::unique_ptr<ProgramNode> Parser::parseProgram() {
     std::vector<std::shared_ptr<ASTNode>> statements;
     while (peekToken().type != VTokenType::End) {
-        statements.push_back(parseStatement());
+        statements.emplace_back(parseStatement());
     }
     return std::make_unique<ProgramNode>(std::move(statements));
 }
@@ -238,10 +238,8 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
         case VTokenType::BuiltIn:                 return parseBuiltInCall();
         case VTokenType::Through:                 return parseForLoop();
         default:
-            throw std::runtime_error("Unexpected token in factor: " + current.name);
+            throw std::runtime_error("Unexpected token in factor: " + current.name + "[ line " + std::to_string(current.line) + " ]");
     }
-
-    throw std::runtime_error("Expected number, identifier, or parenthesis");
 }
 
 std::unique_ptr<ASTNode> Parser::parseStringLiteral() {
@@ -346,10 +344,10 @@ std::unique_ptr<ASTNode> Parser::parseFunctionDefinition() {
     consume(VTokenType::Left_Parenthese);
     std::vector<uint32_t> params;
     if (peekToken().type != VTokenType::Right_Parenthese) {
-        params.push_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
+        params.emplace_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
         while (peekToken().type == VTokenType::Comma) {
             consume(VTokenType::Comma);
-            params.push_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
+            params.emplace_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
         }
     }
     consume(VTokenType::Right_Parenthese);
@@ -402,8 +400,12 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
     if (peekToken().type == VTokenType::Extends) {
         consume(VTokenType::Extends);
         Token typeTok = consume(VTokenType::Identifier);
+
         explicitType = stringToVType(typeTok.name);
-        
+        if (explicitType == VType::Unknown) {
+            throw std::runtime_error("Type Error : Unexpected type " + std::string(typeTok.name) + " [ line " + std::to_string(line) + " ]");
+        }
+
         defineSymbol(currentId, explicitType, true);
     }
     std::vector<std::string> scope;

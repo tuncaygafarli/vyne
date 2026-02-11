@@ -15,11 +15,11 @@ int runFile(const std::string& filename, SymbolContainer& env, const std::string
 
     std::stringstream buffer;
     buffer << file.rdbuf();
-    const std::string& content = buffer.str();
+    const std::string content = buffer.str();
 
     try {
         auto tokens = tokenize(content);
-        Parser parser(tokens);
+        Parser parser(std::move(tokens));
         auto programRoot = parser.parseProgram();
         std::shared_ptr<ASTNode> rootShared = std::move(programRoot);
 

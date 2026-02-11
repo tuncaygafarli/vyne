@@ -70,12 +70,12 @@ enum class VTokenType {
 };
 
 struct Token {
-    VTokenType type;
-    double value;
     std::string name;
+    double value;
+    VTokenType type;
     int line;
 
-    Token(VTokenType t, int cl, double v = 0.0, std::string n = "")
+    Token(VTokenType t, int cl, double v = 0.0, const std::string& n = "")
         : type(t), value(v), name(n), line(cl) {
     }
 

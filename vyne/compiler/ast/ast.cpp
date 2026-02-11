@@ -55,8 +55,19 @@ Value VariableNode::evaluate(SymbolContainer& env, const std::string& currentGro
  * * @return Value The value being assigned (allows for chained assignments like a = b = 1).
  */
 
-Value AssignmentNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
+Value AssignmentNode::evaluate(SymbolContainer& env,     const std::string& currentGroup) const {
     Value val = rhs->evaluate(env, currentGroup);
+
+    if (expectedType != VType::Unknown) {
+        const std::string& expectedName = VTypeToString(expectedType);
+        const std::string& actualName = val.getTypeName(); 
+
+        if (expectedName != actualName) {
+            throw std::runtime_error("Type Error: Explicit type mismatch. Expected " + 
+                expectedName + ", but got " + actualName + 
+                " [ line " + std::to_string(lineNumber) + " ]");
+        }
+    }
 
     if (isConstant) {
         val.setReadOnly();
@@ -64,6 +75,20 @@ Value AssignmentNode::evaluate(SymbolContainer& env, const std::string& currentG
 
     std::string targetGroup = resolvePath(scopePath, currentGroup);
     auto& table = env[targetGroup];
+
+    auto it_existing = table.find(identifierId); 
+
+    if (it_existing != table.end()) {
+        int existingType = it_existing->second.getType();
+        int newType = val.getType();
+
+        if (existingType != 0 && existingType != newType) {
+            throw std::runtime_error("Type Error: Cannot assign " + val.getTypeName() + 
+                                    " to variable '" + originalName + 
+                                    "' defined as " + it_existing->second.getTypeName() + 
+                                    " [ line " + std::to_string(lineNumber) + " ]");
+        }
+    }
 
     if (indexExpr) {
         auto it = table.find(identifierId);
@@ -186,8 +211,6 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
             case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
             case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
             case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
-            case VTokenType::Double_Equals: return Value(l == r);
-            case VTokenType::Not_Equal: return Value(l != r);
             case VTokenType::Floor_Divide: {
                 if (r.asNumber() == 0) {
                     throw std::runtime_error("Division by zero in floor division (//) [ line " + std::to_string(lineNumber) + " ]");
@@ -202,6 +225,14 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
 
                 return Value(std::fmod(l.asNumber(), r.asNumber()));
             }
+            default: return Value(0.0);
+        }
+    }
+
+    if((l.getType() == Value::NUMBER && r.getType() == Value::NUMBER) || (l.getType() == Value::STRING || r.getType() == Value::STRING)){
+        switch(op){
+            case VTokenType::Double_Equals: return Value(l == r);
+            case VTokenType::Not_Equal: return Value(l != r);
             default: return Value(0.0);
         }
     }
@@ -478,10 +509,6 @@ Value MethodCallNode::evaluate(SymbolContainer& env, const std::string& currentG
 
         if (!target) {
             throw std::runtime_error("Runtime Error: Variable '" + var->getOriginalName() + "' not found [ line " + std::to_string(lineNumber) + " ]");
-        }
-
-        if (methodName == "size") {
-            return Value(static_cast<double>(target->asList().size()));
         }
 
         if (methodName == "size") {

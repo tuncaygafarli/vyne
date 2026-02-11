@@ -119,10 +119,15 @@ class VariableNode : public ASTNode {
     uint32_t nameId;
     std::string originalName; 
     std::vector<std::string> specificGroup;
+    VType explicitType;
 
 public:
-    VariableNode(uint32_t id, std::string name, std::vector<std::string> group = {})
-        : ASTNode(NodeType::VARIABLE), nameId(id), originalName(std::move(name)), specificGroup(std::move(group)) {}
+    VariableNode(uint32_t id, std::string name, VType et = VType::Unknown, std::vector<std::string> group = {})
+        : ASTNode(NodeType::VARIABLE), 
+        nameId(id), 
+        originalName(std::move(name)), 
+        explicitType(std::move(et)),
+        specificGroup(std::move(group)) {}
 
     Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
     void compile(Emitter& e) const override;
@@ -130,6 +135,7 @@ public:
     const std::vector<std::string>& getScope() const { return specificGroup; }
     uint32_t getNameId() const { return nameId; }
     const std::string& getOriginalName() const { return originalName; }
+    VType getStaticType() const override { return explicitType; }
 };
 
 class AssignmentNode : public ASTNode {
@@ -139,12 +145,14 @@ class AssignmentNode : public ASTNode {
     std::unique_ptr<ASTNode> indexExpr;
     std::vector<std::string> scopePath;
     bool isConstant;
+    VType expectedType;
 
 public:
     AssignmentNode(uint32_t id, 
                    std::string on, 
                    std::unique_ptr<ASTNode> rhs_ptr, 
                    bool ic,
+                   VType vt,
                    std::vector<std::string> path = {},
                    std::unique_ptr<ASTNode> idx_ptr = nullptr)
         : ASTNode(NodeType::ASSIGNMENT),
@@ -153,7 +161,8 @@ public:
           rhs(std::move(rhs_ptr)), 
           indexExpr(std::move(idx_ptr)),
           scopePath(std::move(path)),
-          isConstant(ic) {}
+          isConstant(ic),
+          expectedType(std::move(vt)) {}
 
     void compile(Emitter& e) const override;
     Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;

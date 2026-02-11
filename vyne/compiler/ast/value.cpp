@@ -153,7 +153,7 @@ uint32_t StringPool::intern(const std::string& s) {
     if (it != pool.strToId.end()) return it->second;
 
     uint32_t newId = static_cast<uint32_t>(pool.idToStr.size());
-    pool.idToStr.push_back(s);
+    pool.idToStr.emplace_back(s);
     pool.strToId[s] = newId;
 
     return newId;

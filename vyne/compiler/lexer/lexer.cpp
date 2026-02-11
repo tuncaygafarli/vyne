@@ -44,7 +44,7 @@ std::vector<Token> tokenize(const std::string& input) {
             if (i < input.length()) {
                 i++;
             }
-            tokens.push_back(Token(VTokenType::String, currentLine, 0, strBuffer));
+            tokens.emplace_back(Token(VTokenType::String, currentLine, 0, strBuffer));
             continue;
         }
 
@@ -227,41 +227,4 @@ std::vector<Token> tokenize(const std::string& input) {
 
     tokens.emplace_back(VTokenType::End, currentLine, 0, "");
     return tokens;
-}
-
-std::string VTokenTypeToString(VTokenType type) {
-    switch (type) {
-        case VTokenType::Number:           return "Number";
-        case VTokenType::Multiply:         return "'*'";
-        case VTokenType::Add:              return "'+'";
-        case VTokenType::Substract:        return "'-'";
-        case VTokenType::Division:         return "'/'";
-        case VTokenType::Left_Parenthese:  return "'('";
-        case VTokenType::Right_Parenthese: return "')'";
-        case VTokenType::Identifier:       return "Identifier";
-        case VTokenType::Equals:           return "'='";
-        case VTokenType::String:           return "String";
-        case VTokenType::True:             return "'true'";
-        case VTokenType::False:            return "'false'";
-        case VTokenType::Null:             return "'null'";
-        case VTokenType::Group:            return "Group";
-        case VTokenType::Left_CB:          return "'{'";
-        case VTokenType::Right_CB:         return "'}'";
-        case VTokenType::Left_Bracket:     return "'['";
-        case VTokenType::Right_Bracket:    return "']'";
-        case VTokenType::Comma:            return "','";
-        case VTokenType::Semicolon:        return "';'";
-        case VTokenType::Extends:          return "'::'";
-        case VTokenType::Dot:              return "'.'";
-        case VTokenType::Greater:          return "'>'";
-        case VTokenType::Smaller:          return "'<'";
-        case VTokenType::While:            return "'while'";
-        case VTokenType::Break:            return "'break'";
-        case VTokenType::Continue:         return "'continue'";
-        case VTokenType::BuiltIn:          return "'BuiltIn'";
-        case VTokenType::Module:           return "'Module'";
-        case VTokenType::Dismiss:          return "'Dismiss'";
-        case VTokenType::End:              return "'end of file'";
-        default:                          return "Unknown Token";
-    }
 }

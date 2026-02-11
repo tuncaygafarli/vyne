@@ -39,7 +39,7 @@ Token Parser::consume(VTokenType expected) {
     }
     throw std::runtime_error("Error: Unexpected token type! Expected " +
         VTokenTypeToString(expected) + ", but got " +
-        VTokenTypeToString(peekToken().type) + " instead.");
+        VTokenTypeToString(peekToken().type) + " instead [ line " + std::to_string(t.line) + " ]");
 }
 
 void Parser::consumeSemicolon() {
@@ -56,7 +56,7 @@ void Parser::consumeSemicolon() {
 std::unique_ptr<ProgramNode> Parser::parseProgram() {
     std::vector<std::shared_ptr<ASTNode>> statements;
     while (peekToken().type != VTokenType::End) {
-        statements.push_back(parseStatement());
+        statements.emplace_back(parseStatement());
     }
     return std::make_unique<ProgramNode>(std::move(statements));
 }
@@ -238,10 +238,8 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
         case VTokenType::BuiltIn:                 return parseBuiltInCall();
         case VTokenType::Through:                 return parseForLoop();
         default:
-            throw std::runtime_error("Unexpected token in factor: " + current.name);
+            throw std::runtime_error("Unexpected token in factor: " + current.name + "[ line " + std::to_string(current.line) + " ]");
     }
-
-    throw std::runtime_error("Expected number, identifier, or parenthesis");
 }
 
 std::unique_ptr<ASTNode> Parser::parseStringLiteral() {
@@ -346,10 +344,10 @@ std::unique_ptr<ASTNode> Parser::parseFunctionDefinition() {
     consume(VTokenType::Left_Parenthese);
     std::vector<uint32_t> params;
     if (peekToken().type != VTokenType::Right_Parenthese) {
-        params.push_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
+        params.emplace_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
         while (peekToken().type == VTokenType::Comma) {
             consume(VTokenType::Comma);
-            params.push_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
+            params.emplace_back(StringPool::instance().intern(consume(VTokenType::Identifier).name));
         }
     }
     consume(VTokenType::Right_Parenthese);
@@ -402,8 +400,12 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
     if (peekToken().type == VTokenType::Extends) {
         consume(VTokenType::Extends);
         Token typeTok = consume(VTokenType::Identifier);
+
         explicitType = stringToVType(typeTok.name);
-        
+        if (explicitType == VType::Unknown) {
+            throw std::runtime_error("Type Error : Unexpected type " + std::string(typeTok.name) + " [ line " + std::to_string(line) + " ]");
+        }
+
         defineSymbol(currentId, explicitType, true);
     }
     std::vector<std::string> scope;
@@ -421,7 +423,7 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
         consume(VTokenType::Right_Parenthese);
         node = std::make_unique<FunctionCallNode>(currentId, lastName, std::move(args));
     } else {
-        node = std::make_unique<VariableNode>(currentId, tok.name);
+        node = std::make_unique<VariableNode>(currentId, tok.name, explicitType);
     }
 
     while (peekToken().type == VTokenType::Dot || peekToken().type == VTokenType::Left_Bracket) {
@@ -444,7 +446,7 @@ std::unique_ptr<ASTNode> Parser::parseIdentifierExpr() {
                 scope.emplace_back(lastName);
                 lastName = member.name;
                 uint32_t memberId = StringPool::instance().intern(member.name);
-                node = std::make_unique<VariableNode>(memberId, lastName, scope);
+                node = std::make_unique<VariableNode>(memberId, lastName, explicitType, scope);
             }
         } 
         else if (peekToken().type == VTokenType::Left_Bracket) {
@@ -576,11 +578,13 @@ std::unique_ptr<ASTNode> Parser::parseAssignment() {
             var->getOriginalName(), 
             std::move(rhs), 
             isConst,
+            varType,
             var->getScope()
         );
         node->lineNumber = line;
         return node;
     }
+
 
     throw std::runtime_error("Syntax Error: Invalid assignment target.");
 }

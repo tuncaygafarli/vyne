@@ -76,12 +76,12 @@ struct Value {
     std::string getTypeName() const { 
         int type = getType();
         switch(type) {
-            case Value::NUMBER: return "number";
-            case Value::STRING: return "string";
-            case Value::ARRAY:  return "array";
-            case Value::FUNCTION: return "function";
-            case Value::MODULE: return "module";
-            default: return "unknown";
+            case Value::NUMBER:   return "Number";
+            case Value::STRING:   return "String";
+            case Value::ARRAY:    return "Array";
+            case Value::FUNCTION: return "Function";
+            case Value::MODULE:   return "Module";
+            default:              return "Unknown";
         }
     }
 
@@ -158,6 +158,8 @@ struct Value {
         }
     }
 };
+
+// TODO ADD POOL CLEARING FEATURE WHEN THE DISMISS IS TRIGGERED
 
 class StringPool {
     std::vector<std::string> idToStr;

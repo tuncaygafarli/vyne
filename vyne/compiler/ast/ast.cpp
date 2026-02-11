@@ -83,7 +83,7 @@ Value AssignmentNode::evaluate(SymbolContainer& env,     const std::string& curr
         int newType = val.getType();
 
         if (existingType != 0 && existingType != newType) {
-            throw std::runtime_error("Type Error: Cannot assign " + val.getTypeName() + 
+            throw std::runtime_error("Type Error: Cannot assign type " + val.getTypeName() + 
                                     " to variable '" + originalName + 
                                     "' defined as " + it_existing->second.getTypeName() + 
                                     " [ line " + std::to_string(lineNumber) + " ]");

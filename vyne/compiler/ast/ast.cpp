@@ -185,7 +185,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
 
     Value r = right->evaluate(env, currentGroup);
 
-    if (op == VTokenType::Add && (l.getType() == Value::STRING || r.getType() == Value::STRING)) {
+    if ((op == VTokenType::Add) && (l.getType() == Value::STRING && r.getType() == Value::STRING)) {
         return Value(l.toString() + r.toString()); 
     }
 
@@ -225,7 +225,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
 
                 return Value(std::fmod(l.asNumber(), r.asNumber()));
             }
-            default: return Value(0.0);
+            default: throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
         }
     }
 
@@ -233,11 +233,9 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
         switch(op){
             case VTokenType::Double_Equals: return Value(l == r);
             case VTokenType::Not_Equal: return Value(l != r);
-            default: return Value(0.0);
+            default: throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
         }
     }
-
-    throw std::runtime_error("Type Error: Invalid operation '" + VTokenTypeToString(op) + "' between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {

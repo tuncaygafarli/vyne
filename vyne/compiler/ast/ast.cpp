@@ -211,8 +211,6 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
             case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
             case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
             case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
-            case VTokenType::Double_Equals: return Value(l == r);
-            case VTokenType::Not_Equal: return Value(l != r);
             case VTokenType::Floor_Divide: {
                 if (r.asNumber() == 0) {
                     throw std::runtime_error("Division by zero in floor division (//) [ line " + std::to_string(lineNumber) + " ]");
@@ -227,6 +225,14 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
 
                 return Value(std::fmod(l.asNumber(), r.asNumber()));
             }
+            default: return Value(0.0);
+        }
+    }
+
+    if((l.getType() == Value::NUMBER && r.getType() == Value::NUMBER) || (l.getType() == Value::STRING || r.getType() == Value::STRING)){
+        switch(op){
+            case VTokenType::Double_Equals: return Value(l == r);
+            case VTokenType::Not_Equal: return Value(l != r);
             default: return Value(0.0);
         }
     }
@@ -503,10 +509,6 @@ Value MethodCallNode::evaluate(SymbolContainer& env, const std::string& currentG
 
         if (!target) {
             throw std::runtime_error("Runtime Error: Variable '" + var->getOriginalName() + "' not found [ line " + std::to_string(lineNumber) + " ]");
-        }
-
-        if (methodName == "size") {
-            return Value(static_cast<double>(target->asList().size()));
         }
 
         if (methodName == "size") {

@@ -1,5 +1,43 @@
 #include "value.h"
 
+int Value::getType() const { return static_cast<int>(data.index()); }
+
+std::string Value::getTypeName() const { 
+    int type = getType();
+    switch(type) {
+        case Value::NUMBER:   return "Number";
+        case Value::STRING:   return "String";
+        case Value::ARRAY:    return "Array";
+        case Value::FUNCTION: return "Function";
+        case Value::MODULE:   return "Module";
+        default:              return "Unknown";
+    }
+}
+
+double Value::asNumber() const { 
+    return std::get<double>(this->data); 
+}
+
+const std::string& Value::asString() const { 
+    return *std::get<std::shared_ptr<std::string>>(this->data); 
+}
+
+std::vector<Value>& Value::asList() { 
+    return *std::get<std::shared_ptr<std::vector<Value>>>(this->data); 
+}
+
+const std::vector<Value>& Value::asList() const { 
+    return *std::get<std::shared_ptr<std::vector<Value>>>(this->data); 
+}
+
+const std::shared_ptr<FunctionData>& Value::asFunction() const { 
+    return std::get<std::shared_ptr<FunctionData>>(this->data); 
+}
+
+const std::string& Value::asModule() const { 
+    return std::get<ModuleData>(data).name;
+}
+
 Value& Value::setReadOnly(){
     isReadOnly = true;
     return *this;
@@ -143,6 +181,46 @@ bool Value::isTruthy() const {
         case Value::STRING:  return !asString().empty();
         case Value::ARRAY:   return !asList().empty();
         default:             return false;
+    }
+}
+
+
+bool Value::operator==(const Value& other) const {
+    if (this->data.index() != other.data.index()) return false;
+
+    switch (this->data.index()) {
+        case 0: return true;
+        case 1: return std::get<double>(this->data) == std::get<double>(other.data);
+        case 2: return *std::get<std::shared_ptr<std::string>>(this->data) == *std::get<std::shared_ptr<std::string>>(other.data);
+        case 3: return *std::get<std::shared_ptr<std::vector<Value>>>(this->data) == *std::get<std::shared_ptr<std::vector<Value>>>(other.data);
+        default: return false; 
+    }
+}
+
+bool Value::operator!=(const Value& other) const {
+    if (this->data.index() != other.data.index()) return false;
+
+    switch (this->data.index()) {
+        case 0: return false;
+        case 1: return std::get<double>(this->data) != std::get<double>(other.data);
+        case 2: return *std::get<std::shared_ptr<std::string>>(this->data) != *std::get<std::shared_ptr<std::string>>(other.data);
+        case 3: return *std::get<std::shared_ptr<std::vector<Value>>>(this->data) != *std::get<std::shared_ptr<std::vector<Value>>>(other.data);
+        default: return true; 
+    }
+}
+
+bool Value::operator<(const Value& other) const {
+    if (data.index() != other.data.index()) {
+        return data.index() < other.data.index();
+    }
+
+    switch (data.index()) {
+        case 1:
+            return std::get<double>(data) < std::get<double>(other.data);
+        case 2:
+            return *std::get<std::shared_ptr<std::string>>(data) < *std::get<std::shared_ptr<std::string>>(other.data);
+        default:
+            return false;
     }
 }
 

@@ -12,10 +12,31 @@
 #include <cstdint>
 
 class ASTNode;
+struct Value;
+struct FunctionData;
+struct ModuleData;
+
 struct ModuleData { 
     uint32_t moduleId;
     std::string name; 
 };
+
+struct FunctionData {
+    std::vector<uint32_t> params;
+    std::vector<std::shared_ptr<ASTNode>> body; 
+
+    std::function<Value(std::vector<Value>&)> nativeFn;
+    bool isNative = false;
+};
+
+using ValueData = std::variant<
+        std::monostate,
+        double,
+        std::shared_ptr<std::string>,
+        std::shared_ptr<std::vector<Value>>,
+        std::shared_ptr<FunctionData>,
+        ModuleData
+>;
 
 struct Value {
     enum TypeIndex { 
@@ -26,24 +47,8 @@ struct Value {
         FUNCTION = 4, 
         MODULE = 5 
     };
-    struct FunctionData {
-        std::vector<uint32_t> params;
-        std::vector<std::shared_ptr<ASTNode>> body; 
 
-        std::function<Value(std::vector<Value>&)> nativeFn;
-        bool isNative = false;
-    };
-
-    using VariantData = std::variant<
-        std::monostate,
-        double,
-        std::shared_ptr<std::string>,
-        std::shared_ptr<std::vector<Value>>,
-        std::shared_ptr<FunctionData>,
-        ModuleData
-    >;
-
-    VariantData data;
+    ValueData data;
     bool isReadOnly = false;
 
     // constructors
@@ -72,91 +77,34 @@ struct Value {
     Value(const Value&) = default;
 
     // safe getters
-    int getType() const { return static_cast<int>(data.index()); }
-    std::string getTypeName() const { 
-        int type = getType();
-        switch(type) {
-            case Value::NUMBER:   return "Number";
-            case Value::STRING:   return "String";
-            case Value::ARRAY:    return "Array";
-            case Value::FUNCTION: return "Function";
-            case Value::MODULE:   return "Module";
-            default:              return "Unknown";
-        }
-    }
+    int getType() const;
+    std::string getTypeName() const;
 
-    double asNumber() const { 
-        return std::get<double>(this->data); 
-    }
+    double asNumber() const;
 
-    const std::string& asString() const { 
-        return *std::get<std::shared_ptr<std::string>>(this->data); 
-    }
+    const std::string& asString() const;
 
-    std::vector<Value>& asList() { 
-        return *std::get<std::shared_ptr<std::vector<Value>>>(this->data); 
-    }
+    std::vector<Value>& asList();
 
-    const std::vector<Value>& asList() const { 
-        return *std::get<std::shared_ptr<std::vector<Value>>>(this->data); 
-    }
+    const std::vector<Value>& asList() const;
 
-    const std::shared_ptr<FunctionData>& asFunction() const { 
-        return std::get<std::shared_ptr<FunctionData>>(this->data); 
-    }
+    const std::shared_ptr<FunctionData>& asFunction() const;
 
-    const std::string& asModule() const { 
-        return std::get<ModuleData>(data).name;
-    }
+    const std::string& asModule() const;
 
     // core value functions
     Value& setReadOnly();
-    bool isTruthy() const;
-    void print(std::ostream& os) const;
-    size_t getDeepBytes() const;
-    size_t getShallowBytes() const;
+    bool isTruthy()                 const;
+    void print(std::ostream& os)    const;
+    size_t getDeepBytes()           const;
+    size_t getShallowBytes()        const;
     bool equals(const Value& other) const;
-    std::string toString() const;
-    int toNumber() const;
+    std::string toString()          const;
+    int toNumber()                  const;
 
-    bool operator==(const Value& other) const {
-        if (this->data.index() != other.data.index()) return false;
-
-        switch (this->data.index()) {
-            case 0: return true;
-            case 1: return std::get<double>(this->data) == std::get<double>(other.data);
-            case 2: return *std::get<std::shared_ptr<std::string>>(this->data) == *std::get<std::shared_ptr<std::string>>(other.data);
-            case 3: return *std::get<std::shared_ptr<std::vector<Value>>>(this->data) == *std::get<std::shared_ptr<std::vector<Value>>>(other.data);
-            default: return false; 
-        }
-    }
-
-    bool operator!=(const Value& other) const {
-        if (this->data.index() != other.data.index()) return false;
-
-        switch (this->data.index()) {
-            case 0: return false;
-            case 1: return std::get<double>(this->data) != std::get<double>(other.data);
-            case 2: return *std::get<std::shared_ptr<std::string>>(this->data) != *std::get<std::shared_ptr<std::string>>(other.data);
-            case 3: return *std::get<std::shared_ptr<std::vector<Value>>>(this->data) != *std::get<std::shared_ptr<std::vector<Value>>>(other.data);
-            default: return true; 
-        }
-    }
-
-    bool operator<(const Value& other) const {
-        if (data.index() != other.data.index()) {
-            return data.index() < other.data.index();
-        }
-
-        switch (data.index()) {
-            case 1:
-                return std::get<double>(data) < std::get<double>(other.data);
-            case 2:
-                return *std::get<std::shared_ptr<std::string>>(data) < *std::get<std::shared_ptr<std::string>>(other.data);
-            default:
-                return false;
-        }
-    }
+    bool operator==(const Value& other) const;
+    bool operator!=(const Value& other) const;
+    bool operator<(const Value& other) const;
 };
 
 // TODO ADD POOL CLEARING FEATURE WHEN THE DISMISS IS TRIGGERED

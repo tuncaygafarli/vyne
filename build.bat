@@ -3,10 +3,8 @@ setlocal
 
 set CXX=g++
 
-set CXXFLAGS=-std=c++17 -O3 -Wall -Wextra -I"./vendor/glfw/include"
+set CXXFLAGS=-std=c++17 -O3 -Wall -Wextra
 set OUT=vyne.exe
-
-set LDFLAGS=-L"./vendor/glfw/lib-mingw-w64" -lglfw3 -lgdi32 -lopengl32 -luser32 -lshell32
 
 set SRC_FILES=main.cpp ^
 vyne/vm/vm.cpp ^
@@ -26,7 +24,7 @@ echo ---------------------------------------
 echo Building Vyne Interpreter (Windows) with GLFW...
 echo ---------------------------------------
 
-%CXX% %CXXFLAGS% %SRC_FILES% -o %OUT% %LDFLAGS%
+%CXX% %CXXFLAGS% %SRC_FILES% -o %OUT%
 
 if %ERRORLEVEL% EQU 0 (
     echo Build Successful: %OUT% created.

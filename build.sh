@@ -24,6 +24,7 @@ vyne/compiler/ast/value.cpp \
 vyne/modules/vcore/vcore.cpp \
 vyne/modules/vglib/vglib.cpp \
 vyne/modules/vmem/vmem.cpp \
+vyne/modules/vmath/vmath.cpp \
 cli/file_handler.cpp \
 cli/repl.cpp"
 

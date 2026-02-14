@@ -3,6 +3,7 @@
 #include "../../modules/vcore/vcore.h"
 #include "../../modules/vglib/vglib.h"
 #include "../../modules/vmem/vmem.h"
+#include "../../modules/vmath/vmath.h"
 
 Value ProgramNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value lastValue;
@@ -710,6 +711,10 @@ Value ModuleNode::evaluate(SymbolContainer& env, const std::string& currentGroup
 
     if (originalName == "vmem") {
         setupVMem(env, StringPool::instance());
+    }
+
+    if (originalName == "vmath") {
+        setupVMath(env, StringPool::instance());
     }
     
     // TODO this shit clashes with group names

@@ -212,6 +212,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
             case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
             case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
             case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
+            case VTokenType::Power: return Value(std::pow(l.asNumber(), r.asNumber()));
             case VTokenType::Floor_Divide: {
                 if (r.asNumber() == 0) {
                     throw std::runtime_error("Division by zero in floor division (//) [ line " + std::to_string(lineNumber) + " ]");
@@ -235,7 +236,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
     if (op == VTokenType::Double_Equals) return Value(l == r);
     if (op == VTokenType::Not_Equal) return Value(l != r);
 
-    throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName());
+    throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + "[ " + std::to_string(lineNumber) + " ]");
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {

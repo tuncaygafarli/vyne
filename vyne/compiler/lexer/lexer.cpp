@@ -102,7 +102,6 @@ std::vector<Token> tokenize(const std::string& input) {
         }
 
         switch (character) {
-            case '*': tokens.emplace_back(VTokenType::Multiply, currentLine, 0, "*"); break;
             case '(': tokens.emplace_back(VTokenType::Left_Parenthese, currentLine, 0, "("); break;
             case ')': tokens.emplace_back(VTokenType::Right_Parenthese, currentLine, 0, ")"); break;
             case '{': tokens.emplace_back(VTokenType::Left_CB, currentLine, 0, "{"); break;
@@ -127,6 +126,15 @@ std::vector<Token> tokenize(const std::string& input) {
                     i++;
                 } else {
                     tokens.emplace_back(VTokenType::Dot, currentLine, 0, ".");
+                }
+                break;
+            }
+            case '*': {
+                if (i + 1 < input.length() && input[i + 1] == '*') {
+                    tokens.emplace_back(VTokenType::Power, currentLine, 0, "**");
+                    i++;
+                } else {
+                    tokens.emplace_back(VTokenType::Multiply, currentLine, 0, "*");
                 }
                 break;
             }

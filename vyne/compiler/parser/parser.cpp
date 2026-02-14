@@ -191,7 +191,7 @@ std::unique_ptr<ASTNode> Parser::parseAdditive() {
 
 std::unique_ptr<ASTNode> Parser::parseTerm() {
     auto left = parseUnary();
-    while (peekToken().type == VTokenType::Multiply || peekToken().type == VTokenType::Division) {
+    while (peekToken().type == VTokenType::Multiply || peekToken().type == VTokenType::Division || peekToken().type == VTokenType::Power) {
         Token opToken = getNextToken();
         auto right = parseUnary();
         auto node = std::make_unique<BinOpNode>(opToken.type, std::move(left), std::move(right));

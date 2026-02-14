@@ -39,6 +39,7 @@ enum class VTokenType {
     Double_Decrement,   // --
     Floor_Divide,       //
     Modulo,             // %
+    Power,
     Exclamatory,        // !
 
     // --- OPERATORS: LOGIC & RELATIONAL ---

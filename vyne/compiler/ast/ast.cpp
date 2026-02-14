@@ -212,6 +212,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
             case VTokenType::Smaller_Or_Equal: return Value(l.asNumber() <= r.asNumber());
             case VTokenType::Greater: return Value(l.asNumber() > r.asNumber());
             case VTokenType::Greater_Or_Equal: return Value(l.asNumber() >= r.asNumber());
+            case VTokenType::Power: return Value(std::pow(l.asNumber(), r.asNumber()));
             case VTokenType::Floor_Divide: {
                 if (r.asNumber() == 0) {
                     throw std::runtime_error("Division by zero in floor division (//) [ line " + std::to_string(lineNumber) + " ]");

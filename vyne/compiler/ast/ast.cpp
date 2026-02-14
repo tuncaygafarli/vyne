@@ -226,17 +226,16 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
 
                 return Value(std::fmod(l.asNumber(), r.asNumber()));
             }
-            default: throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
-        }
-    }
-
-    if((l.getType() == Value::NUMBER && r.getType() == Value::NUMBER) || (l.getType() == Value::STRING || r.getType() == Value::STRING)){
-        switch(op){
             case VTokenType::Double_Equals: return Value(l == r);
             case VTokenType::Not_Equal: return Value(l != r);
             default: throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + " [ line " + std::to_string(lineNumber) + " ]");
         }
     }
+
+    if (op == VTokenType::Double_Equals) return Value(l == r);
+    if (op == VTokenType::Not_Equal) return Value(l != r);
+
+    throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName());
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {

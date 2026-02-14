@@ -198,7 +198,7 @@ bool Value::operator==(const Value& other) const {
 }
 
 bool Value::operator!=(const Value& other) const {
-    if (this->data.index() != other.data.index()) return false;
+    if (this->data.index() != other.data.index()) return true;
 
     switch (this->data.index()) {
         case 0: return false;

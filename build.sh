@@ -2,7 +2,7 @@
 set -e
 
 CXX=g++
-OUT="vyne"
+OUT="vyne_bin"
 
 if [[ "$*" == *"--asan"* ]]; then
     echo "Building with AddressSanitizer..."
@@ -12,8 +12,6 @@ else
 fi
 
 CXXFLAGS="-std=c++17 $EXTRA_FLAGS -Wall -Wextra -Wpedantic"
-
-LDFLAGS="-lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl"
 
 SRC_FILES="main.cpp \
 vyne/vm/vm.cpp \
@@ -34,7 +32,7 @@ echo "Building Vyne Interpreter (Unix-like)..."
 echo "Mode: ${EXTRA_FLAGS}"
 echo "---------------------------------------"
 
-$CXX $CXXFLAGS $SRC_FILES -o $OUT $LDFLAGS
+$CXX $CXXFLAGS $SRC_FILES -o $OUT
 
 echo "Build Successful: $OUT created."
 

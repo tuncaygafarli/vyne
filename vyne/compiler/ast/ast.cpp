@@ -236,7 +236,7 @@ Value BinOpNode::evaluate(SymbolContainer& env, const std::string& currentGroup)
     if (op == VTokenType::Double_Equals) return Value(l == r);
     if (op == VTokenType::Not_Equal) return Value(l != r);
 
-    throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName());
+    throw std::runtime_error("Type Error: Invalid operation " + VTokenTypeToString(op) + " between " + l.getTypeName() + " and " + r.getTypeName() + "[ " + std::to_string(lineNumber) + " ]");
 }
 
 Value PostFixNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {

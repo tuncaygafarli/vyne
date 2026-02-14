@@ -73,6 +73,13 @@ void setupVMath(SymbolContainer& env, StringPool& pool) {
     vmath[pool.intern("sqrt")]     = Value(VMathNative::sqrt);
     vmath[pool.intern("abs")]      = Value(VMathNative::abs);
 
+    // VMath constants
+    vmath[pool.intern("pi")]       = Value(3.141592653589793).setReadOnly();
+    vmath[pool.intern("e")]        = Value(2.718281828459045).setReadOnly();
+    vmath[pool.intern("tau")]      = Value(6.283185307179586).setReadOnly();
+    vmath[pool.intern("phi")]      = Value(1.618033988749895).setReadOnly();
+    vmath[pool.intern("sqrt2")]    = Value(1.414213562373095).setReadOnly();
+
     // VMath properties
     vmath[pool.intern("version")]  = Value("v0.0.1-alpha").setReadOnly();
 }

@@ -97,6 +97,9 @@ std::vector<Token> tokenize(const std::string& input) {
             else if (buffer == "if") tokens.emplace_back(VTokenType::If, currentLine, 0, buffer);
             else if (buffer == "else") tokens.emplace_back(VTokenType::Else, currentLine, 0, buffer);
             else if (buffer == "const") tokens.emplace_back(VTokenType::Const, currentLine, 0, buffer);
+            else if (buffer == "use") tokens.emplace_back(VTokenType::Use, currentLine, 0, buffer);
+            else if (buffer == "deploy") tokens.emplace_back(VTokenType::Deploy, currentLine, 0, buffer);
+            else if (buffer == "as") tokens.emplace_back(VTokenType::As, currentLine, 0, buffer);
             else tokens.emplace_back(VTokenType::Identifier, currentLine, 0, buffer);
             continue;
         }

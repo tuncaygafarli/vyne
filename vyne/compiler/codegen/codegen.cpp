@@ -121,6 +121,7 @@ void BlockNode::compile(Emitter& e) const {
     }
 }
 void ModuleNode::compile(Emitter& e) const {}
+void ImportNode::compile(Emitter& e) const {}
 void DismissNode::compile(Emitter& e) const {}
 void IfNode::compile(Emitter& e) const {
     condition->compile(e); 

@@ -8,6 +8,10 @@
 #define CYAN    "\033[36m"
 #define BOLD    "\033[1m"
 
+class ASTNode;
+class ProgramNode;
+class StringPool;
+
 // TODO ADD DOUBLE INCREMENT SYNTAX
 
 Token Parser::getNextToken() {
@@ -40,6 +44,40 @@ Token Parser::consume(VTokenType expected) {
     throw std::runtime_error("Error: Unexpected token type! Expected " +
         VTokenTypeToString(expected) + ", but got " +
         VTokenTypeToString(peekToken().type) + " instead [ line " + std::to_string(t.line) + " ]");
+}
+
+std::unique_ptr<ASTNode> Parser::parseDeployModule() {
+    int line = peekToken().line;
+    consume(VTokenType::Deploy);
+
+    Token modTok = consume(VTokenType::Identifier);
+    std::string moduleName = modTok.name;
+
+    consumeSemicolon();
+
+    auto node = std::make_unique<DeployNode>(moduleName);
+    node->lineNumber = line;
+    return node;
+}
+
+std::unique_ptr<ASTNode> Parser::parseImportModule() {
+    int line = peekToken().line;
+    consume(VTokenType::Use);
+
+    Token pathTok = consume(VTokenType::String);
+    std::string filePath = pathTok.name;
+
+    std::string alias = "";
+    if (peekToken().type == VTokenType::As) {
+        consume(VTokenType::As);
+        alias = consume(VTokenType::Identifier).name;
+    }
+
+    consumeSemicolon();
+
+    auto node = std::make_unique<ImportNode>(filePath, alias);
+    node->lineNumber = line;
+    return node;
 }
 
 void Parser::consumeSemicolon() {
@@ -75,6 +113,8 @@ std::unique_ptr<ASTNode> Parser::parseStatement() {
         case VTokenType::Continue:   return parseLoopControl(); 
         case VTokenType::Module:     return parseModuleStatement();
         case VTokenType::Dismiss:    return parseDismissStatement();
+        case VTokenType::Use:        return parseImportModule();
+        case VTokenType::Deploy:     return parseDeployModule();
         case VTokenType::Identifier:
         case VTokenType::Const: {
             int checkPos = 0;
@@ -202,7 +242,8 @@ std::unique_ptr<ASTNode> Parser::parseTerm() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseUnary() {
-    if (peekToken().type == VTokenType::Exclamatory || peekToken().type == VTokenType::Substract) {
+    if (peekToken().type == VTokenType::Exclamatory || 
+        peekToken().type == VTokenType::Substract) {
         Token opToken = getNextToken();
         
         auto right = parseUnary(); 

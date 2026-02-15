@@ -5,6 +5,9 @@
 #include "../../modules/vmem/vmem.h"
 #include "../../modules/vmath/vmath.h"
 
+#include "../parser/parser.h"
+#include "../lexer/lexer.h"
+
 Value ProgramNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     Value lastValue;
     for (const auto& statement : statements) lastValue = statement->evaluate(env, currentGroup);
@@ -724,6 +727,67 @@ Value ModuleNode::evaluate(SymbolContainer& env, const std::string& currentGroup
     return env[currentGroup][moduleId];
 }
 
+Value ImportNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
+    const std::string& source = FileUtils::readFile(filePath);
+    auto tokens = tokenize(source);
+    Parser parser(std::move(tokens));
+    auto externalAst = parser.parseProgram();
+
+    SymbolContainer externalEnv;
+
+    try {
+        externalAst->evaluate(externalEnv, "global");
+        std::cout << "[DEBUG] External file '" << filePath << "' evaluated successfully.\n";
+    } catch (const std::runtime_error& e) {
+        throw std::runtime_error("In " + filePath + ": " + e.what());
+    }
+
+    for (auto const& [id, val] : externalEnv["global"]) {
+        env["global"][id] = val;
+    }
+
+    for (auto it = externalEnv.begin(); it != externalEnv.end(); ++it) {
+        const std::string& scopeName = it->first;
+
+        if (scopeName == "global") continue;
+
+        std::string finalScopeName;
+        if (alias.empty()) {
+            finalScopeName = scopeName;
+        } else {
+            if (scopeName.rfind("global.", 0) == 0) {
+                finalScopeName = "global." + alias + "." + scopeName.substr(7);
+            } else {
+                finalScopeName = alias + "." + scopeName;
+            }
+        }
+
+        std::cout << "[DEBUG] Transferring Scope: " << scopeName << " -> " << finalScopeName 
+                  << " (" << it->second.size() << " symbols)\n";
+
+        env[finalScopeName] = std::move(it->second);
+    }
+
+    for (const auto& modName : externalEnv.getDeployedList()) {
+        std::string targetMod = alias.empty() ? modName : alias + "." + modName;
+        env.deploy(targetMod);
+    }
+
+    return Value(true);
+}
+
+Value DeployNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
+    uint32_t modId = StringPool::instance().intern(moduleName); 
+
+    if (env["global"].find(modId) == env["global"].end()) {
+        throw std::runtime_error("Runtime Error: Module '" + moduleName + "' not found [ line " + std::to_string(lineNumber) + " ]");
+    }
+
+    env.deploy(moduleName); 
+    
+    return Value(true); 
+}
+
 Value DismissNode::evaluate(SymbolContainer& env, const std::string& currentGroup) const {
     bool erasedSomething = false;
     uint32_t nameId = StringPool::instance().intern(originalName);
@@ -744,8 +808,13 @@ Value DismissNode::evaluate(SymbolContainer& env, const std::string& currentGrou
 }
 
 std::string resolvePath(std::vector<std::string> scope, const std::string& currentGroup) {
-    if (scope.empty()) return currentGroup;
-    std::string targetGroup = "global";
-    for (const auto& g : scope) targetGroup += "." + g;
-    return targetGroup;
+    if (scope.empty()) {
+        return currentGroup;
+    }
+    
+    std::string path = "global";
+    for (const auto& segment : scope) {
+        path += "." + segment;
+    }
+    return path;
 }

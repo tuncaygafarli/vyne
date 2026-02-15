@@ -19,6 +19,9 @@ enum class VTokenType {
     Dismiss,            // Unload/Remove module
     Arrow,              // Loop sequencer
     Const,              // Constant declaration
+    Use,                // Multiple file importing
+    Deploy,             // Module deployment
+    As,                 // Alias declaration
 
     // --- KEYWORDS: CONTROL FLOW ---
     If,

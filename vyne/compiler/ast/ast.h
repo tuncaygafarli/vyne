@@ -15,13 +15,59 @@
 
 #include "../lexer/lexer.h"
 #include "../types.h"
+#include "../../utils/file_utils.h"
 #include "value.h"
 
 class Emitter;
+class Parser;
+struct Value;
 class ASTNode;
-struct Value; 
 using SymbolTable = std::unordered_map<uint32_t, Value>;
-using SymbolContainer = std::unordered_map<std::string, SymbolTable>;
+class SymbolContainer {
+    std::unordered_map<std::string, SymbolTable> table;
+    
+    std::vector<std::string> deployedModules;
+
+public:
+    SymbolTable& operator[](const std::string& key) { return table[key]; }
+
+    auto find(const std::string& key) { return table.find(key); }
+    auto begin() { return table.begin(); } 
+    auto begin() const { return table.begin(); }
+    
+    auto end() { return table.end(); }
+    auto end() const { return table.end(); }
+
+    void deploy(const std::string& moduleName) {
+        SymbolTable& globalScope = table["global"];
+    
+        deployedModules.emplace_back(moduleName);
+    }
+
+    size_t count(const std::string& key) const {
+        return table.count(key);
+    }
+
+    bool contains(const std::string& key) const {
+        return table.find(key) != table.end();
+    }
+
+    const std::vector<std::string>& getDeployedList() const {
+        return deployedModules;
+    }
+
+    size_t erase(const std::string& key) {
+        return table.erase(key);
+    }
+
+    const SymbolTable& at(const std::string& key) const {
+        return table.at(key);
+    }
+
+    size_t size() const { return table.size(); }
+    
+    bool empty() const { return table.empty(); }
+};
 
 // exception signals
 struct ReturnException {
@@ -62,6 +108,8 @@ enum class NodeType {
 
     MODULE,
     DISMISS,
+    DEPLOY,
+    IMPORT,
 
     BREAK,
     CONTINUE
@@ -407,9 +455,30 @@ public:
 
     ModuleNode(uint32_t mId, std::string mName) : ASTNode(NodeType::MODULE), moduleId(mId), originalName(std::move(mName)) {}
 
-    Value evaluate(SymbolContainer& env, const std::string& currentGroup) const override;
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
     void compile(Emitter& e) const override;
     VType getStaticType() const override { return VType::Module; }
+};
+
+class ImportNode : public ASTNode {
+    std::string filePath;
+    std::string alias;
+public:
+    ImportNode(std::string path, std::string al = "") 
+        : ASTNode(NodeType::IMPORT), filePath(std::move(path)), alias(std::move(al)) {}
+
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
+    void compile(Emitter& e) const override;
+};
+
+class DeployNode : public ASTNode {
+    std::string moduleName;
+public:
+    DeployNode(std::string name) : ASTNode(NodeType::DEPLOY), moduleName(std::move(name)) {}
+
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
+    
+    void compile(Emitter& e) const override {}
 };
 
 class DismissNode : public ASTNode {
@@ -419,7 +488,7 @@ public:
 
     DismissNode(uint32_t mId, std::string mName) : ASTNode(NodeType::DISMISS), moduleId(mId), originalName(std::move(mName)) {}
 
-    Value evaluate(SymbolContainer& env, const std::string& currentGroup) const override;
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
     void compile(Emitter& e) const override;
 };
 
@@ -432,7 +501,7 @@ public:
     IfNode(std::unique_ptr<ASTNode> c, std::unique_ptr<ASTNode> b, std::unique_ptr<ASTNode> eb = nullptr) : 
     ASTNode(NodeType::IF), condition(std::move(c)), body(std::move(b)), elseBody(std::move(eb)) {}
 
-    Value evaluate(SymbolContainer& env, const std::string& currentGroup) const override;
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override;
     void compile(Emitter& e) const override;
 };
 
@@ -440,7 +509,7 @@ public:
 struct BreakNode : public ASTNode {
     BreakNode() : ASTNode(NodeType::BREAK) {}
 
-    Value evaluate(SymbolContainer& env, const std::string& currentGroup) const override {
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override {
         throw BreakException();
     }
     void compile(Emitter& e) const override;
@@ -449,10 +518,10 @@ struct BreakNode : public ASTNode {
 struct ContinueNode : public ASTNode {
     ContinueNode() : ASTNode(NodeType::CONTINUE) {}
 
-    Value evaluate(SymbolContainer& env, const std::string& currentGroup) const override {
+    Value evaluate(SymbolContainer& env, const std::string& currentGroup = "global") const override {
         throw ContinueException();
     }
     void compile(Emitter& e) const override;
 };
 
-std::string resolvePath(std::vector<std::string> scope, const std::string& currentGroup);
+std::string resolvePath(std::vector<std::string> scope, const std::string& currentGroup = "global");

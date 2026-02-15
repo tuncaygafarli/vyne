@@ -22,7 +22,7 @@ while true {
 
     if discriminant < 0 {
 
-        log("No real roots");
+        out("No real roots");
 
     } else {
 
@@ -41,8 +41,8 @@ while true {
         root1 = (-b + sqrt_discriminant) / (2*a);
         root2 = (-b - sqrt_discriminant) / (2*a);
 
-        log(root1);
-        log(root2);
+        out(root1);
+        out(root2);
     }
 
 }

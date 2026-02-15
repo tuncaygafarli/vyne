@@ -7,7 +7,7 @@ while true {
     process = vcore.input("Enter the process : ");
 
     if process == "+" { 
-        return log(input_1 + input_2); 
+        return out(input_1 + input_2); 
     }
 
     if input == "exit" { break; }

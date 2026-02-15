@@ -3,11 +3,11 @@ y = 6;
 z = 7;
 
 sub do(){
-    log(x);
+    out(x);
 }
 
 if x == y {
-    log(z);
+    out(z);
 } else if x == 5 {
     do();
 }

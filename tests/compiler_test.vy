@@ -6,4 +6,4 @@ while i < 1000000 {
     i = i + 1;
 }
 
-log(sum);
+out(sum);

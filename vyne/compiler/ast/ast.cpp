@@ -296,7 +296,7 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, const std::string& current
     std::vector<Value> argValues;
     for (auto& arg : arguments) argValues.emplace_back(arg->evaluate(env, currentGroup));
 
-    if (funcName == "log") {
+    if (funcName == "out") {
         if (!argValues.empty()) { argValues[0].print(std::cout); std::cout << std::endl; }
         return Value();
     }

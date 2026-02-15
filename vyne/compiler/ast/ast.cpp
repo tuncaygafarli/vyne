@@ -769,7 +769,7 @@ Value ImportNode::evaluate(SymbolContainer& env, const std::string& currentGroup
     }
 
     for (const auto& modName : externalEnv.getDeployedList()) {
-        std::string targetMod = alias.empty() ? modName : alias + "." + modName;
+        const std::string& targetMod = alias.empty() ? modName : alias + "." + modName;
         env.deploy(targetMod);
     }
 

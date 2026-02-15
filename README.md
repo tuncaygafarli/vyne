@@ -56,12 +56,6 @@ To ensure engine stability, the following rules are enforced:
 > [ Note: Constant Protection ]
 > Constants must be initialized at the moment of declaration. Once set, they are read-only for the duration of the program execution.
 
-#### 4. Type Coercion (Implicit Casting)
-
-Vyne avoids "hidden" type casting to prevent bugs, with one primary exception:
-
-- **String Promotion**: Using the `+` operator with a `String` and a `Number` will automatically promote the `Number` to a `String` for concatenation.
-
 ---
 
 ### 📦 Built-in Modules

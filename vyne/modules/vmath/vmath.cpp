@@ -473,13 +473,20 @@ void setupVMath(SymbolContainer& env, StringPool& pool) {
     vmath[pool.intern("lgamma")]   = Value(VMathNative::lgamma);
 
     // VMath constants
-    vmath[pool.intern("pi")]          = Value(3.141592653589793).setReadOnly();
-    vmath[pool.intern("e")]           = Value(2.718281828459045).setReadOnly();
-    vmath[pool.intern("tau")]         = Value(6.283185307179586).setReadOnly();
-    vmath[pool.intern("phi")]         = Value(1.618033988749895).setReadOnly();
+    vmath[pool.intern("pi")]       = Value(3.141592653589793).setReadOnly();
+    vmath[pool.intern("e")]        = Value(2.718281828459045).setReadOnly();
+    vmath[pool.intern("tau")]      = Value(6.283185307179586).setReadOnly();
+    vmath[pool.intern("phi")]      = Value(1.618033988749895).setReadOnly();
+    vmath[pool.intern("sqrt2")]    = Value(1.414213562373095).setReadOnly();
+    vmath[pool.intern("pi_half")]  = Value(1.5707963267948966).setReadOnly();
+    vmath[pool.intern("pi_quarter")] = Value(0.7853981633974483).setReadOnly();
+    vmath[pool.intern("sqrt3")]    = Value(1.732050807568877).setReadOnly();
+    vmath[pool.intern("sqrt5")]    = Value(2.23606797749979).setReadOnly();
+    vmath[pool.intern("ln2")]      = Value(0.6931471805599453).setReadOnly();
+    vmath[pool.intern("ln10")]     = Value(2.302585092994046).setReadOnly();
     vmath[pool.intern("euler_gamma")] = Value(0.5772156649015329).setReadOnly();
-    vmath[pool.intern("inf")]         = Value(INFINITY).setReadOnly();
-    vmath[pool.intern("nan")]         = Value(NAN).setReadOnly();
+    vmath[pool.intern("inf")]      = Value(INFINITY).setReadOnly();
+    vmath[pool.intern("nan")]      = Value(NAN).setReadOnly();
 
     // VMath properties
     vmath[pool.intern("version")]  = Value("v0.0.1-alpha").setReadOnly();

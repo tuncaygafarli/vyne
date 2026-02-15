@@ -11,7 +11,7 @@ sub checkSorted(arr, size) {
         while col < (size - row - 1) {
             if arr[col] > arr[col + 1] {
                 sortedStatus = 0;
-                log("ur shit ain't sorted bro");
+                out("ur shit ain't sorted bro");
                 break;
             }
             col = col + 1;
@@ -21,4 +21,4 @@ sub checkSorted(arr, size) {
     return sortedStatus;
 }
 
-log(checkSorted(numbers, numbers.size()));
+out(checkSorted(numbers, numbers.size()));

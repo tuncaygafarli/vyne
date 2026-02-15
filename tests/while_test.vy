@@ -6,5 +6,5 @@ while i < 1000 {
     i = i + 1;
 }
 
-log("Array size:");
-log(list.size());
+out("Array size:");
+out(list.size());

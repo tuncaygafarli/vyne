@@ -29,7 +29,7 @@ sub unique_arr(arr) {
 raw = [1, 2, 2, 3, 1, 4, 5, 4];
 cleaned = unique_arr(raw);
 
-log("Original:");
-log(raw);
-log("Unique:");
-log(cleaned); # Expected: [1, 2, 3, 4, 5]
+out("Original:");
+out(raw);
+out("Unique:");
+out(cleaned); # Expected: [1, 2, 3, 4, 5]

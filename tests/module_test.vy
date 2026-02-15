@@ -3,7 +3,7 @@ module vmem;
 module CustomModule;
 
 sub::CustomModule call(){
-    log("hi");
+    out("hi");
 }
 
-log(vmem.usage(CustomModule.call));
+out(vmem.usage(CustomModule.call));

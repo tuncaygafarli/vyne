@@ -296,7 +296,7 @@ Value BuiltInCallNode::evaluate(SymbolContainer& env, const std::string& current
     std::vector<Value> argValues;
     for (auto& arg : arguments) argValues.emplace_back(arg->evaluate(env, currentGroup));
 
-    if (funcName == "log") {
+    if (funcName == "out") {
         if (!argValues.empty()) { argValues[0].print(std::cout); std::cout << std::endl; }
         return Value();
     }
@@ -491,29 +491,30 @@ Value MethodCallNode::evaluate(SymbolContainer& env, const std::string& currentG
 
     // --- ARRAY METHODS ---
     if (receiverVal.getType() == Value::ARRAY) {
-        if (receiver->type() != NodeType::VARIABLE) {
-            throw std::runtime_error("Runtime Error: Cannot call methods on anonymous arrays [ line " + std::to_string(lineNumber) + " ]");
+        if (methodName == "size") {
+            return Value(static_cast<double>(receiverVal.asList().size()));
         }
 
-        auto* var = static_cast<VariableNode*>(receiver.get());
-        std::string targetGroup = resolvePath(var->getScope(), currentGroup);
         Value* target = nullptr;
 
-        if (env.count(targetGroup) && env[targetGroup].count(var->getNameId())) {
-            target = &env[targetGroup][var->getNameId()];
+        if (receiver->type() == NodeType::VARIABLE) {
+            auto* var = static_cast<VariableNode*>(receiver.get());
+            std::string targetGroup = resolvePath(var->getScope(), currentGroup);
+            if (env.count(targetGroup) && env[targetGroup].count(var->getNameId())) {
+                target = &env[targetGroup][var->getNameId()];
+            } else if (targetGroup != "global" && env["global"].count(var->getNameId())) {
+                target = &env["global"][var->getNameId()];
+            }
         } 
-        else if (targetGroup != "global" && env["global"].count(var->getNameId())) {
-            target = &env["global"][var->getNameId()];
+        else if (receiver->type() == NodeType::INDEX_ACCESS) {
+            target = &receiverVal;
         }
 
-        if (!target) {
-            throw std::runtime_error("Runtime Error: Variable '" + var->getOriginalName() + "' not found [ line " + std::to_string(lineNumber) + " ]");
+        if (!target && (methodName == "push" || methodName == "pop" || methodName == "clear")) {
+            throw std::runtime_error("Runtime Error: Cannot call mutating method '" + methodName + "' on anonymous array [ line " + std::to_string(lineNumber) + " ]");
         }
 
-        if (methodName == "size") {
-            if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method size() on non-array [ line " + std::to_string(lineNumber) + " ]");
-            return Value(static_cast<double>(target->asList().size()));
-        }
+        auto& vec = target ? target->asList() : receiverVal.asList();
 
         if (methodName == "push") {
             if (target->getType() != Value::ARRAY) throw std::runtime_error("Type Error : Called method push() on non-array [ line " + std::to_string(lineNumber) + " ]");

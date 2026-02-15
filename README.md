@@ -56,12 +56,6 @@ To ensure engine stability, the following rules are enforced:
 > [ Note: Constant Protection ]
 > Constants must be initialized at the moment of declaration. Once set, they are read-only for the duration of the program execution.
 
-#### 4. Type Coercion (Implicit Casting)
-
-Vyne avoids "hidden" type casting to prevent bugs, with one primary exception:
-
-- **String Promotion**: Using the `+` operator with a `String` and a `Number` will automatically promote the `Number` to a `String` for concatenation.
-
 ---
 
 ### 📦 Built-in Modules
@@ -71,6 +65,7 @@ Vyne leverages native C++ modules to handle high-performance tasks that the inte
 - 📡 **[vcore](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vcore)** System-level utilities, sleep timers, and process management.
 - 🎨 **[vglib](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vglib)** The "Vyne Graphics Library" — home to the 3D ASCII donut and buffer management (in the future).
 - 🧠 **[vmem](https://github.com/tuncaygafarli/vyne/tree/master/vyne/modules/vmem)** Memory management and introspection — track heap usage, inspect raw memory addresses, and monitor variable footprints.
+- 🧪 **[vmath](https://github.com/t2ncay/vyne/tree/master/vyne/modules/vmath)** A comprehensive wrapper for the C++ standard math library, featuring trigonometric functions, hyperbolic operations, and mathematical constants like $\pi$ and $\phi$.
 
 ---
 
@@ -79,7 +74,7 @@ Vyne leverages native C++ modules to handle high-performance tasks that the inte
 #### Global Functions
 
 ```bash
-log(x)         # Print to terminal
+out(x)         # Print to terminal
 type(x)        # Returns "number", "string", "array", or "function"
 sizeof(x)      # Get length of strings or count of array elements
 string(x)      # Convert any data type to string

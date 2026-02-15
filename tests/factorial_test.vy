@@ -8,14 +8,14 @@ sub factorial(n) {
     return n * factorial(n - 1);
 }
 
-log("Initial Memory:");
-log(vmem.usage());
+out("Initial Memory:");
+out(vmem.usage());
 
 # high recursion depth
 result = factorial(50); 
 
-log("Factorial(50) Result:");
-log(result);
+out("Factorial(50) Result:");
+out(result);
 
-log("Memory after recursion:");
-log(vmem.usage());
+out("Memory after recursion:");
+out(vmem.usage());

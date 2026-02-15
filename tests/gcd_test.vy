@@ -15,7 +15,7 @@ while true {
         a = temp; # This is the Euclidean algorithm we all learn in 6th grade LMAO
     }
     
-    log(a);
+    out(a);
 
     if input_1 == "exit" || input_2 == "exit" { break; }
 }

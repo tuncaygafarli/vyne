@@ -5,7 +5,7 @@ while (i < 1000) {
     i = i + 1;
 }
 
-log("Array built. Starting the stress test...");
+out("Array built. Starting the stress test...");
 
 start = 0;
 while (start < 5000) {
@@ -14,4 +14,4 @@ while (start < 5000) {
     start = start + 1;
 }
 
-log("Stress test finished!");
+out("Stress test finished!");

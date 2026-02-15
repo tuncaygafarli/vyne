@@ -3,7 +3,7 @@ a = 0;
 b = 1;
 i = 0;
 
-log("Calculating Fibonacci(40)...");
+out("Calculating Fibonacci(40)...");
 
 while (i < n) {
     temp = a;
@@ -12,5 +12,5 @@ while (i < n) {
     i++;
 }
 
-log("Result:");
-log(a);
+out("Result:");
+out(a);

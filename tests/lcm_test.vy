@@ -25,7 +25,7 @@ while true {
 
     lcm = temp / gcd;
 
-    log(lcm);
+    out(lcm);
 
     if input_1 == "exit" || input_2 == "exit" { break; }
 }
